@@ -1,0 +1,153 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--cyan:#00f3ff;
+--lime:#ccff00;
+--glass:rgba(255,255,255,.07);
+--border:rgba(255,255,255,.15);
+}
+
+body{background:#020617;font-family:Inter;color:#e5e7eb}
+
+.wrap{padding:35px}
+
+.header{
+display:flex;justify-content:space-between;align-items:center;margin-bottom:25px
+}
+
+.header h2{
+background:linear-gradient(90deg,var(--cyan),var(--lime));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin:0
+}
+
+.card{
+background:var(--glass);
+border:1px solid var(--border);
+border-radius:20px;
+backdrop-filter:blur(15px);
+padding:25px;
+box-shadow:0 20px 40px rgba(0,0,0,.6)
+}
+
+.table{width:100%;border-collapse:separate;border-spacing:0 12px}
+
+.table th{
+font-size:.8rem;color:#94a3b8;text-transform:uppercase;text-align:left;padding:10px
+}
+
+.table td{
+background:rgba(255,255,255,.05);
+padding:15px
+}
+
+.table td:first-child{border-radius:12px 0 0 12px}
+.table td:last-child{border-radius:0 12px 12px 0;text-align:right}
+
+.table tr:hover td{background:rgba(255,255,255,.1)}
+
+.badge{
+background:#020617;padding:5px 12px;border-radius:20px;font-size:.75rem
+}
+
+.open{color:var(--cyan);cursor:pointer}
+.open:hover{text-shadow:0 0 8px var(--cyan)}
+
+.empty{text-align:center;padding:50px;color:#64748b}
+
+/* Modal */
+.modal{
+position:fixed;inset:0;background:rgba(0,0,0,.8);
+display:none;align-items:center;justify-content:center;z-index:999
+}
+
+.modal-box{
+width:500px;background:#020617;border:1px solid var(--border);
+border-radius:20px;padding:25px
+}
+
+.close{float:right;cursor:pointer;color:#ff4d4d}
+
+.subject{font-weight:700;margin-bottom:10px}
+</style>
+
+<div class="wrap">
+
+<div class="header">
+<h2><i class="fa-solid fa-inbox"></i> Inbox</h2>
+</div>
+
+<div class="card">
+
+<table class="table">
+<thead>
+<tr>
+<th>From</th>
+<th>Subject</th>
+<th>Date</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for m in messages %}
+<tr>
+<td><span class="badge">{{ m.sender.username }}</span></td>
+<td>{{ m.subject }}</td>
+<td style="font-size:.8rem;opacity:.6">{{ m.created_at|date:"d M Y" }}</td>
+<td>
+<span class="open"
+onclick="openMsg('{{m.subject}}','{{m.body|escapejs}}','{{m.sender.username}}')">
+<i class="fa-solid fa-eye"></i>
+</span>
+</td>
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="4" class="empty">
+<i class="fa-regular fa-envelope-open fa-3x"></i><br><br>
+No messages yet
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="msgModal">
+<div class="modal-box">
+<span class="close" onclick="closeMsg()"><i class="fa-solid fa-xmark"></i></span>
+
+<div class="subject" id="mSubject"></div>
+<div style="font-size:.8rem;opacity:.6;margin-bottom:15px" id="mFrom"></div>
+<div id="mBody"></div>
+
+</div>
+</div>
+
+<script>
+function openMsg(sub,body,from){
+document.getElementById("mSubject").innerText=sub;
+document.getElementById("mBody").innerText=body;
+document.getElementById("mFrom").innerText="From : "+from;
+document.getElementById("msgModal").style.display="flex";
+}
+
+function closeMsg(){
+document.getElementById("msgModal").style.display="none";
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+body { background:#0f172a; color:#e5e7eb; font-family:Segoe UI; }
+.card { background:#1e293b; padding:20px; border-radius:10px; }
+table { width:100%; border-collapse:collapse; }
+th,td { padding:14px; border-bottom:1px solid #334155; }
+th { color:#94a3b8; text-transform:uppercase; font-size:13px; }
+.status-active { color:#22c55e; }
+.status-inactive { color:#ef4444; }
+a { text-decoration:none; font-weight:600; }
+.edit { color:#60a5fa; margin-right:10px; }
+.delete { color:#f87171; }
+</style>
+
+<div class="card">
+    <h2>🧑‍🏫 Trainers</h2>
+
+    <a href="{% url 'trainer_create' %}" style="float:right;color:#22c55e;">➕ Add Trainer</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Mobile</th>
+                <th>Experience</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for trainer in trainers %}
+            <tr>
+                <td>{{ trainer.username }}</td>
+                <td>{{ trainer.mobile }}</td>
+                <td>
+                    {% if trainer.trainerprofile %}
+                        {{ trainer.trainerprofile.experience }} yrs
+                    {% else %}
+                        0 yrs
+                    {% endif %}
+                </td>
+                <td>
+                    {% if trainer.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-inactive">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'trainer_edit' trainer.id %}" class="edit">Edit</a>
+                    <a href="{% url 'trainer_delete' trainer.id %}"
+                       onclick="return confirm('Deactivate this trainer?');"
+                       class="delete">Delete</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No trainers found</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<!-- CSRF token (required for fetch POST) -->
+<form style="display:none;">
+  {% csrf_token %}
+</form>
+
+<style>
+.page-wrap {
+  max-width: 1100px;
+  margin: 30px auto;
+}
+
+.card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.btn-login {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-logout {
+  background: #ef4444;
+  color: white;
+}
+
+#status {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.map-link {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+</style>
+
+<div class="page-wrap">
+
+  <!-- ===== ATTENDANCE ACTIONS ===== -->
+  <div class="card">
+    <h2>📍 Attendance Tracker</h2>
+
+    <button class="btn btn-login" onclick="markLogin()">Login</button>
+    <button class="btn btn-logout" onclick="markLogout()">Logout</button>
+
+    <div id="status"></div>
+
+    <iframe
+      id="map"
+      width="100%"
+      height="280"
+      style="border-radius:12px; margin-top:15px; display:none;"
+      loading="lazy">
+    </iframe>
+  </div>
+
+  <!-- ===== ATTENDANCE TABLE ===== -->
+  <div class="card">
+    <h2>📅 My Attendance Records</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Login</th>
+          <th>Logout</th>
+          <th>Status</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for att in attendance_list %}
+        <tr>
+          <td>{{ att.date }}</td>
+          <td>{{ att.login_time|default:"-" }}</td>
+          <td>{{ att.logout_time|default:"-" }}</td>
+          <td>{{ att.get_status_display }}</td>
+          <td>
+            {% if att.latitude and att.longitude %}
+              <a class="map-link"
+                 target="_blank"
+                 href="https://www.google.com/maps?q={{ att.latitude }},{{ att.longitude }}">
+                View
+              </a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No attendance records</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+function getCSRFToken() {
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function markLogin() {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      fetch("{% url 'attendance_login' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCSRFToken(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          latitude: lat,
+          longitude: lng
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("status").innerText = "✅ Logged In";
+        const map = document.getElementById("map");
+        map.style.display = "block";
+        map.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+        setTimeout(() => location.reload(), 800);
+      });
+    },
+    function() {
+      alert("Location permission denied");
+    },
+    { enableHighAccuracy: true }
+  );
+}
+
+function markLogout() {
+  fetch("{% url 'attendance_logout' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken()
+    }
+  })
+  .then(res => res.json())
+  .then(() => {
+    document.getElementById("status").innerText = "❌ Logged Out";
+    setTimeout(() => location.reload(), 800);
+  });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #f1f5f9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* TOPBAR */
+    header.topbar {
+      height: 60px;
+      background: #1e293b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+    header.topbar h2 { margin: 0; font-size: 20px; font-weight: 600; }
+    .user-info a { color: #f87171; text-decoration: none; font-weight: bold; }
+
+    /* LAYOUT */
+    .container { display: flex; flex: 1; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 250px;
+      background: #0f172a;
+      color: #cbd5e1;
+      padding-top: 20px;
+      border-right: 1px solid #334155;
+    }
+    .sidebar a {
+      display: block;
+      padding: 14px 24px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: 0.2s;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border-left-color: #3b82f6;
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<header class="topbar">
+  <h2>🚀 LMS Admin</h2>
+  <div class="user-info">
+    {{ request.user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <a href="{% url 'admin_dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+      📊 Dashboard
+    </a>
+
+    <a href="{% url 'admin_users' %}"
+       class="{% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+      👥 User Management
+    </a>
+
+    <a href="{% url 'admin_create_user' %}"
+       class="{% if request.resolver_match.url_name == 'admin_create_user' %}active{% endif %}">
+      ➕ Create User
+    </a>
+
+    <a href="{% url 'admin_course_list' %}"
+       class="{% if request.resolver_match.url_name == 'admin_course_list' %}active{% endif %}">
+      📘 Courses
+    </a>
+
+    <a href="{% url 'admin_media_list' %}"
+       class="{% if request.resolver_match.url_name == 'admin_media_list' %}active{% endif %}">
+      🎥 Media & Ads
+    </a>
+
+    <a href="{% url 'admin_settings' %}"
+       class="{% if request.resolver_match.url_name == 'admin_settings' %}active{% endif %}">
+      ⚙ Settings
+    </a>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div style="
+          padding:10px;
+          margin-bottom:20px;
+          background:#dcfce7;
+          color:#166534;
+          border-radius:6px;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

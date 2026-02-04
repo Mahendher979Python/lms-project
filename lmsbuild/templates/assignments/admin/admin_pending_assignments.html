@@ -1,0 +1,16 @@
+<h2>Pending Assignments (Admin)</h2>
+
+<table border="1">
+<tr><th>Title</th><th>Action</th></tr>
+
+{% for a in assignments %}
+<tr>
+<td>{{ a.title }}</td>
+<td>
+<a href="{% url 'assignments:admin_assignment_review' a.id %}">Review</a>
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="2">No pending assignments</td></tr>
+{% endfor %}
+</table>

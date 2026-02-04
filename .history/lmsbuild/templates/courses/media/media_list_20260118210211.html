@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Trainer – Session Videos</h2>
+
+<a href="{% url 'trainer_video_add' %}" class="btn">+ Add Video</a>
+
+<table border="1" width="100%" cellpadding="10">
+    <tr>
+        <th>Title</th>
+        <th>Video</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for video in videos %}
+    <tr>
+        <td>{{ video.title }}</td>
+        <td>
+            <video width="200" controls>
+                <source src="{{ video.video.url }}">
+            </video>
+        </td>
+        <td>
+            <a href="{% url 'trainer_video_edit' video.id %}">Edit</a> |
+            <a href="{% url 'trainer_video_delete' video.id %}"
+               onclick="return confirm('Delete this video?')">Delete</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">No videos uploaded</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

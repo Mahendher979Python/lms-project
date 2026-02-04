@@ -1,0 +1,35 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>🧑‍🏫 Trainers</h2>
+
+{% for message in messages %}
+  <p style="color:green;font-weight:600;">{{ message }}</p>
+{% endfor %}
+
+<a href="{% url 'trainer_create' %}">➕ Add Trainer</a>
+
+<table border="1" cellpadding="10">
+<tr>
+  <th>Username</th>
+  <th>Mobile</th>
+  <th>Experience</th>
+  <th>Status</th>
+  <th>Actions</th>
+</tr>
+
+{% for t in trainers %}
+<tr>
+  <td>{{ t.username }}</td>
+  <td>{{ t.mobile }}</td>
+  <td>{{ t.trainerprofile.experience }} yrs</td>
+  <td>{{ t.is_active|yesno:"Active,Inactive" }}</td>
+  <td>
+    <a href="{% url 'trainer_edit' t.id %}">Edit</a>
+    <a href="{% url 'trainer_delete' t.id %}">Delete</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

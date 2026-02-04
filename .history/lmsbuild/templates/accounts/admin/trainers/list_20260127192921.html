@@ -1,0 +1,72 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h2>Trainer Management</h2>
+
+<a href="{% url 'trainer_create' %}">➕ Add Trainer</a>
+
+<table border="1" width="100%" cellpadding="10">
+
+<tr>
+<th>Name</th>
+<th>Mobile</th>
+<th>Emp ID</th>
+<th>Subject</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for t in trainers %}
+<tr>
+
+<td>{{ t.user.username }}</td>
+<td>{{ t.user.mobile }}</td>
+<td>{{ t.emp_id }}</td>
+<td>{{ t.subject }}</td>
+
+<td>
+{% if t.user.is_active %}
+<span class="badge-active">Active</span>
+{% else %}
+<span class="badge-inactive">Inactive</span>
+{% endif %}
+</td>
+
+<td>
+<a href="{% url 'trainer_edit' t.user.id %}">Edit</a>
+<a href="{% url 'trainer_delete' t.user.id %}"
+onclick="return confirm('Delete?')">Delete</a>
+</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+
+<canvas id="statusChart" height="120"></canvas>
+
+<script>
+const active = document.querySelectorAll('.badge-active').length;
+const inactive = document.querySelectorAll('.badge-inactive').length;
+
+new Chart(document.getElementById("statusChart"),{
+type:"doughnut",
+data:{
+labels:["Active","Inactive"],
+datasets:[{
+data:[active,inactive]
+}]
+}
+});
+</script>
+
+<style>
+.badge-active{color:green;font-weight:bold}
+.badge-inactive{color:red;font-weight:bold}
+</style>
+
+{% endblock %}

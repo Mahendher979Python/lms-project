@@ -1,0 +1,14 @@
+<h1>Admin Dashboard</h1>
+
+<p>Welcome {{ request.user.username }}</p>
+
+<hr>
+
+<ul>
+    <li><a href="{% url 'admin_course_list' %}">📚 Courses</a></li>
+
+    <!-- ✅ NEW MEDIA SECTION -->
+    <li><a href="{% url 'admin_media_list' %}">🎥 Media (Videos & Ads)</a></li>
+
+    <li><a href="{% url 'logout' %}">🚪 Logout</a></li>
+</ul>

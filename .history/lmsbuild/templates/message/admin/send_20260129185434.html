@@ -1,0 +1,19 @@
+<h2>Send Message</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<select name="receiver">
+{% for u in users %}
+<option value="{{u.id}}">{{u.username}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+<input type="text" name="subject" placeholder="Subject"><br><br>
+
+<textarea name="body" placeholder="Message"></textarea><br><br>
+
+<button type="submit">Send</button>
+</form>

@@ -1,0 +1,97 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.page{padding:25px;background:#f0f2f5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.05)}
+.stat{font-size:28px;font-weight:bold;color:#4361ee}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+thead{background:#4361ee;color:#fff}
+</style>
+
+<div class="page">
+
+<h2>📊 Admin Master Dashboard</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Admin</h3>
+<p><b>{{ admin.username }}</b></p>
+</div>
+
+<div class="card">
+<h3>Counts</h3>
+<p>Trainers: <span class="stat">{{ total_trainers }}</span></p>
+<p>Students: <span class="stat">{{ total_students }}</span></p>
+</div>
+
+</div>
+
+<br>
+
+<div class="grid">
+
+<div class="card">
+<h3>📈 Batch Wise Students</h3>
+<canvas id="batchChart"></canvas>
+</div>
+
+<div class="card">
+<h3>👨‍🏫 Trainers</h3>
+<table>
+<thead>
+<tr><th>ID</th><th>Name</th><th>Subject</th></tr>
+</thead>
+<tbody>
+{% for t in trainers %}
+<tr>
+<td>{{ t.user.id }}</td>
+<td>{{ t.user.username }}</td>
+<td>{{ t.subject }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+<h3>👨‍🎓 Students</h3>
+<table>
+<thead>
+<tr><th>ID</th><th>Name</th><th>Trainer</th><th>Batch</th></tr>
+</thead>
+<tbody>
+{% for s in students %}
+<tr>
+<td>{{ s.user.id }}</td>
+<td>{{ s.user.username }}</td>
+<td>{{ s.trainer.user.username }}</td>
+<td>{{ s.batch.name }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+const labels=[{% for b in batch_stats %}"{{ b.batch__name }}",{% endfor %}]
+const values=[{% for b in batch_stats %}{{ b.count }},{% endfor %}]
+
+new Chart(document.getElementById("batchChart"),{
+type:"pie",
+data:{labels:labels,datasets:[{data:values}]}
+})
+</script>
+
+{% endblock %}

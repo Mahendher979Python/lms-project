@@ -1,0 +1,206 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+/* --- Layout & Centering --- */
+.page-wrapper {
+  min-height: 85vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f4f6;
+  padding: 40px 20px;
+}
+
+/* --- 3D Card Design --- */
+.form-box {
+  width: 100%;
+  max-width: 550px;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  /* Deep 3D Shadow */
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.form-box:hover {
+  transform: translateY(-2px);
+}
+
+/* --- Typography --- */
+.form-box h2 {
+  margin-bottom: 25px;
+  font-size: 24px;
+  color: #111827;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 15px;
+}
+
+/* --- Form Elements --- */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+}
+
+/* --- Student List (Scroll) --- */
+.student-list {
+  max-height: 180px;
+  overflow-y: auto;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.checkbox-row:hover {
+  background-color: #e6f5ea;
+}
+
+.checkbox-row input {
+  margin-right: 10px;
+  accent-color: #16a34a;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* --- Button Group (New) --- */
+.form-actions {
+  display: flex;
+  gap: 15px; /* Space between buttons */
+  margin-top: 30px;
+}
+
+/* Common Button Styles */
+.btn {
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-align: center;
+  text-decoration: none; /* For the anchor tag */
+  display: inline-block;
+}
+
+/* Primary (Save) Button */
+.submit-btn {
+  flex: 2; /* Takes up more space */
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.4);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.5);
+}
+
+/* Secondary (Back) Button */
+.back-btn {
+  flex: 1; /* Takes up less space */
+  background-color: #e5e7eb;
+  color: #374151;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background-color: #d1d5db;
+  color: #111827;
+  transform: translateY(-2px);
+}
+</style>
+
+<div class="page-wrapper">
+  
+  <div class="form-box">
+    <h2><span style="color:#16a34a;">+</span> Add New Todo</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label>Task Title</label>
+        <input type="text" name="title" placeholder="Enter task title..." required>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="4" placeholder="Enter details here..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Attachment</label>
+        <input type="file" name="file">
+      </div>
+
+      <div class="form-group">
+        <label>Assign Trainers</label>
+        <div class="student-list">
+          {% for student in students %}
+            <label class="checkbox-row">
+                <input type="checkbox" name="students" value="{{ student.id }}">
+                <span>{{ student.username }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="javascript:history.back()" class="btn back-btn">Cancel</a>
+        
+        <button type="submit" class="btn submit-btn">Save Todo</button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

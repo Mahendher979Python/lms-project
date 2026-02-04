@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* --- COLOR PALETTE: Deep Midnight (No White Backgrounds) --- */
+      --bg-body: #0b1120;       /* Very Dark Navy */
+      --bg-panel: #151e32;      /* Slightly lighter for cards */
+      --bg-sidebar: #0f172a;    /* Sidebar Dark */
+      
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      
+      --primary: #3b82f6;       /* Bright Blue */
+      --primary-glow: rgba(59, 130, 246, 0.4);
+      
+      --card-blue: #2563eb;
+      --card-green: #16a34a;
+      --card-orange: #d97706;
+      --card-red: #dc2626;
+
+      /* 3D Shadows & Glass Effect */
+      --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 15px var(--primary-glow);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden; /* Prevent body scroll, let content scroll */
+    }
+
+    /* ================= SIDEBAR (Fixed Left) ================= */
+    .sidebar {
+      width: 270px;
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      padding: 20px 15px;
+      z-index: 100;
+    }
+
+    /* LOGO AREA */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      padding-left: 10px;
+    }
+    .brand h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* PROFILE SECTION (Circle Big Image) */
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary); /* Blue Ring */
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); /* Glow */
+      margin-bottom: 15px;
+    }
+
+    .profile-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin: 0;
+    }
+    .profile-role {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* NAVIGATION LINKS */
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      padding: 14px 20px;
+      border-radius: 12px; /* Rounded Pill Shape */
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+
+    /* ACTIVE STATE - The "Blue Pill" Look */
+    .nav-links a.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px var(--primary-glow); /* Blue Glow */
+      font-weight: 600;
+    }
+
+    /* ================= MAIN CONTENT ================= */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-body);
+      overflow: hidden;
+    }
+
+    /* TOP BAR */
+    header.topbar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end; /* Logout on right */
+      padding: 0 30px;
+    }
+
+    .logout-btn {
+      background: rgba(220, 38, 38, 0.15);
+      color: #f87171;
+      padding: 8px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.2s;
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+    .logout-btn:hover {
+      background: rgba(220, 38, 38, 0.25);
+    }
+
+    /* SCROLLABLE CONTENT AREA */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 30px 40px 30px;
+    }
+
+    /* PAGE TITLE */
+    .page-title {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ================= 3D DASHBOARD CARDS ================= */
+    /* Matches image 2 layout but dark mode */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--bg-panel);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      position: relative;
+      transition: transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Color Bars on Top */
+    .stat-card.blue { border-top: 4px solid var(--card-blue); }
+    .stat-card.green { border-top: 4px solid var(--card-green); }
+    .stat-card.orange { border-top: 4px solid var(--card-orange); }
+    .stat-card.red { border-top: 4px solid var(--card-red); }
+
+    .stat-content {
+      padding: 25px;
+    }
+
+    .stat-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Icon in corner of card */
+    .stat-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      opacity: 0.1;
+      font-size: 40px;
+    }
+
+    /* ================= DARK TABLES (Users List) ================= */
+    .table-container {
+      background: var(--bg-panel);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text-muted);
+    }
+
+    th {
+      text-align: left;
+      padding: 15px;
+      border-bottom: 2px solid rgba(255,255,255,0.05);
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    
+    tr:hover td {
+      background: rgba(255,255,255,0.02);
+      color: white;
+    }
+
+    /* Status Badges */
+    .status-active {
+      color: #4ade80;
+      font-weight: 600;
+      background: rgba(74, 222, 128, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .action-btn {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .action-btn:hover { text-decoration: underline; }
+
+    /* ================= SCROLLBAR ================= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <h2>🚀 LMS Admin</h2>
+    </div>
+
+    <div class="profile-card">
+      <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=3b82f6&color=fff&size=150&font-size=0.4" class="profile-img" alt="Profile">
+      <h3 class="profile-name">{{ request.user.username|title }}</h3>
+      <span class="profile-role">Super Admin</span>
+    </div>
+
+    <nav class="nav-links">
+      <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        <span>📊</span> Dashboard
+      </a>
+      <a href="{% url 'admin_user_list' %}" class="{% if request.resolver_match.url_name == 'admin_user_list' %}active{% endif %}">
+        <span>👥</span> Users
+      </a>
+      <a href="{% url 'trainer_list' %}" class="{% if request.resolver_match.url_name == 'trainer_list' %}active{% endif %}">
+        <span>🧑‍🏫</span> Trainers
+      </a>
+      <a href="{% url 'admin_students' %}" class="{% if request.resolver_match.url_name == 'admin_student_list' %}active{% endif %}">
+        <span>🎓</span> Students
+      </a>
+      <a href="#" class="{% if request.resolver_match.url_name == 'admin_courses' %}active{% endif %}">
+        <span>📘</span> Courses
+      </a>
+      <a href="{% url 'admin_media_list' %}" class="{% if request.resolver_match.url_name == 'admin_media_list' %}active{% endif %}">
+        <span>🎥</span> Media
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+    
+    <header class="topbar">
+      <a href="{% url 'logout' %}" class="logout-btn">Logout ➔</a>
+    </header>
+
+    <main class="content-area">
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div style="background: rgba(34,197,94,0.1); color:#4ade80; padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid rgba(34,197,94,0.2);">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if request.resolver_match.url_name == 'admin_dashboard' %}
+        <div class="page-title">Dashboard Overview</div>
+        
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-content">
+              <div class="stat-title">Total Users</div>
+              <div class="stat-value">1,250</div>
+              <div class="stat-icon">👥</div>
+            </div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-content">
+              <div class="stat-title">Revenue</div>
+              <div class="stat-value">$45k</div>
+              <div class="stat-icon">💲</div>
+            </div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-content">
+              <div class="stat-title">Active Courses</div>
+              <div class="stat-value">34</div>
+              <div class="stat-icon">📚</div>
+            </div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-content">
+              <div class="stat-title">Pending</div>
+              <div class="stat-value">12</div>
+              <div class="stat-icon">⏳</div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+
+    </main>
+  </div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "accounts/admin/base.html" %}
+{% block title %}Student Directory | Admin{% endblock %}
+
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>Student Directory <span style="font-size: 0.6em; color: var(--text-light);">({{ students.count }})</span></h2>
+    
+    <div style="width: 300px;">
+        <input type="text" placeholder="Search students..." style="margin-bottom: 0;">
+    </div>
+</div>
+
+<table class="table-container">
+    <thead>
+        <tr style="color: var(--text-light); text-align: left;">
+            <th style="padding-left: 20px;">Photo</th>
+            <th>Name / ID</th>
+            <th>Education</th>
+            <th>College</th>
+            <th style="text-align: right; padding-right: 20px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in students %}
+        <tr class="table-row-3d">
+            <td style="padding-left: 20px;">
+                {% if s.user.profile_pic %}
+                    <img src="{{ s.user.profile_pic.url }}" class="avatar-sm" style="width: 45px; height: 45px; border-radius: 50%;">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ s.user.username }}" class="avatar-sm" style="width: 45px; height: 45px; border-radius: 50%;">
+                {% endif %}
+            </td>
+            <td>
+                <div style="font-weight: bold; color: var(--text-main);">{{ s.user.username }}</div>
+                <div style="font-size: 0.85em; color: var(--text-light);">{{ s.user.email }}</div>
+            </td>
+            <td>{{ s.education }}</td>
+            <td>{{ s.college }}</td>
+            <td style="text-align: right; padding-right: 20px;">
+                <a href="{% url 'admin_profile_detail' 'student' s.user.id %}" class="btn-3d" style="padding: 6px 15px; font-size: 0.85rem;">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" style="text-align: center; padding: 30px; color: var(--text-light);">
+                No students found.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

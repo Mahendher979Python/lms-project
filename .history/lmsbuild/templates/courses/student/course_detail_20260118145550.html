@@ -1,0 +1,45 @@
+<h2>{{ course.title }}</h2>
+
+<p><b>Level:</b> {{ course.level }}</p>
+<p><b>Description:</b> {{ course.description }}</p>
+
+<hr>
+
+<h3>Lessons</h3>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Order</th>
+    <th>Title</th>
+    <th>Video</th>
+    <th>Notes</th>
+</tr>
+
+{% for lesson in lessons %}
+<tr>
+    <td>{{ lesson.order }}</td>
+    <td>{{ lesson.title }}</td>
+    <td>
+        {% if lesson.video_url %}
+            <a href="{{ lesson.video_url }}" target="_blank">Watch</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td>
+        {% if lesson.notes %}
+            <a href="{{ lesson.notes.url }}">Download</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="4">No lessons available</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'student_course_list' %}">⬅ Back to Courses</a>

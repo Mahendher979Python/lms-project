@@ -1,0 +1,161 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+  :root {
+    --input-bg: #f3f4f6;
+    --focus-ring: rgba(79, 70, 229, 0.4);
+  }
+
+  .form-container {
+    max-width: 800px;
+    margin: 40px auto;
+    perspective: 1000px; /* For 3D effect */
+  }
+
+  .form-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    border-top: 6px solid #4f46e5;
+    transform: rotateX(0deg); /* Start flat */
+    animation: floatIn 0.6s ease-out;
+  }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(20px) rotateX(5deg); }
+    to { opacity: 1; transform: translateY(0) rotateX(0); }
+  }
+
+  h2 { text-align: center; color: #1e293b; margin-bottom: 30px; font-weight: 800; font-size: 1.8rem; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+
+  .form-group { margin-bottom: 5px; }
+  .full-width { grid-column: span 2; }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* 3D Input Style */
+  input, select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: var(--input-bg);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05), inset -2px -2px 5px rgba(255,255,255,1);
+    font-size: 1rem;
+    color: #334155;
+    transition: all 0.3s;
+    outline: none;
+    box-sizing: border-box; 
+  }
+
+  input:focus, select:focus {
+    background: #fff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px var(--focus-ring);
+  }
+
+  .actions {
+    margin-top: 35px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 25px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.1s;
+  }
+  .btn:active { transform: scale(0.96); }
+  
+  .save {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+  }
+  
+  .back {
+    background: #e2e8f0;
+    color: #475569;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .back:hover { background: #cbd5e1; }
+</style>
+
+<div class="form-container">
+  <div class="form-card">
+    <h2>{% if attendance %}✏️ Edit Attendance{% else %}✨ New Attendance{% endif %}</h2>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Select User ID</label>
+          <input type="number" name="user" value="{{attendance.user.id|default:''}}" placeholder="Enter User ID..." required>
+        </div>
+
+        <div class="form-group">
+          <label>Role</label>
+          <select name="role">
+            <option value="student" {% if attendance.role == "student" %}selected{% endif %}>🎓 Student</option>
+            <option value="trainer" {% if attendance.role == "trainer" %}selected{% endif %}>👨‍🏫 Trainer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status" id="statusSelect">
+            <option value="Present" {% if attendance.status == "Present" %}selected{% endif %}>🟢 Present</option>
+            <option value="Absent" {% if attendance.status == "Absent" %}selected{% endif %}>🔴 Absent</option>
+            <option value="Half Day" {% if attendance.status == "Half Day" %}selected{% endif %}>🟠 Half Day</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Date</label>
+          <input type="date" name="date" value="{{attendance.date|date:'Y-m-d'}}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Login Time</label>
+          <input type="datetime-local" name="login_time" value="{{ attendance.login_time|date:'Y-m-d\TH:i' }}">
+        </div>
+
+        <div class="form-group">
+          <label>Logout Time</label>
+          <input type="datetime-local" name="logout_time" value="{{ attendance.logout_time|date:'Y-m-d\TH:i' }}">
+        </div>
+      </div>
+
+      <div class="actions">
+        <a href="{% url 'admin_attendance_list' %}" class="btn back">Cancel</a>
+        <button class="btn save" type="submit">Save Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

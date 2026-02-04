@@ -1,0 +1,26 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.row:hover{background:#f4f8ff;cursor:pointer}
+.unread{font-weight:bold}
+</style>
+
+<h2>Your Inbox</h2>
+
+<table width="100%">
+<tr><th>From</th><th>Subject</th><th>Message</th></tr>
+
+{% for m in messages %}
+<tr class="row {% if not m.is_read %}unread{% endif %}"
+onclick="window.location='/message/view/{{m.id}}/'">
+<td>{{m.sender.username}}</td>
+<td>{{m.subject}}</td>
+<td>{{m.body|truncatechars:40}}</td>
+</tr>
+{% empty %}
+<tr><td>No messages</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}

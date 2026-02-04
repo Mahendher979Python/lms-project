@@ -1,0 +1,60 @@
+{% extends "accounts/student/student_base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        border-left: 5px solid var(--accent);
+    }
+    .stat-card h3 { font-size: 32px; color: #1e293b; margin-bottom: 5px; }
+    .stat-card p { color: #64748b; font-size: 14px; }
+    
+    .welcome-box {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .welcome-box h2 { margin-bottom: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="welcome-box">
+        <h2>👋 Welcome back, {{ request.user.username }}!</h2>
+        <p>You have <strong>2 pending assignments</strong> due this week. Keep learning!</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ courses_count|default:"0" }}</h3>
+            <p>Enrolled Courses</p>
+        </div>
+        <div class="stat-card" style="border-color: #10b981;">
+            <h3>12</h3>
+            <p>Lessons Completed</p>
+        </div>
+        <div class="stat-card" style="border-color: #f59e0b;">
+            <h3>85%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+
+    <div class="page-header">
+        <h3>Recent Activity</h3>
+        <p style="color: #64748b;">Here is what you accessed recently.</p>
+    </div>
+
+    {% endblock %}

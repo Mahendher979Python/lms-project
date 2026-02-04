@@ -1,0 +1,199 @@
+{% extends "accounts/student/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+ --primary:#6366f1;
+ --secondary:#4f46e5;
+ --bg:#f8fafc;
+}
+
+.student-container{
+ padding:30px;
+ background:var(--bg);
+ min-height:100vh;
+ font-family:Inter,sans-serif;
+}
+
+.header-box{
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ padding:35px;
+ border-radius:20px;
+ color:white;
+ margin-bottom:25px;
+}
+
+.filter-wrapper{display:flex;gap:10px;margin-bottom:20px;}
+.filter-btn{
+ padding:8px 18px;
+ border-radius:20px;
+ border:1px solid #ddd;
+ background:white;
+ cursor:pointer;
+ font-weight:600;
+}
+.filter-btn.active{background:var(--primary);color:white;}
+
+.search-bar{
+ padding:10px 15px;
+ border-radius:10px;
+ border:1px solid #ddd;
+ width:250px;
+}
+
+.material-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+ gap:20px;
+}
+
+.material-card{
+ background:white;
+ border-radius:15px;
+ box-shadow:0 8px 20px rgba(0,0,0,.08);
+ transition:.3s;
+}
+
+.material-card:hover{transform:translateY(-5px);}
+
+.card-top{
+ height:120px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+.bg-pdf{background:#fee2e2;color:#ef4444;}
+.bg-video{background:#dcfce7;color:#22c55e;}
+.bg-image{background:#eff6ff;color:#3b82f6;}
+
+.card-body{padding:15px;}
+.card-title{font-weight:700;}
+.btn-open{
+ margin-top:10px;
+ display:block;
+ text-align:center;
+ padding:10px;
+ border-radius:10px;
+ background:#f1f5f9;
+ text-decoration:none;
+ font-weight:700;
+}
+.btn-open:hover{background:var(--primary);color:white;}
+
+.preview-box{
+ margin-top:40px;
+ background:white;
+ padding:20px;
+ border-radius:20px;
+ box-shadow:0 10px 25px rgba(0,0,0,.08);
+ display:none;
+}
+
+</style>
+
+<div class="student-container">
+
+<div class="header-box">
+<h2>{{ course.title }}</h2>
+<p>Student Materials</p>
+</div>
+
+<div class="d-flex justify-content-between mb-3">
+ <div class="filter-wrapper">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="pdf">PDF</button>
+  <button class="filter-btn" data-filter="video">Video</button>
+  <button class="filter-btn" data-filter="image">Image</button>
+ </div>
+
+ <input id="searchInput" class="search-bar" placeholder="Search...">
+</div>
+
+<div class="material-grid">
+
+{% for m in materials %}
+<div class="material-card" data-type="{{ m.material_type }}" data-url="{{ m.file.url }}">
+
+<div class="card-top
+{% if m.material_type == 'pdf' %}bg-pdf
+{% elif m.material_type == 'video' %}bg-video
+{% else %}bg-image{% endif %}">
+<i class="fa-solid
+{% if m.material_type == 'pdf' %}fa-file-pdf
+{% elif m.material_type == 'video' %}fa-circle-play
+{% else %}fa-image{% endif %} fa-3x"></i>
+</div>
+
+<div class="card-body">
+<div class="card-title">{{ m.title }}</div>
+
+<button class="btn-open"
+onclick="openPreview('{{ m.material_type }}','{{ m.file.url }}','{{ m.title }}')">
+Open Material
+</button>
+</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+<!-- PREVIEW SECTION -->
+<div class="preview-box" id="previewBox">
+<h4 id="previewTitle"></h4>
+<div id="previewContent"></div>
+</div>
+
+</div>
+
+<script>
+
+// SEARCH
+document.getElementById("searchInput").addEventListener("keyup",function(){
+ let val=this.value.toLowerCase();
+ document.querySelectorAll(".material-card").forEach(c=>{
+  c.style.display=c.innerText.toLowerCase().includes(val)?"block":"none";
+ });
+});
+
+// FILTER
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  let f=btn.dataset.filter;
+  document.querySelectorAll(".material-card").forEach(c=>{
+   c.style.display=(f=="all"||c.dataset.type==f)?"block":"none";
+  });
+ };
+});
+
+// PREVIEW
+function openPreview(type,url,title){
+
+ document.getElementById("previewBox").style.display="block";
+ document.getElementById("previewTitle").innerText=title;
+
+ let html="";
+
+ if(type=="video"){
+  html=`<video controls width="100%"><source src="${url}"></video>`;
+ }
+ else if(type=="pdf"){
+  html=`<iframe src="${url}" width="100%" height="600"></iframe>`;
+ }
+ else{
+  html=`<img src="${url}" width="100%">`;
+ }
+
+ document.getElementById("previewContent").innerHTML=html;
+ window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+
+</script>
+
+{% endblock %}

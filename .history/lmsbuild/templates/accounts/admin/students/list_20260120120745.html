@@ -1,0 +1,31 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Students List</h2>
+<a href="{% url 'admin_add_student' %}">+ Add Student</a>
+
+<table border="1">
+    <tr>
+        <th>Username</th>
+        <th>Roll No</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for s in students %}
+    <tr>
+        <td>{{ s.user.username }}</td>
+        <td>{{ s.roll_no }}</td>
+        <td>{{ s.phone }}</td>
+        <td>{{ s.user.is_active|yesno:"Active,Inactive" }}</td>
+        <td>
+            <a href="{% url 'admin_edit_student' s.id %}">Edit</a>
+            <a href="{% url 'admin_delete_student' s.id %}"
+               onclick="return confirm('Deactivate student?')">Deactivate</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

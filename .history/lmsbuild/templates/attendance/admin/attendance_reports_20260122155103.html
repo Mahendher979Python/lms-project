@@ -1,0 +1,242 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root {
+    --primary-grad: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --shadow-4d: 
+      12px 12px 24px rgba(174, 192, 214, 0.6), 
+      -12px -12px 24px #ffffff;
+    --inner-shadow: inset 4px 4px 8px rgba(174, 192, 214, 0.4), inset -4px -4px 8px #ffffff;
+  }
+
+  body { background: #eef2f6; font-family: 'Segoe UI', sans-serif; }
+
+  /* 3D Card Container */
+  .report-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 30px;
+    background: #eef2f6;
+    box-shadow: var(--shadow-4d);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    background: -webkit-linear-gradient(#333, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+
+  /* 3D Filter Bar */
+  .filter-bar {
+    display: flex;
+    gap: 20px;
+    background: #eef2f6;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: var(--inner-shadow);
+    align-items: center;
+  }
+
+  input[type="month"] {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #eef2f6;
+    box-shadow: var(--shadow-4d);
+    color: #475569;
+    font-weight: 600;
+    outline: none;
+    transition: 0.3s;
+  }
+  input[type="month"]:focus { box-shadow: var(--inner-shadow); color: #4f46e5; }
+
+  /* Buttons */
+  .btn {
+    padding: 12px 25px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-gen {
+    background: #eef2f6;
+    color: #4f46e5;
+    box-shadow: var(--shadow-4d);
+  }
+  .btn-gen:hover { transform: translateY(-2px); color: #3730a3; }
+  .btn-gen:active { box-shadow: var(--inner-shadow); transform: translateY(0); }
+
+  .btn-export {
+    background: var(--primary-grad);
+    color: #fff;
+    box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+  }
+  .btn-export:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  /* Chart Area */
+  .chart-wrapper {
+    margin: 30px 0;
+    padding: 20px;
+    border-radius: 20px;
+    background: #eef2f6;
+    box-shadow: var(--inner-shadow); /* Sunken look for chart */
+    height: 300px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Table Styling */
+  table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 10px; }
+  
+  th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    padding: 15px;
+  }
+
+  tr.data-row {
+    background: #eef2f6;
+    box-shadow: 6px 6px 10px rgba(174, 192, 214, 0.4), -6px -6px 10px #ffffff;
+    border-radius: 15px;
+    transition: transform 0.2s;
+  }
+  tr.data-row:hover { transform: scale(1.01); z-index: 10; }
+
+  td { padding: 15px; text-align: center; color: #334155; font-weight: 600; }
+  td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
+  td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
+
+  .role-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.05);
+  }
+  .role-student { background: #dcfce7; color: #166534; }
+  .role-trainer { background: #dbeafe; color: #1e40af; }
+</style>
+
+<div class="report-container">
+  <div class="header-section">
+    <h2>📊 Intelligence Report</h2>
+    {% if data %}
+    <a href="{% url 'admin_attendance_export' %}" class="btn btn-export">
+      <span>📥</span> Export Excel
+    </a>
+    {% endif %}
+  </div>
+
+  <form method="get" class="filter-bar">
+    <label style="font-weight:600; color:#64748b;">Select Period:</label>
+    <input type="month" name="month" required value="{{ request.GET.month }}">
+    <button class="btn btn-gen">🔍 Analysis</button>
+  </form>
+
+  {% if data %}
+  <div class="chart-wrapper">
+    <canvas id="reportChart"></canvas>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>User Profile</th>
+        <th>Role</th>
+        <th>Total Days Present</th>
+        <th>Performance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in data %}
+      <tr class="data-row">
+        <td>{{ d.user__username }}</td>
+        <td>
+          <span class="role-badge {% if d.role == 'student' %}role-student{% else %}role-trainer{% endif %}">
+            {{ d.role|title }}
+          </span>
+        </td>
+        <td class="days-count">{{ d.total_days }}</td>
+        <td>
+          <div style="width: 80px; height: 6px; background: #cbd5e1; border-radius: 10px; margin: 0 auto; overflow: hidden;">
+            <div style="height: 100%; width: calc(({{ d.total_days }} / 30) * 100%); background: #4f46e5;"></div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% else %}
+  <div style="text-align: center; padding: 50px; color: #94a3b8;">
+    <h3>Start Analysis</h3>
+    <p>Select a month above to generate AI insights.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% if data %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Extract data from HTML table for the chart
+    const users = [];
+    const days = [];
+    
+    document.querySelectorAll('.data-row').forEach(row => {
+      users.push(row.cells[0].innerText);
+      days.push(parseInt(row.querySelector('.days-count').innerText));
+    });
+
+    const ctx = document.getElementById('reportChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: users,
+        datasets: [{
+          label: 'Days Present',
+          data: days,
+          backgroundColor: '#6366f1',
+          borderRadius: 8,
+          barThickness: 30,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Attendance Overview', font: { size: 16 } }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { display: false } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  });
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ course.title }}</title>
+</head>
+<body>
+
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<h3>📚 Lessons</h3>
+
+<ul>
+{% for lesson in lessons %}
+  <li>
+    {{ lesson.order }}. {{ lesson.title }}
+    <a href="{% url 'student_lesson_list' lesson.id %}">View</a>
+  </li>
+{% empty %}
+<p>No lessons</p>
+{% endfor %}
+</ul>
+
+<a href="{% url 'student_dashboard' %}">⬅ Back</a>
+
+</body>
+</html>

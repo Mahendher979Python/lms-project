@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LMS Portal{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #64748b;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            /* The Secret to 3D: Dual Shadows */
+            --shadow-light: -10px -10px 30px #ffffff;
+            --shadow-dark: 10px 10px 30px rgba(174, 174, 192, 0.4);
+            --depth-hover: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: #1e293b;
+            margin: 0;
+            padding-bottom: 50px; /* Space for footer */
+            min-height: 100vh;
+        }
+
+        /* --- 3D Navbar --- */
+        .navbar-3d {
+            background: var(--card-bg);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-dark), var(--shadow-light);
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-left: 20px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.05), inset -3px -3px 6px #fff;
+        }
+
+        /* --- 3D Card Container (Used in Child Templates) --- */
+        .card-3d {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            margin: 40px auto; /* Centered */
+            box-shadow: var(--shadow-dark), var(--shadow-light);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-3d:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        /* --- Typography & Elements --- */
+        h2, h3 {
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            display: inline-block;
+            background: none;
+            -webkit-text-fill-color: #334155;
+            color: #334155;
+        }
+
+        /* --- Data Rows (Key-Value pairs) --- */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #cbd5e1;
+            align-items: center;
+        }
+        .data-row:last-child { border-bottom: none; }
+        .label { font-weight: 600; color: var(--secondary); }
+        .value { font-weight: 700; color: #334155; text-align: right; }
+
+        /* --- 3D Buttons --- */
+        .btn-3d {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(145deg, #4f46e5, #3b35ad);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 5px 5px 15px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 0.95rem;
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(145deg, #64748b, #475569);
+            box-shadow: 5px 5px 15px rgba(100, 116, 139, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(145deg, #10b981, #059669);
+            box-shadow: 5px 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* --- 3D Table Styles --- */
+        .table-container {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        .table-container th {
+            text-align: left;
+            color: var(--secondary);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .table-row-3d {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        
+        .table-row-3d td {
+            padding: 20px;
+            background: white;
+            border: none;
+        }
+        
+        .table-row-3d td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
+        .table-row-3d td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
+
+        .table-row-3d:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .yes { background: #dcfce7; color: #166534; }
+        .no { background: #fee2e2; color: #991b1b; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar-3d">
+        <a href="/" class="brand-logo">LMS Portal 🎓</a>
+        
+        <div class="nav-links">
+            <a href="/">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile_edit' %}">Profile</a>
+                <a href="{% url 'logout' %}" style="color: #ef4444;">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container animate-in">
+        
+        {% if messages %}
+            <div style="max-width: 900px; margin: 0 auto 20px;">
+                {% for message in messages %}
+                    <div style="
+                        padding: 15px; 
+                        border-radius: 10px; 
+                        margin-bottom: 10px; 
+                        background: {% if message.tags == 'error' %}#fee2e2{% else %}#dcfce7{% endif %};
+                        color: {% if message.tags == 'error' %}#991b1b{% else %}#166534{% endif %};
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    ">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+    <footer style="text-align: center; margin-top: 50px; color: var(--secondary); font-size: 0.9rem;">
+        <p>&copy; {% now "Y" %} LMS Portal. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

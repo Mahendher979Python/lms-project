@@ -1,0 +1,28 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>{{ course.title }} – Lessons</h3>
+
+<a href="{% url 'admin_lesson_create' course.id %}" class="btn btn-primary mb-3">
+Add Lesson
+</a>
+
+<table class="table">
+<tr>
+<th>Title</th>
+<th>Actions</th>
+</tr>
+
+{% for lesson in lessons %}
+<tr>
+<td>{{ lesson.title }}</td>
+<td>
+<a href="{% url 'admin_material_list' lesson.id %}" class="btn btn-sm btn-info">Materials</a>
+<a href="{% url 'admin_lesson_edit' lesson.id %}" class="btn btn-sm btn-warning">Edit</a>
+<a href="{% url 'admin_lesson_delete' lesson.id %}" class="btn btn-sm btn-danger">Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .form-wrapper {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #764ba2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+    }
+
+    /* Custom Checkbox Grid */
+    .checkbox-section {
+        margin-top: 2rem;
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .user-checkbox {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .user-checkbox:hover {
+        border-color: #764ba2;
+        transform: translateY(-2px);
+    }
+
+    .user-checkbox input { margin-right: 10px; }
+
+    /* Buttons */
+    .btn-container {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .btn-submit:hover { transform: scale(1.02); }
+
+    .btn-back {
+        padding: 15px 30px;
+        background: #eee;
+        color: #333;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-header">
+        <h2>✏ Edit / Add Note</h2>
+        <p>Update details and assignments below</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label>Note Title</label>
+            <input type="text" name="title" class="form-control" value="{{ note.title }}" placeholder="Enter title..." required>
+        </div>
+
+        <div class="input-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="4" placeholder="Enter details...">{{ note.description }}</textarea>
+        </div>
+
+        <div class="input-group">
+            <label>Upload File</label>
+            <input type="file" name="file" class="form-control">
+            {% if note.file %}
+                <small style="color: #764ba2;">Current: <a href="{{ note.file.url }}" target="_blank">{{ note.file.name }}</a></small>
+            {% endif %}
+        </div>
+
+        <div class="checkbox-section">
+            <h4><i class="fas fa-chalkboard-teacher"></i> Assign to Trainers</h4>
+            <div class="checkbox-grid">
+                {% for user in trainers %}
+                <label class="user-checkbox">
+                    <input type="checkbox" name="assigned_to" value="{{ user.id }}" {% if user in note.assigned_to.all %}checked{% endif %}>
+                    <span>{{ user.username }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="checkbox-section" style="margin-top: 1rem;">
+            <h4><i class="fas fa-user-graduate"></i> Assign to Students</h4>
+            <div class="checkbox-grid">
+                {% for user in students %}
+                <label class="user-checkbox">
+                    <input type="checkbox" name="assigned_to" value="{{ user.id }}" {% if user in note.assigned_to.all %}checked{% endif %}>
+                    <span>{{ user.username }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <a href="{% url 'admin_notes_list' %}" class="btn-back">Cancel</a>
+            <button type="submit" class="btn-submit">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

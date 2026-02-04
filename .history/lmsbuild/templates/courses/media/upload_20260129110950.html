@@ -1,0 +1,63 @@
+{% extends "courses/media/admin_base.html" %}
+
+{% block title %}Upload Media{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">Upload Course Material</h5>
+            </div>
+            <div class="card-body">
+                <form id="uploadForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Material Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Introduction PDF" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Course</label>
+                        <select name="course" class="form-select" required>
+                            <option value="">-- Choose Course --</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">File</label>
+                        <input type="file" name="file" id="fileInput" class="form-control" required>
+                        <div id="fileHelp" class="form-text">Max file size: 10MB.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-cloud-arrow-up me-1"></i> Start Upload
+                        </button>
+                        <a href="{% url 'admin_media_list' %}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('uploadForm').onsubmit = function(e) {
+    const fileInput = document.getElementById('fileInput');
+    const maxSize = 10 * 1024 * 1024; // 10MB
+
+    if (fileInput.files.length > 0) {
+        if (fileInput.files[0].size > maxSize) {
+            alert("File is too large! Please select a file smaller than 10MB.");
+            e.preventDefault();
+            return false;
+        }
+    }
+};
+</script>
+{% endblock %}

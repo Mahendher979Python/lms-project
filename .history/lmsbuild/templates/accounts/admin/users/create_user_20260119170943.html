@@ -1,0 +1,40 @@
+{% extends "accounts\admin\base.html" %}
+
+
+{% block content %}
+<div style="max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+  <h2>➕ Create New User</h2>
+  
+  <form method="post">
+    {% csrf_token %}
+
+    {% if form.errors %}
+      <div style="color: #ef4444; background: #fef2f2; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+        {{ form.errors }}
+      </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label>Username</label>
+      {{ form.username }} 
+      </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      {{ form.email }}
+    </div>
+
+    <div class="form-group">
+      <label>Role</label>
+      {{ form.role }}
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      {{ form.password }}
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create User</button>
+  </form>
+</div>
+{% endblock %}

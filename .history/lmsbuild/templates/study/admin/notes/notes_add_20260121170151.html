@@ -1,0 +1,50 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>➕ Add Note (Admin)</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>Title<br><input type="text" name="title" required></p>
+
+  <p>Description<br>
+    <textarea name="description"></textarea>
+  </p>
+
+  <p>Course<br>
+    <select name="course">
+      <option value="">-- Optional --</option>
+      {% for c in courses %}
+        <option value="{{ c.id }}">{{ c.title }}</option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>Visibility<br>
+    <select name="visibility">
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+    </select>
+  </p>
+
+  <p>File<br><input type="file" name="file" required></p>
+
+  <h4>Assign To</h4>
+
+  <strong>Trainers</strong><br>
+  {% for t in trainers %}
+    <input type="checkbox" name="assigned_to" value="{{ t.id }}"> {{ t.username }}<br>
+  {% endfor %}
+
+  <br><strong>Students</strong><br>
+  {% for s in students %}
+    <input type="checkbox" name="assigned_to" value="{{ s.id }}"> {{ s.username }}<br>
+  {% endfor %}
+
+  <br>
+  <button type="submit">Save</button>
+  <a href="{% url 'admin_notes_list' %}">Back</a>
+</form>
+
+{% endblock %}

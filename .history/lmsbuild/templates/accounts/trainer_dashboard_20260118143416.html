@@ -1,0 +1,10 @@
+<h1>Trainer Dashboard</h1>
+
+<p>Welcome {{ request.user.username }}</p>
+
+<hr>
+
+<a href="{% url 'trainer_course_list' %}">📚 My Courses</a>
+<br><br>
+
+<a href="{% url 'logout' %}">🚪 Logout</a>

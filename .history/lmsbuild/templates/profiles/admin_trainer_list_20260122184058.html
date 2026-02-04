@@ -1,0 +1,26 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<h2>Trainer Profiles</h2>
+
+<table border="1" cellpadding="10" width="100%">
+    <tr>
+        <th>Username</th>
+        <th>Qualification</th>
+        <th>Experience</th>
+        <th>Action</th>
+    </tr>
+
+    {% for t in trainers %}
+    <tr>
+        <td>{{ t.user.username }}</td>
+        <td>{{ t.qualification }}</td>
+        <td>{{ t.experience_years }} yrs</td>
+        <td>
+            <a href="{% url 'admin_profile_detail' 'trainer' t.id %}">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

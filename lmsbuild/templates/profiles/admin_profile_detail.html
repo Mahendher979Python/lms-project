@@ -1,0 +1,66 @@
+{% extends "profiles/base.html" %}
+{% load static %}
+
+{% block title %}User Details | Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <a href="javascript:history.back()" class="btn-3d" style="color: var(--text-light); padding: 8px 18px;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h2 style="margin:0; color: var(--text-main);">{{ target_user.username|title }}'s Profile</h2>
+    </div>
+
+    <div class="card-3d">
+        <div style="text-align: center; margin-bottom: 30px;">
+            {% if target_user.profile_pic %}
+                <img src="{{ target_user.profile_pic.url }}" class="avatar" style="width: 100px; height: 100px;">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ target_user.username }}" class="avatar" style="width: 100px; height: 100px;">
+            {% endif %}
+            
+            <h3 style="margin: 10px 0 5px;">{{ target_user.first_name }} {{ target_user.last_name }}</h3>
+            <span class="badge" style="background: var(--bg-color); color: var(--brand-color); box-shadow: var(--shadow-in);">
+                {{ target_user.role|upper }}
+            </span>
+        </div>
+
+        <hr style="border:0; border-top:1px solid rgba(0,0,0,0.05); margin: 20px 0;">
+
+        <div style="padding: 0 20px;">
+            <div class="info-row"><span>Email</span> <span>{{ target_user.email }}</span></div>
+            <div class="info-row"><span>Mobile</span> <span>{{ target_user.mobile|default:"--" }}</span></div>
+
+            {% if target_user.role == 'student' %}
+                <div class="info-row"><span>Education</span> <span>{{ target_profile.education }}</span></div>
+                <div class="info-row"><span>College</span> <span>{{ target_profile.college }}</span></div>
+                <div class="info-row"><span>Semester</span> <span>{{ target_profile.semester }}</span></div>
+            
+            {% elif target_user.role == 'trainer' %}
+                <div class="info-row"><span>Qualification</span> <span>{{ target_profile.qualification }}</span></div>
+                <div class="info-row"><span>Experience</span> <span>{{ target_profile.experience_years }} Years</span></div>
+                <div class="info-row"><span>Expertise</span> <span>{{ target_profile.expertise }}</span></div>
+            {% endif %}
+            
+            <div class="info-row"><span>Date Joined</span> <span>{{ target_user.date_joined|date:"d M Y" }}</span></div>
+        </div>
+
+        <div style="margin-top: 40px; text-align: right; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
+            <form action="#" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="button" class="btn-3d btn-danger" onclick="confirm('Are you sure?')">
+                    <i class="fas fa-trash"></i> Delete User
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.5); font-weight: 500; }
+    .info-row span:first-child { color: var(--text-light); }
+    .info-row span:last-child { color: var(--text-main); font-weight: 600; }
+</style>
+{% endblock %}

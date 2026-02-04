@@ -1,0 +1,14 @@
+<h2>Admin – Assignment Reports</h2>
+
+<ul>
+{% for a in assignments %}
+  <li>
+    {{ a.title }} —
+    <a href="{% url 'assignments:trainer_assignment_report' a.id %}">
+      View Report
+    </a>
+  </li>
+{% empty %}
+  <li>No assignments</li>
+{% endfor %}
+</ul>

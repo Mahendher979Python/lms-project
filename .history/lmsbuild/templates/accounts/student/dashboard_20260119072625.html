@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student LMS | {% block title %}Dashboard{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ================= ROOT VARIABLES ================= */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #111827;
+            --bg-light: #f1f5f9;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ================= RESET & BODY ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
+        body { background: var(--bg-light); color: #334155; }
+        a { text-decoration: none; }
+
+        /* ================= TOP BAR ================= */
+        .topbar {
+            height: 60px;
+            background: var(--bg-panel);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar h2 { font-size: 18px; font-weight: 600; }
+        .user-info { font-size: 14px; }
+        .logout-btn { color: #f87171; margin-left: 15px; font-weight: 500; }
+
+        /* ================= LAYOUT ================= */
+        .layout { display: flex; margin-top: 60px; min-height: calc(100vh - 60px); }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            padding: 25px 15px;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 60px;
+        }
+        .sidebar h3 { margin-bottom: 25px; font-size: 14px; text-transform: uppercase; color: #60a5fa; letter-spacing: 1px; text-align: center;}
+        
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .menu a:hover, .menu a.active { background: var(--accent); color: #000; font-weight: 600; }
+
+        /* ================= CONTENT AREA ================= */
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* ================= COMMON UI ELEMENTS ================= */
+        .page-header { margin-bottom: 25px; }
+        .page-header h2 { font-size: 26px; color: #1e293b; }
+        .btn { display: inline-block; padding: 8px 16px; background: #2563eb; color: #fff; border-radius: 6px; font-size: 14px; transition: 0.2s;}
+        .btn:hover { background: #1e40af; }
+        .btn-back { background: #64748b; margin-top: 20px; }
+        .btn-back:hover { background: #475569; }
+
+        /* Page Specific Styles injection */
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <h2>🚀 LMS Platform</h2>
+        <div class="user-info">
+            <span>👤 {{ request.user.username|default:"Student" }}</span>
+            <a href="{% url 'logout' %}" class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <h3>🎓 Student Panel</h3>
+            <div class="menu">
+                <a href="{% url 'student_dashboard' %}" class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge"></i> Dashboard
+                </a>
+                <a href="{% url 'student_course_list' %}" class="{% if 'course' in request.path %}active{% endif %}">
+                    <i class="fa-solid fa-book"></i> My Courses
+                </a>
+                <a href="#"><i class="fa-solid fa-file-pen"></i> Assignments</a>
+                <a href="#"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+                <a href="#"><i class="fa-solid fa-folder-open"></i> Materials</a>
+            </div>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

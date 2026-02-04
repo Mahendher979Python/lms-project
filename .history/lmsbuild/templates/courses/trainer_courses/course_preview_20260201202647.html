@@ -1,0 +1,11 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+
+<h2>{{course.title}}</h2>
+
+<p>{{course.description}}</p>
+
+<a href="{% url 'trainer_materials' course.id %}">Materials</a>
+<a href="{% url 'trainer_students' course.id %}">Students</a>
+
+{% endblock %}

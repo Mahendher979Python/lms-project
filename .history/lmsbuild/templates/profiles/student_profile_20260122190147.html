@@ -1,0 +1,33 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+
+<div class="card-3d">
+    <h2>My Student Profile</h2>
+    
+    <div style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <div class="data-row">
+            <span class="label">Education Stream</span>
+            <span class="value">{{ profile.education }}</span>
+        </div>
+        <div class="data-row">
+            <span class="label">College/University</span>
+            <span class="value">{{ profile.college }}</span>
+        </div>
+        <div class="data-row">
+            <span class="label">Current Semester</span>
+            <span class="value">{{ profile.semester }}</span>
+        </div>
+    </div>
+
+    <h3>Skills & Abilities</h3>
+    <p style="color: #64748b; line-height: 1.6;">
+        {{ profile.skills|default:"No skills added yet." }}
+    </p>
+
+    <div style="margin-top: 30px;">
+        <a class="btn-3d" href="{% url 'profile_edit' %}">Update Profile</a>
+    </div>
+</div>
+
+{% endblock %}

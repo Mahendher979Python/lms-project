@@ -1,0 +1,254 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+/* ===== PAGE SETUP ===== */
+.page-wrap {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  perspective: 1000px;
+}
+
+/* ===== ANALYTICS 3D TILES ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  /* 3D Float Effect */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05), 0 6px 0 #cbd5e1;
+  transform: translateY(0);
+  transition: all 0.2s ease;
+}
+
+.stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1), 0 8px 0 #cbd5e1;
+}
+
+.stat h4 {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat strong {
+  font-size: 2.2rem;
+  color: #1e293b;
+  display: block;
+  font-weight: 800;
+}
+
+/* Color accents for stats */
+.stat.blue::before { content:''; position:absolute; top:0; left:0; width:6px; height:100%; background:#6366f1; }
+.stat.green::before { content:''; position:absolute; top:0; left:0; width:6px; height:100%; background:#22c55e; }
+.stat.red::before { content:''; position:absolute; top:0; left:0; width:6px; height:100%; background:#ef4444; }
+.stat.sky::before { content:''; position:absolute; top:0; left:0; width:6px; height:100%; background:#0ea5e9; }
+.stat.purple::before { content:''; position:absolute; top:0; left:0; width:6px; height:100%; background:#8b5cf6; }
+
+/* ===== MAIN CARD CONTAINER ===== */
+.main-card {
+  background: #f8fafc; /* Slightly darker than white for contrast with rows */
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.02); /* Inset shadow to look like a tray */
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1e293b;
+  text-shadow: 2px 2px 0px #e2e8f0;
+  font-weight: 800;
+}
+
+/* ===== 3D BUTTONS ===== */
+.btn {
+  background: #6366f1;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-block;
+  box-shadow: 0 5px 0 #4338ca; /* 3D Lip */
+  transition: all 0.1s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #4338ca;
+  background: #5558e6;
+}
+
+.btn:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+/* ===== 3D FLOATING TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px; /* Space between rows */
+}
+
+th {
+  text-align: left;
+  padding: 10px 20px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* The Rows look like chips */
+tbody tr {
+  background: #ffffff;
+  box-shadow: 0 4px 0 #e2e8f0, 0 5px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+tbody tr:hover {
+  transform: scale(1.01) translateY(-2px);
+  box-shadow: 0 6px 0 #cbd5e1, 0 10px 20px rgba(0,0,0,0.08);
+}
+
+td {
+  padding: 18px 20px;
+  color: #334155;
+  border: 1px solid #f1f5f9;
+  border-width: 1px 0; /* Top and bottom borders only */
+}
+
+/* Rounded corners for the row "chip" */
+td:first-child { 
+  border-radius: 12px 0 0 12px; 
+  border-left: 1px solid #f1f5f9;
+}
+td:last-child { 
+  border-radius: 0 12px 12px 0; 
+  border-right: 1px solid #f1f5f9;
+}
+
+/* Badges */
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.public { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.private { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* Action Buttons within table */
+.action-btn {
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 8px;
+  border-radius: 6px;
+  transition: 0.2s;
+  display: inline-block;
+}
+.action-btn:hover { background: #f1f5f9; transform: scale(1.1); }
+
+</style>
+
+<div class="page-wrap">
+
+  <div class="stats">
+    <div class="stat blue">
+      <h4>Total Notes</h4>
+      <strong>{{total_notes}}</strong>
+    </div>
+    <div class="stat green">
+      <h4>Public</h4>
+      <strong>{{public_notes}}</strong>
+    </div>
+    <div class="stat red">
+      <h4>Private</h4>
+      <strong>{{private_notes}}</strong>
+    </div>
+    <div class="stat sky">
+      <h4>Courses</h4>
+      <strong>{{courses_count}}</strong>
+    </div>
+    <div class="stat purple">
+      <h4>Users</h4>
+      <strong>{{assigned_users}}</strong>
+    </div>
+  </div>
+
+  <div class="main-card">
+    
+    <div class="header">
+      <h2>📘 Notes Manager</h2>
+      <a href="{% url 'admin_notes_add' %}" class="btn">➕ Create Note</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Course</th>
+          <th>Visibility</th>
+          <th>Users</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for n in notes %}
+        <tr>
+          <td>
+            <div style="font-weight:700; color:#0f172a;">{{n.title}}</div>
+          </td>
+          <td style="color:#64748b; font-size:0.9rem;">
+            {{n.course.title|default:"-- General --"}}
+          </td>
+          <td>
+            <span class="badge {% if n.visibility == 'public' %}public{% else %}private{% endif %}">
+              {{n.visibility|title}}
+            </span>
+          </td>
+          <td style="font-weight:600; color:#475569;">
+            👥 {{n.assigned_to.count}}
+          </td>
+          <td style="text-align:right;">
+            <a href="{% url 'admin_notes_edit' n.id %}" class="action-btn" title="Edit">✏️</a>
+            <a href="{% url 'admin_notes_delete' n.id %}" class="action-btn" title="Delete" style="color:#ef4444;">🗑️</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.media-card{
+background:rgba(255,255,255,.05);
+border-radius:18px;
+padding:25px;
+box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:15px;color:white}
+tr{background:rgba(255,255,255,.03)}
+tr:hover{background:rgba(255,255,255,.08)}
+
+.download{
+background:#22c55e;
+padding:6px 15px;
+border-radius:20px;
+color:black;
+text-decoration:none;
+font-weight:600;
+}
+</style>
+
+<div class="media-card">
+
+<h2>📁 Media Library</h2>
+
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Course</th>
+<th>Uploaded By</th>
+<th>Date</th>
+<th>File</th>
+</tr>
+</thead>
+
+<tbody>
+{% for m in materials %}
+<tr>
+<td>{{ m.title }}</td>
+<td>{{ m.course.title }}</td>
+<td>{{ m.uploaded_by.username }}</td>
+<td>{{ m.created_at|date:"d M Y" }}</td>
+<td>
+<a class="download" href="{{ m.file.url }}" download>Download</a>
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No materials uploaded</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+
+{% endblock %}

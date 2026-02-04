@@ -1,0 +1,10 @@
+<h2>Result</h2>
+
+Score: {{ submission.score }}
+
+{% if passed %}
+<p>Passed ✅</p>
+<a href="{% url 'assignments:download_certificate' submission.id %}">Download Certificate</a>
+{% else %}
+<p>Failed ❌</p>
+{% endif %}

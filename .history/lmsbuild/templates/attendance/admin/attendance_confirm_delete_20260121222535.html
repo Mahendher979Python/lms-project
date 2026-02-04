@@ -1,0 +1,15 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Delete Attendance</h2>
+
+<p>Are you sure you want to delete attendance for
+<strong>{{ attendance.user.username }}</strong> on {{ attendance.date }}?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, Delete</button>
+  <a href="{% url 'admin_attendance_list' %}">Cancel</a>
+</form>
+
+{% endblock %}

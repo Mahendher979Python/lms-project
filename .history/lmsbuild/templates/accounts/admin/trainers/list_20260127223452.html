@@ -1,0 +1,76 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.dashboard-container{padding:30px;background:#f0f2f5;min-height:100vh}
+.header-section{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.btn-add{background:#4361ee;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none}
+.table-container{background:#fff;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+thead{background:#4361ee;color:#fff}
+.status-active{color:green;font-weight:bold}
+.status-inactive{color:red;font-weight:bold}
+.actions a{margin-right:10px;text-decoration:none;font-weight:600}
+</style>
+
+<div class="dashboard-container">
+
+<div class="header-section">
+<h2>🧑‍🏫 Trainer Management</h2>
+<a href="{% url 'admin_add_trainer' %}" class="btn-add">➕ Add Trainer</a>
+</div>
+
+<div class="table-container">
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Username</th>
+<th>Mobile</th>
+<th>Employee ID</th>
+<th>Subject</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for t in trainers %}
+<tr>
+
+<td>{{ forloop.counter }}</td>
+<td>{{ t.user.username }}</td>
+<td>{{ t.user.mobile }}</td>
+<td>{{ t.emp_id }}</td>
+<td>{{ t.subject }}</td>
+
+<td>
+{% if t.user.is_active %}
+<span class="status-active">Active</span>
+{% else %}
+<span class="status-inactive">Inactive</span>
+{% endif %}
+</td>
+
+<td class="actions">
+<a href="{% url 'admin_edit_trainer' t.user.id %}">✏ Edit</a>
+<a href="{% url 'trainer_delete' t.user.id %}"
+onclick="return confirm('Deactivate trainer?')">🗑 Delete</a>
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="7" style="text-align:center;">No trainers found</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+{% endblock %}

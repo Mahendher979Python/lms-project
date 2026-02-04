@@ -1,0 +1,16 @@
+<h2>Create Batch</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input type="text" name="name" placeholder="Batch Name" required>
+
+<select name="trainer" required>
+<option value="">Select Trainer</option>
+{% for t in teachers %}
+<option value="{{ t.id }}">{{ t.user.username }}</option>
+{% endfor %}
+</select>
+
+<button type="submit">Save</button>
+</form>

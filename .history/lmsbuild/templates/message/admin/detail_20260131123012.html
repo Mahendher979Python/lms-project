@@ -1,0 +1,13 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>{{ msg.subject }}</h2>
+<p><b>From:</b> {{ msg.sender.username }}</p>
+
+<hr>
+
+<p>{{ msg.body }}</p>
+
+<a href="/message/reply/{{ msg.id }}/" class="btn btn-primary">Reply</a>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<h2>Trainer Profile</h2>
+<p><b>Qualification:</b> {{ profile.qualification }}</p>
+<p><b>Experience:</b> {{ profile.experience_years }} years</p>
+<p><b>Expertise:</b> {{ profile.expertise }}</p>
+<p><b>Certifications:</b> {{ profile.certifications }}</p>
+
+<a class="btn" href="{% url 'profile_edit' %}">Edit Profile</a>
+
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'accounts/admin/base.html' %}
+
+{% block content %}
+<style>
+    /* Modern Dashboard Styling */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 1rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 20px rgba(118, 75, 162, 0.2);
+    }
+
+    /* Card Design */
+    .admin-card {
+        background: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none !important; /* Remove link underline */
+        display: block;
+        height: 100%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Hover Effects */
+    .admin-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Icon Bubbles */
+    .icon-bubble {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    /* Trainer Specific Colors */
+    .card-trainer .icon-bubble {
+        background: rgba(78, 115, 223, 0.1);
+        color: #4e73df;
+    }
+    .card-trainer:hover .icon-bubble {
+        background: #4e73df;
+        color: #fff;
+        transform: rotateY(180deg);
+    }
+
+    /* Student Specific Colors */
+    .card-student .icon-bubble {
+        background: rgba(28, 200, 138, 0.1);
+        color: #1cc88a;
+    }
+    .card-student:hover .icon-bubble {
+        background: #1cc88a;
+        color: #fff;
+        transform: rotateY(180deg);
+    }
+
+    /* Typography */
+    .card-title {
+        color: #2d3436;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-desc {
+        color: #636e72;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    /* Action Badge */
+    .action-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+    .card-trainer .action-badge {
+        background-color: #f8f9fc;
+        color: #4e73df;
+        border: 1px solid #e3e6f0;
+    }
+
+    .card-student .action-badge {
+        background-color: #f8f9fc;
+        color: #1cc88a;
+        border: 1px solid #e3e6f0;
+    }
+
+    .admin-card:hover .action-badge {
+        padding-right: 25px; /* Creates space for arrow movement */
+    }
+    
+    /* Decoration Circle in background */
+    .bg-circle {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        opacity: 0.05;
+        transition: all 0.5s ease;
+    }
+    .card-trainer .bg-circle { background-color: #4e73df; }
+    .card-student .bg-circle { background-color: #1cc88a; }
+    
+    .admin-card:hover .bg-circle {
+        transform: scale(5); /* Expands circle on hover */
+        opacity: 0.02;
+    }
+
+</style>
+
+<div class="container py-4">
+    
+    <div class="page-header text-center position-relative overflow-hidden">
+        <h2 class="fw-bold mb-2">Welcome, Admin! 👋</h2>
+        <p class="mb-0 opacity-75">Who would you like to manage today?</p>
+        <div style="position: absolute; top: 10%; left: 5%; opacity: 0.2;"><i class="fas fa-shapes fa-3x"></i></div>
+        <div style="position: absolute; bottom: 10%; right: 5%; opacity: 0.2;"><i class="fas fa-layer-group fa-3x"></i></div>
+    </div>
+
+    <div class="row justify-content-center g-4">
+
+        <div class="col-md-5 col-lg-4">
+            <a href="{% url 'trainer_list' %}" class="admin-card card-trainer">
+                <div class="bg-circle"></div>
+                
+                <div class="icon-bubble">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                
+                <h3 class="card-title">Trainers</h3>
+                <p class="card-desc">
+                    View trainer list, update profiles, and generate login passwords.
+                </p>
+
+                <div class="action-badge">
+                    <span><i class="fas fa-plus-circle me-1"></i> Add / Create Password</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+            <a href="{% url 'admin_students' %}" class="admin-card card-student">
+                <div class="bg-circle"></div>
+
+                <div class="icon-bubble">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+
+                <h3 class="card-title">Students</h3>
+                <p class="card-desc">
+                    Manage student admissions, roll numbers, and generate credentials.
+                </p>
+
+                <div class="action-badge">
+                    <span><i class="fas fa-plus-circle me-1"></i> Add / Create Password</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Smooth Entry Animation
+    document.addEventListener("DOMContentLoaded", function() {
+        const items = document.querySelectorAll('.admin-card, .page-header');
+        
+        items.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.section-title{margin-top:30px;font-size:20px;font-weight:600;color:#2563eb}
+.material-card{background:#fff;padding:15px;border-radius:10px}
+.material-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+img,video{border-radius:8px}
+.btn{padding:6px 10px;background:#2563eb;color:white;border-radius:6px;text-decoration:none;font-size:13px;margin-right:5px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:999}
+.modal-content{background:white;padding:15px;border-radius:10px;width:80%;height:80%}
+.close{float:right;cursor:pointer;font-weight:bold}
+iframe{width:100%;height:90%}
+</style>
+
+<h2>All Materials</h2>
+
+<div id="previewModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closePreview()">X</span>
+<div id="previewBody"></div>
+</div>
+</div>
+
+<script>
+function previewFile(url,type){
+ let body=document.getElementById("previewBody");
+ if(type=="pdf"){
+   body.innerHTML=`<iframe src="${url}"></iframe>`;
+ }
+ else{
+   body.innerHTML=`<img src="${url}" style="max-width:100%">`;
+ }
+ document.getElementById("previewModal").style.display="flex";
+}
+function closePreview(){
+ document.getElementById("previewModal").style.display="none";
+}
+</script>
+
+<!-- IMAGES -->
+<div class="section-title">Images</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+<div class="material-card">
+<img src="{{m.file.url}}" width="100%">
+<p>{{m.title}}</p>
+
+<a class="btn" onclick="previewFile('{{m.file.url}}','img')">Preview</a>
+<a class="btn" href="{{m.file.url}}" download>Download</a>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- VIDEOS -->
+<div class="section-title">Videos</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+<div class="material-card">
+<video width="100%" controls><source src="{{m.file.url}}"></video>
+<p>{{m.title}}</p>
+
+<a class="btn" href="{{m.file.url}}" target="_blank">Open</a>
+<a class="btn" href="{{m.file.url}}" download>Download</a>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- PDF -->
+<div class="section-title">PDF Documents</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+<div class="material-card">
+<p>{{m.title}}</p>
+
+<a class="btn" onclick="previewFile('{{m.file.url}}','pdf')">Preview</a>
+<a class="btn" href="{{m.file.url}}" download>Download</a>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- OTHERS -->
+<div class="section-title">Other Files</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if not m.file.url|lower|slice:"-4:" in ".jpg,.png,.mp4,.pdf" %}
+<div class="material-card">
+<p>{{m.title}}</p>
+
+<a class="btn" href="{{m.file.url}}" target="_blank">Open</a>
+<a class="btn" href="{{m.file.url}}" download>Download</a>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

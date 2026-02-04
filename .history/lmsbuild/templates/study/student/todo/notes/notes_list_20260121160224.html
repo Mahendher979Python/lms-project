@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-graduation-cap text-warning"></i> Study Material</h2>
+            <p class="text-muted">Access notes assigned to you by your trainers.</p>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="studentSearch" class="form-control" placeholder="Search topics..." onkeyup="searchCards()">
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="notesGrid">
+        {% for note in notes %}
+        <div class="col note-item">
+            <div class="card h-100 note-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">{{ note.created_at|date:"M d, Y" }}</small>
+                        <span class="badge bg-light text-dark border">
+                            <i class="fas fa-user-tie"></i> {{ note.created_by.first_name }}
+                        </span>
+                    </div>
+                    
+                    <h5 class="card-title text-primary note-title">{{ note.title }}</h5>
+                    <p class="card-text desc-truncate">{{ note.description }}</p>
+                </div>
+                <div class="card-footer bg-white border-top-0 pb-3">
+                    {% if note.file %}
+                        <a href="{{ note.file.url }}" class="btn btn-primary w-100" download>
+                            <i class="fas fa-download me-2"></i> Download Material
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            No File Attached
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png" alt="No Data" width="100" class="mb-3 opacity-50">
+            <h4>No notes assigned yet!</h4>
+            <p class="text-muted">Check back later for updates from your trainers.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Specific search for the Card Grid
+    function searchCards() {
+        let input = document.getElementById('studentSearch').value.toUpperCase();
+        let cards = document.getElementsByClassName('note-item');
+        
+        for (let i = 0; i < cards.length; i++) {
+            let title = cards[i].querySelector('.note-title');
+            if (title.innerText.toUpperCase().indexOf(input) > -1) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+</script>
+{% endblock %}

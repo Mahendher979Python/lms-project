@@ -1,0 +1,181 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --cyan: #00f3ff;
+    --lime: #ccff00;
+    --glass: rgba(255, 255, 255, .05);
+    --border: rgba(255, 255, 255, .1);
+    --bg-dark: #020617;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #e5e7eb; }
+
+.wrap { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
+
+/* Header Styling */
+.header-area { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 30px; 
+}
+
+.header-area h2 {
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Message Card Styling */
+.msg-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(15px);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.msg-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cyan);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.msg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.sender-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: #0f172a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lime);
+    border: 1px solid var(--border);
+    font-weight: bold;
+}
+
+.sender-name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.msg-subject {
+    color: var(--cyan);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.timestamp {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.msg-body {
+    line-height: 1.6;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    padding-left: 52px; /* Align with avatar */
+}
+
+/* Empty State */
+.empty-inbox {
+    text-align: center;
+    padding: 60px;
+    background: var(--glass);
+    border-radius: 24px;
+    border: 1px dashed var(--border);
+}
+
+.empty-inbox i { color: #475569; margin-bottom: 20px; }
+
+/* Badge */
+.new-badge {
+    background: var(--lime);
+    color: #000;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+</style>
+
+<div class="wrap">
+    <div class="header-area">
+        <h2><i class="fa-solid fa-inbox"></i> Inbox</h2>
+        <a href="{% url 'send_message' %}" style="color: var(--lime); text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+            <i class="fa-solid fa-plus-circle"></i> New Message
+        </a>
+    </div>
+
+    {% for msg in messages %}
+    <div class="msg-card">
+        <div class="msg-header">
+            <div class="sender-info">
+                <div class="avatar">
+                    {{ msg.sender.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <div class="sender-name">{{ msg.sender.username }}</div>
+                    <div class="msg-subject">{{ msg.subject }}</div>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div class="timestamp">{{ msg.created_at|date:"M d, g:i a" }}</div>
+                {% if not msg.is_read %}
+                <span class="new-badge">New</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="msg-body">
+            {{ msg.body|linebreaksbr }}
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-inbox">
+        <i class="fa-regular fa-envelope-open fa-4x"></i>
+        <h3 style="color: #94a3b8;">Your inbox is empty</h3>
+        <p style="color: #64748b;">When you receive messages, they will appear here.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Message card interaction
+    document.querySelectorAll('.msg-card').forEach(card => {
+        card.addEventListener('click', () => {
+            // You can add logic here to open a full view or mark as read
+            console.log("Message clicked");
+        });
+    });
+</script>
+
+{% endblock %}

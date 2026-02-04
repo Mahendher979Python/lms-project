@@ -1,0 +1,36 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .reply-container {
+        max-width: 500px;
+        margin: 50px auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border: 1px solid #eef2f6;
+    }
+    textarea {
+        width: 100%; border: 1px solid #ddd; border-radius: 12px;
+        padding: 15px; margin-bottom: 20px; font-family: inherit;
+        background: #fdfdfd; resize: none;
+    }
+    .send-btn {
+        background: #10b981; color: white; border: none;
+        width: 100%; padding: 14px; border-radius: 12px;
+        font-weight: bold; cursor: pointer; transform: translateY(0);
+        transition: 0.2s;
+    }
+    .send-btn:hover { background: #059669; transform: translateY(-2px); }
+</style>
+
+<div class="reply-container">
+    <h3 style="margin-bottom: 20px;">Replying to Message</h3>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="body" rows="6" placeholder="Write your reply here..." required></textarea>
+        <button class="send-btn">Send Reply</button>
+    </form>
+</div>
+{% endblock %}

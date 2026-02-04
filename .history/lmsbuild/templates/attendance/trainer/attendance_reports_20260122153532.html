@@ -1,0 +1,37 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.card{background:#fff;padding:25px;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,.08)}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:12px;text-align:center;border-bottom:1px solid #e5e7eb}
+th{background:#f1f5f9}
+</style>
+
+<div class="card">
+  <h2>📊 My Attendance Report</h2>
+
+  <form method="get">
+    <input type="month" name="month" required>
+    <button class="btn edit">Generate</button>
+  </form>
+
+  {% if data %}
+  <table>
+    <tr>
+      <th>Month</th>
+      <th>Days Present</th>
+    </tr>
+    {% for d in data %}
+    <tr>
+      <td>{{ request.GET.month }}</td>
+      <td>{{ d.total_days }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:#64748b;">Select month to view report</p>
+  {% endif %}
+</div>
+
+{% endblock %}

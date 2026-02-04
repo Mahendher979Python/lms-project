@@ -1,0 +1,8 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('dashboard/student/courses/<int:course_id>/',views.student_course_detail,name='student_course_detail'),
+
+    path('dashboard/student/courses/<int:course_id>/enroll/',views.enroll_course,name='enroll_course'),
+]

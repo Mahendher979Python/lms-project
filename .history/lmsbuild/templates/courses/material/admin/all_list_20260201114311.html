@@ -1,0 +1,253 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- Main UI Styling --- */
+    .dashboard-wrapper {
+        padding: 10px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .section-title {
+        margin: 40px 0 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Grid for 3D Cards */
+    .material-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .material-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .material-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .card-preview-box {
+        height: 160px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .card-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #334155;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+
+    /* Action Buttons Styles */
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        transition: 0.3s;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-preview { background: #eef2ff; color: #4f46e5; }
+    .btn-download { background: #f0fdf4; color: #16a34a; }
+    
+    .btn-preview:hover { background: #4f46e5; color: white; }
+    .btn-download:hover { background: #16a34a; color: white; }
+
+    /* --- Preview Modal Styling --- */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-content {
+        background: white;
+        width: 90%;
+        height: 90%;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 15px; right: 25px;
+        font-size: 35px;
+        color: #64748b;
+        cursor: pointer;
+        z-index: 10001;
+        transition: 0.3s;
+    }
+    .close-modal:hover { color: #ef4444; transform: rotate(90deg); }
+
+    iframe { width: 100%; height: 100%; border: none; }
+    .preview-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+</style>
+
+<div class="dashboard-wrapper">
+    <h2 style="font-weight: 700;"><i class="fa-solid fa-folder-open" style="color:#4f46e5;"></i> Material Library</h2>
+
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePreview()">&times;</span>
+            <div id="previewBody" style="width:100%; height:100%;">
+                </div>
+        </div>
+    </div>
+
+    <div class="section-title">
+        <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> PDF Documents
+    </div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+        <div class="material-card">
+            <div class="card-preview-box" style="background: #fef2f2;">
+                <i class="fa-solid fa-file-lines fa-4x" style="color:#ef4444;"></i>
+            </div>
+            <p class="card-title">{{ m.title }}</p>
+            <div class="btn-group">
+                <button class="btn btn-preview" onclick="previewFile('{{m.file.url}}', 'pdf')">
+                    <i class="fa-solid fa-eye"></i> Preview
+                </button>
+                <a class="btn btn-download" href="{{m.file.url}}" download>
+                    <i class="fa-solid fa-download"></i> Save
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="section-title">
+        <i class="fa-solid fa-image" style="color:#3b82f6;"></i> Images
+    </div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+        <div class="material-card">
+            <div class="card-preview-box">
+                <img src="{{ m.file.url }}" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <p class="card-title">{{ m.title }}</p>
+            <div class="btn-group">
+                <button class="btn btn-preview" onclick="previewFile('{{m.file.url}}', 'img')">
+                    <i class="fa-solid fa-expand"></i> Preview
+                </button>
+                <a class="btn btn-download" href="{{m.file.url}}" download>
+                    <i class="fa-solid fa-download"></i> Save
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="section-title">
+        <i class="fa-solid fa-circle-play" style="color:#8b5cf6;"></i> Videos
+    </div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+        <div class="material-card">
+            <div class="card-preview-box" style="background:#000;">
+                <video width="100%" height="100%"><source src="{{m.file.url}}"></video>
+            </div>
+            <p class="card-title">{{ m.title }}</p>
+            <div class="btn-group">
+                <a class="btn btn-preview" href="{{m.file.url}}" target="_blank">
+                    <i class="fa-solid fa-play"></i> Play Full
+                </a>
+                <a class="btn btn-download" href="{{m.file.url}}" download>
+                    <i class="fa-solid fa-download"></i> Save
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function previewFile(url, type) {
+    let body = document.getElementById("previewBody");
+    body.innerHTML = ""; // Clear existing content
+
+    if (type === "pdf") {
+        // Displays PDF inside modal using browser's PDF viewer
+        body.innerHTML = `<iframe src="${url}#toolbar=0" type="application/pdf"></iframe>`;
+    } else if (type === "img") {
+        body.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <img src="${url}" class="preview-img">
+                          </div>`;
+    }
+    
+    document.getElementById("previewModal").style.display = "flex";
+}
+
+function closePreview() {
+    document.getElementById("previewModal").style.display = "none";
+    document.getElementById("previewBody").innerHTML = ""; // Stop any processes
+}
+
+// Close modal when clicking on the background
+window.onclick = function(event) {
+    let modal = document.getElementById("previewModal");
+    if (event.target == modal) {
+        closePreview();
+    }
+}
+</script>
+
+{% endblock %}

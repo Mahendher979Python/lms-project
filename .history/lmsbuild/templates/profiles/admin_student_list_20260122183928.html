@@ -1,0 +1,26 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<h2>Student Profiles</h2>
+
+<table border="1" cellpadding="10" width="100%">
+    <tr>
+        <th>Username</th>
+        <th>Education</th>
+        <th>College</th>
+        <th>Action</th>
+    </tr>
+
+    {% for s in students %}
+    <tr>
+        <td>{{ s.user.username }}</td>
+        <td>{{ s.education }}</td>
+        <td>{{ s.college }}</td>
+        <td>
+            <a href="{% url 'admin_profile_detail' 'student' s.id %}">View</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--primary:#4f46e5;
+--cyan:#00f3ff;
+--lime:#ccff00;
+--glass:rgba(255,255,255,.07);
+--border:rgba(255,255,255,.15);
+}
+
+body{font-family:Inter;background:#020617;color:#e5e7eb}
+
+.wrap{padding:30px}
+
+.header{
+display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+
+.header h2{
+font-size:1.7rem;
+background:linear-gradient(90deg,var(--cyan),var(--lime));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent}
+
+.upload-btn{
+background:linear-gradient(135deg,var(--lime),#9acd00);
+padding:12px 26px;border-radius:40px;color:#000!important;
+font-weight:700;text-decoration:none;
+box-shadow:0 10px 25px rgba(204,255,0,.3);
+transition:.3s}
+
+.upload-btn:hover{transform:translateY(-3px)}
+
+.card{
+background:var(--glass);
+border:1px solid var(--border);
+border-radius:20px;
+backdrop-filter:blur(15px);
+box-shadow:0 20px 40px rgba(0,0,0,.6);
+padding:25px}
+
+.table{width:100%;border-collapse:separate;border-spacing:0 12px}
+
+.table th{
+color:#94a3b8;font-size:.8rem;text-transform:uppercase;padding:10px}
+
+.table td{
+background:rgba(255,255,255,.05);
+padding:16px}
+
+.table tr:hover td{background:rgba(255,255,255,.1)}
+
+.table td:first-child{border-radius:12px 0 0 12px}
+.table td:last-child{border-radius:0 12px 12px 0;text-align:right}
+
+.file{
+display:flex;gap:15px;align-items:center}
+
+.icon{
+width:42px;height:42px;border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+background:#0f172a;color:var(--cyan)}
+
+.title{font-weight:600}
+
+.meta{font-size:.75rem;color:#94a3b8}
+
+.badge{
+background:#020617;padding:4px 12px;border-radius:20px;font-size:.8rem}
+
+.action a{
+margin-left:12px;font-size:1.1rem}
+
+.download{color:var(--lime)}
+.delete{color:#ff4d4d}
+
+.empty{text-align:center;padding:60px;color:#64748b}
+
+.stats{
+margin-top:20px;display:flex;justify-content:space-between;font-size:.85rem}
+
+</style>
+
+<div class="wrap">
+
+<div class="header">
+<div>
+<h2>📁 Course Materials</h2>
+<div style="opacity:.6">Course: {{ course.title }}</div>
+</div>
+
+<a href="{% url 'admin_material_upload' course.id %}" class="upload-btn">
+<i class="fa-solid fa-cloud-arrow-up"></i> Upload
+</a>
+</div>
+
+<div class="card">
+
+<table class="table">
+<thead>
+<tr>
+<th>Material</th>
+<th>Uploaded By</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for m in materials %}
+<tr>
+
+<td>
+<div class="file">
+<div class="icon"><i class="fa-solid fa-file"></i></div>
+<div>
+<div class="title">{{ m.title }}</div>
+<div class="meta">ID #{{ m.id }}</div>
+</div>
+</div>
+</td>
+
+<td>
+<span class="badge">
+<i class="fa-solid fa-user"></i> {{ m.uploaded_by.username }}
+</span>
+</td>
+
+<td class="action">
+<a href="{{ m.file.url }}" target="_blank" class="download">
+<i class="fa-solid fa-download"></i>
+</a>
+
+<a href="{% url 'admin_material_delete' m.id %}"
+onclick="return confirm('Delete permanently?')"
+class="delete">
+<i class="fa-solid fa-trash"></i>
+</a>
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="3" class="empty">
+<i class="fa-regular fa-folder-open fa-2x"></i><br><br>
+No materials uploaded yet
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+<div class="stats">
+<span>Total Files</span>
+<b style="color:var(--lime)">{{ materials.count }}</b>
+</div>
+
+</div>
+</div>
+
+<script>
+document.querySelectorAll(".title").forEach(t=>{
+let i=t.closest("tr").querySelector(".icon i");
+let n=t.innerText.toLowerCase();
+if(n.endsWith(".pdf"))i.className="fa-solid fa-file-pdf";
+else if(n.match(/jpg|png|jpeg/))i.className="fa-solid fa-file-image";
+else if(n.match(/doc|docx/))i.className="fa-solid fa-file-word";
+else if(n.match(/mp4|mov/))i.className="fa-solid fa-file-video";
+});
+</script>
+
+{% endblock %}

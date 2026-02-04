@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trainer Videos</title>
+    <style>
+        body{font-family:Arial;background:#f4f6f8;padding:20px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,280px);gap:20px}
+        .card{background:#fff;padding:10px;border-radius:10px;box-shadow:0 4px 8px #ccc}
+        video{width:100%;height:160px;border-radius:8px}
+        .actions a{margin-right:10px;text-decoration:none}
+        .add-btn{margin-bottom:20px;display:inline-block}
+
+        /* MODAL */
+        .modal{
+            display:none;
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.7);
+            justify-content:center;
+            align-items:center;
+        }
+        .modal-content{
+            background:#fff;
+            padding:20px;
+            width:70%;
+            border-radius:10px;
+            position:relative;
+        }
+        .close{
+            position:absolute;
+            top:10px;
+            right:15px;
+            font-size:22px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>My Videos</h2>
+
+<a href="{% url 'trainer_video_add' %}" class="add-btn">➕ Add Video</a>
+
+<div class="grid">
+{% for v in videos %}
+  <div class="card">
+    <video muted onclick="openModal('{{ v.id }}')">
+        <source src="{{ v.video.url }}">
+    </video>
+    <h4>{{ v.title }}</h4>
+    <p>{{ v.description }}</p>
+
+    <div class="actions">
+        <a href="{% url 'trainer_video_edit' v.id %}">✏ Edit</a>
+        <a href="{% url 'trainer_video_delete' v.id %}" onclick="return confirm('Delete video?')">🗑 Delete</a>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal{{ v.id }}">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('{{ v.id }}')">✖</span>
+        <video controls autoplay style="width:100%">
+            <source src="{{ v.video.url }}">
+        </video>
+        <h3>{{ v.title }}</h3>
+        <p>{{ v.description }}</p>
+    </div>
+  </div>
+{% empty %}
+<p>No videos uploaded</p>
+{% endfor %}
+</div>
+
+<script>
+function openModal(id){
+    document.getElementById("modal"+id).style.display="flex";
+}
+function closeModal(id){
+    let modal=document.getElementById("modal"+id);
+    modal.style.display="none";
+    let v=modal.querySelector("video");
+    v.pause(); v.currentTime=0;
+}
+</script>
+
+</body>
+</html>

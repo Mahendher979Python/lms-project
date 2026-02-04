@@ -1,0 +1,62 @@
+{% extends "profiles/base.html" %}
+{% block title %}Trainer Directory | Admin{% endblock %}
+
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>Trainer Directory <span style="font-size: 0.6em; color: var(--text-light);">({{ trainers.count }})</span></h2>
+    
+    <div>
+        <a href="#" class="btn-3d">
+            <i class="fas fa-plus"></i> Add Trainer
+        </a>
+    </div>
+</div>
+
+<table class="table-container">
+    <thead>
+        <tr style="color: var(--text-light); text-align: left;">
+            <th style="padding-left: 20px;">Photo</th>
+            <th>Trainer Name</th>
+            <th>Qualification</th>
+            <th>Experience</th>
+            <th style="text-align: right; padding-right: 20px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in trainers %}
+        <tr class="table-row-3d">
+            <td style="padding-left: 20px;">
+                {% if t.user.profile_pic %}
+                    <img src="{{ t.user.profile_pic.url }}" class="avatar-sm" style="width: 45px; height: 45px; border-radius: 50%;">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ t.user.username }}" class="avatar-sm" style="width: 45px; height: 45px; border-radius: 50%;">
+                {% endif %}
+            </td>
+            <td>
+                <div style="font-weight: bold; color: var(--text-main);">{{ t.user.first_name }} {{ t.user.last_name }}</div>
+                <div style="font-size: 0.85em; color: var(--text-light);">@{{ t.user.username }}</div>
+            </td>
+            <td>
+                <span style="background: #eff6ff; color: #2563eb; padding: 3px 10px; border-radius: 10px; font-size: 0.9em; box-shadow: var(--shadow-in);">
+                    {{ t.qualification }}
+                </span>
+            </td>
+            <td>{{ t.experience_years }} Years</td>
+            <td style="text-align: right; padding-right: 20px;">
+                <a href="{% url 'admin_profile_detail' 'trainer' t.user.id %}" class="btn-3d" style="padding: 6px 15px; font-size: 0.85rem;">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" style="text-align: center; padding: 30px; color: var(--text-light);">
+                No trainers registered yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

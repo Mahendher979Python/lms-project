@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+<h1>✏ Edit Trainer</h1>
+
+<form method="post" style="max-width:600px;">
+  {% csrf_token %}
+
+  <label>Username</label>
+  <input type="text" name="username" value="{{ trainer.username }}" required>
+
+  <label>Mobile</label>
+  <input type="text" name="mobile" value="{{ trainer.mobile }}">
+
+  <label>Qualification</label>
+  <input type="text" name="qualification" value="{{ profile.qualification }}">
+
+  <label>Designation</label>
+  <input type="text" name="designation" value="{{ profile.designation }}">
+  <label>Experience (in years)</label>
+  <input type="number" name="experience" value="{{ profile.experience }}">
+  
+
+    <input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+    Active
+  </label>
+
+  <br><br>
+  <button type="submit">Update</button>
+  <a href="{% url 'trainer_list' %}">Cancel</a>
+</form>
+
+{% endblock %}

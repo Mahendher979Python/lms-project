@@ -1,0 +1,158 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+--neon:#00f3ff;
+--bg:#020617;
+--glass:rgba(255,255,255,.05);
+}
+
+.upload-wrap{
+min-height:90vh;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:Poppins;
+background:radial-gradient(circle at top right,#020617,#000);
+}
+
+.upload-card{
+width:480px;
+padding:40px;
+border-radius:30px;
+background:var(--glass);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.1);
+box-shadow:0 40px 80px rgba(0,0,0,.7);
+text-align:center;
+transform-style:preserve-3d;
+transition:.4s;
+}
+
+.upload-card:hover{
+transform:rotateX(5deg) rotateY(-5deg) scale(1.02);
+box-shadow:0 0 50px var(--neon);
+}
+
+.title{
+font-size:1.8rem;
+font-weight:700;
+background:linear-gradient(90deg,#00f3ff,#ccff00);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:30px;
+}
+
+.input{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border-radius:12px;
+background:rgba(0,0,0,.4);
+border:1px solid rgba(255,255,255,.1);
+color:white;
+outline:none;
+transition:.3s;
+}
+
+.input:focus{
+border-color:var(--neon);
+box-shadow:0 0 15px rgba(0,243,255,.3);
+}
+
+.file-box{
+border:2px dashed rgba(255,255,255,.2);
+padding:30px;
+border-radius:20px;
+color:#aaa;
+cursor:pointer;
+transition:.3s;
+margin-bottom:20px;
+}
+
+.file-box:hover{
+border-color:var(--neon);
+color:var(--neon);
+}
+
+.btn-upload{
+width:100%;
+padding:15px;
+border:none;
+border-radius:16px;
+background:linear-gradient(135deg,#00f3ff,#0099ff);
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+.btn-upload:hover{
+transform:scale(1.05);
+box-shadow:0 0 30px var(--neon);
+}
+
+.filename{
+margin-top:10px;
+font-size:.8rem;
+color:#aaa;
+}
+</style>
+
+<div class="upload-wrap">
+
+<div class="upload-card" id="card">
+
+<h2 class="title">Upload Material</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input class="input" name="title" placeholder="Material Title">
+
+<select name="material_type" class="input">
+<option value="video">Video</option>
+<option value="pdf">PDF</option>
+<option value="image">Image</option>
+<option value="note">Notes</option>
+<option value="other">Other</option>
+</select>
+
+<label class="file-box">
+<i class="fa-solid fa-cloud-arrow-up fa-2x"></i><br><br>
+Click or Drop File
+<input hidden type="file" name="file" id="fileInput">
+<div class="filename" id="fileName"></div>
+</label>
+
+<button class="btn-upload">
+<i class="fa-solid fa-upload"></i> Upload Now
+</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+const card=document.getElementById("card");
+
+document.addEventListener("mousemove",e=>{
+let x=(window.innerWidth/2-e.pageX)/40;
+let y=(window.innerHeight/2-e.pageY)/40;
+card.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
+});
+
+document.addEventListener("mouseleave",()=>{
+card.style.transform="rotateX(0) rotateY(0)";
+});
+
+document.getElementById("fileInput").addEventListener("change",function(){
+document.getElementById("fileName").innerText=this.files[0].name;
+});
+</script>
+
+{% endblock %}

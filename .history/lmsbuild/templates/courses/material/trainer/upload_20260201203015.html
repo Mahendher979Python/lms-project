@@ -1,0 +1,13 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+
+<h2>Upload Material</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<input name="title" placeholder="title"><br><br>
+<input type="file" name="file"><br><br>
+<button>Upload</button>
+</form>
+
+{% endblock %}

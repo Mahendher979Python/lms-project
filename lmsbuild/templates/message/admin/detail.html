@@ -1,0 +1,39 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .view-card {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .view-header {
+        background: #f8fafc;
+        padding: 25px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .view-body { padding: 30px; line-height: 1.8; color: #334155; font-size: 16px; }
+    .actions { padding: 20px 30px; background: #fff; border-top: 1px solid #f1f5f9; }
+    .reply-link {
+        color: #4f46e5; font-weight: bold; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 8px;
+    }
+    .reply-link:hover { text-decoration: underline; }
+</style>
+
+<div class="view-card">
+    <div class="view-header">
+        <h2 style="margin:0;">{{msg.subject}}</h2>
+        <p style="color:#64748b; margin: 10px 0 0 0;">From: <strong>{{msg.sender.username}}</strong></p>
+    </div>
+    <div class="view-body">
+        {{msg.body|linebreaks}}
+    </div>
+    <div class="actions">
+        <a href="/message/reply/{{msg.id}}/" class="reply-link">↩ Reply to this message</a>
+    </div>
+</div>
+{% endblock %}

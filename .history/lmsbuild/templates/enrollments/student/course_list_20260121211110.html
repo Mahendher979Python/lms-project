@@ -1,0 +1,270 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+/* ===== PAGE SETUP ===== */
+.page-wrap {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  perspective: 1000px;
+}
+
+/* ===== MAIN 3D CARD ===== */
+.main-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid #e2e8f0;
+  border-bottom: 10px solid #cbd5e1; /* Thick base */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  transform: rotateX(0.5deg);
+}
+
+/* ===== HEADER SECTION ===== */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px dashed #e2e8f0;
+}
+
+.course-info h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #1e293b;
+  font-weight: 800;
+  text-shadow: 2px 2px 0 #e2e8f0;
+}
+
+.trainer-name {
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+/* 3D CLOSE BUTTON */
+.btn-close {
+  background: #ef4444;
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 5px 0 #b91c1c;
+  transition: all 0.1s;
+}
+
+.btn-close:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #b91c1c;
+}
+
+.btn-close:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+/* ===== TOPIC LIST (Accordion) ===== */
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.topic-item {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* The clickable header of each topic */
+.topic-header {
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  /* 3D Effect for the strip */
+  box-shadow: 0 4px 0 #e2e8f0;
+  transition: all 0.2s;
+  z-index: 2;
+  position: relative;
+}
+
+.topic-item.active .topic-header {
+  background: #eef2ff; /* Light indigo when open */
+  box-shadow: none; /* Pressed down effect */
+  border-bottom: 1px solid #e2e8f0;
+  transform: translateY(4px); /* Physically moves down */
+}
+
+.topic-title {
+  font-weight: 700;
+  color: #334155;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-box {
+  width: 35px;
+  height: 35px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.toggle-icon {
+  font-size: 1.5rem;
+  color: #94a3b8;
+  font-weight: bold;
+  transition: transform 0.3s;
+}
+
+.topic-item.active .toggle-icon {
+  transform: rotate(180deg);
+  color: #6366f1;
+}
+
+/* The hidden content area */
+.topic-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: #f8fafc;
+}
+
+.content-inner {
+  padding: 25px;
+  border-top: 1px solid transparent; /* Smoother animation */
+}
+
+.description {
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* 3D ACTION BUTTON (Download/View) */
+.btn-action {
+  display: inline-block;
+  background: #3b82f6;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 0 #1d4ed8;
+  transition: all 0.1s;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #1d4ed8;
+}
+
+.btn-action:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+/* Empty State */
+.empty-msg {
+  text-align: center;
+  color: #94a3b8;
+  padding: 20px;
+  font-style: italic;
+}
+
+</style>
+
+<div class="page-wrap">
+  <div class="main-card">
+
+    <div class="header-row">
+      <div class="course-info">
+        <small style="color:#6366f1; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Course Content</small>
+        <h1>{{ course.title }}</h1>
+        <div class="trainer-name">👨‍🏫 Instructor: {{ course.trainer.username }}</div>
+      </div>
+      
+      <a href="{% url 'student_course_list' %}" class="btn-close" title="Close & Return">×</a>
+    </div>
+
+    <div class="topic-list">
+      {% for topic in topics %}
+      <div class="topic-item">
+        
+        <div class="topic-header" onclick="toggleTopic(this)">
+          <div class="topic-title">
+            <div class="icon-box">
+              {% if topic.file %}📄{% else %}📝{% endif %}
+            </div>
+            {{ topic.title }}
+          </div>
+          <span class="toggle-icon">⌄</span>
+        </div>
+
+        <div class="topic-content">
+          <div class="content-inner">
+            <p class="description">
+              {{ topic.description|default:"No description provided." }}
+            </p>
+
+            {% if topic.file %}
+              <a href="{{ topic.file.url }}" target="_blank" class="btn-action">
+                📂 Open / Download File
+              </a>
+            {% else %}
+               <span style="color:#64748b; font-size:0.9rem;">(This is a reading topic only)</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+      {% empty %}
+        <div class="empty-msg">No chapters or topics uploaded yet.</div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleTopic(header) {
+  const item = header.parentElement;
+  const content = item.querySelector('.topic-content');
+  
+  // Toggle the 'active' class for 3D styling
+  item.classList.toggle('active');
+
+  // Handle the slide animation
+  if (item.classList.contains('active')) {
+    content.style.maxHeight = content.scrollHeight + "px";
+  } else {
+    content.style.maxHeight = null;
+  }
+}
+</script>
+
+{% endblock %}

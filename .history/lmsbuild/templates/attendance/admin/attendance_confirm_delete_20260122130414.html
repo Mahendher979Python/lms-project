@@ -1,0 +1,37 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.confirm{
+  background:#fff;
+  max-width:500px;
+  margin:auto;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 20px 45px rgba(0,0,0,.08);
+  text-align:center;
+}
+.btn{padding:10px 18px;border-radius:8px;border:none;color:#fff;font-weight:600}
+.del{background:#dc2626}
+.cancel{background:#64748b;text-decoration:none}
+.actions{display:flex;justify-content:center;gap:15px;margin-top:20px}
+</style>
+
+<div class="confirm">
+  <h2>⚠ Delete Attendance</h2>
+  <p>
+    Are you sure you want to delete attendance of  
+    <b>{{attendance.user.username}}</b>  
+    on <b>{{attendance.date}}</b>?
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="actions">
+      <button type="submit" class="btn del">Yes, Delete</button>
+      <a href="{% url 'admin_attendance_list' %}" class="btn cancel">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

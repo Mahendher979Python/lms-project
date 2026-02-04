@@ -1,0 +1,120 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.media-grid{
+display:grid;
+grid-template-columns:1fr 400px;
+gap:25px;
+}
+
+.card{
+background:rgba(255,255,255,.05);
+padding:25px;
+border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,.2);
+background:#0f172a;
+color:white;
+margin-bottom:15px;
+}
+
+.upload-btn{
+background:linear-gradient(135deg,#38f9d7,#4facfe);
+border:none;
+padding:12px;
+border-radius:30px;
+width:100%;
+font-weight:700;
+cursor:pointer;
+}
+
+.upload-btn:hover{box-shadow:0 0 15px #38f9d7}
+
+table{width:100%}
+th,td{padding:12px;text-align:left}
+tbody tr:hover{background:rgba(255,255,255,.07)}
+
+.file-box{
+border:2px dashed rgba(255,255,255,.3);
+padding:30px;
+text-align:center;
+border-radius:15px;
+cursor:pointer;
+margin-bottom:15px;
+}
+
+</style>
+
+<div class="media-grid">
+
+<!-- LEFT : MEDIA LIST -->
+<div class="card">
+
+<h2>📂 Media Library</h2>
+
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Course</th>
+<th>Date</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+{% for m in materials %}
+<tr>
+<td>{{m.title}}</td>
+<td>{{m.course.title}}</td>
+<td>{{m.created_at|date:"d M Y"}}</td>
+<td>
+<a href="{{m.file.url}}" target="_blank">⬇</a>
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="4">No materials</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+
+<!-- RIGHT : UPLOAD -->
+<div class="card">
+
+<h3>⬆ Upload Media</h3>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input name="title" placeholder="Material Title" required>
+
+<select name="course" required>
+<option value="">Select Course</option>
+{% for c in courses %}
+<option value="{{c.id}}">{{c.title}}</option>
+{% endfor %}
+</select>
+
+<label class="file-box">
+Choose File
+<input type="file" hidden name="file" required>
+</label>
+
+<button class="upload-btn">Upload</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

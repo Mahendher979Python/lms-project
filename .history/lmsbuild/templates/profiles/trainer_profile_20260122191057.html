@@ -1,0 +1,33 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<div class="card-3d">
+    <h2>Trainer Portfolio</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+        <div style="background: #eff6ff; padding: 15px; border-radius: 10px;">
+            <span class="label" style="display:block; margin-bottom:5px;">Qualification</span>
+            <strong style="font-size: 1.1rem;">{{ profile.qualification }}</strong>
+        </div>
+        <div style="background: #f0fdf4; padding: 15px; border-radius: 10px;">
+            <span class="label" style="display:block; margin-bottom:5px;">Experience</span>
+            <strong style="font-size: 1.1rem;">{{ profile.experience_years }} Years</strong>
+        </div>
+    </div>
+
+    <h3>Core Expertise</h3>
+    <div style="margin-bottom: 20px; padding: 10px 0; border-bottom: 1px solid #eee;">
+        {{ profile.expertise }}
+    </div>
+
+    <h3>Certifications</h3>
+    <div style="color: #475569; font-style: italic;">
+        {{ profile.certifications|default:"No certifications listed." }}
+    </div>
+
+    <div style="margin-top: 40px; text-align: right;">
+        <a class="btn-3d" href="{% url 'profile_edit' %}">Edit Profile</a>
+    </div>
+</div>
+
+{% endblock %}

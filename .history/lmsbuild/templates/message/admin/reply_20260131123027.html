@@ -1,0 +1,13 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Reply</h2>
+
+<form method="post">
+{% csrf_token %}
+<textarea name="body" rows="5" required></textarea>
+<br><br>
+<button type="submit">Send Reply</button>
+</form>
+
+{% endblock %}

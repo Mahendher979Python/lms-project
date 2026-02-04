@@ -1,0 +1,35 @@
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+<h2>📝 My Todos</h2>
+
+<table border="1" cellpadding="10" style="margin-top:20px; width:100%;">
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    <th>File</th>
+    <th>Assigned By</th>
+    <th>Date</th>
+  </tr>
+
+  {% for todo in todos %}
+  <tr>
+    <td>{{ todo.title }}</td>
+    <td>{{ todo.description }}</td>
+    <td>
+      {% if todo.file %}
+        <a href="{{ todo.file.url }}" target="_blank">View</a>
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td>{{ todo.created_by.username }}</td>
+    <td>{{ todo.created_at|date:"d M Y" }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5">No Todos Assigned</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,24 @@
+from django.shortcuts import render, get_object_or_404
+from .models import Course, Topic # Mee model names change unte adjust cheyandi
+
+def student_course_detail(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Get all topics
+    topics = course.topics.all() # Or however you relate topics
+    
+    # Check if a specific topic is clicked, otherwise show nothing or first one
+    topic_id = request.GET.get('topic_id')
+    selected_topic = None
+    
+    if topic_id:
+        selected_topic = topics.filter(id=topic_id).first()
+    elif topics.exists():
+        selected_topic = topics.first() # Default ga first topic open avtundi
+        
+    context = {
+        'course': course,
+        'topics': topics,
+        'selected_topic': selected_topic
+    }
+    return render(request, 'accounts/student/student_course_detail.html', context)

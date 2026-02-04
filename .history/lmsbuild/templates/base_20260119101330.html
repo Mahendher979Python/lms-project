@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}LMS{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<header class="navbar">
+  <a href="{% url 'home' %}" class="brand-wrap">
+    <img src="{% static 'images/Speshwaylogo.jpg' %}" class="logo">
+    <span class="brand">LMS</span>
+  </a>
+
+  <nav class="nav-center">
+    <a href="{% url 'home' %}">Home</a>
+    <a href="#">Courses</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <div class="nav-right">
+      <a href="{% url 'login' %}" class="btn primary">Login</a>
+  </div>
+</header>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>© 2026 LMS | Designed by <b>Banavath Mahendher</b></p>
+</footer>
+
+<script src="{% static 'js/base.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

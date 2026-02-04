@@ -1,0 +1,116 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --neon-teal: #00f2ea;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-white: #ffffff;
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(15, 20, 35) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-white);
+    }
+
+    .media-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        border: var(--glass-border);
+    }
+
+    /* Header & Search */
+    .header-row {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+    }
+    .header-row h2 { margin: 0; font-size: 1.8rem; background: linear-gradient(90deg, #fff, var(--neon-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .search-box {
+        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+        padding: 10px 20px; border-radius: 50px; color: white; width: 250px;
+    }
+
+    /* Table Styling */
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    th { text-align: left; padding: 15px; color: rgba(255,255,255,0.6); font-size: 0.85rem; text-transform: uppercase; }
+    
+    tbody tr { background: rgba(255,255,255,0.02); transition: 0.3s; }
+    tbody tr:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    
+    td { padding: 15px; vertical-align: middle; }
+    td:first-child { border-radius: 10px 0 0 10px; border-left: 3px solid var(--neon-teal); }
+    td:last-child { border-radius: 0 10px 10px 0; }
+
+    /* Buttons */
+    .download {
+        background: linear-gradient(135deg, var(--neon-teal), #0099ff);
+        padding: 8px 20px; border-radius: 30px; color: black; text-decoration: none; font-weight: 700; font-size: 0.8rem;
+        display: inline-flex; align-items: center; gap: 5px; transition: 0.3s;
+    }
+    .download:hover { box-shadow: 0 0 15px var(--neon-teal); color: black; }
+
+    /* Icons */
+    .file-icon { width: 30px; text-align: center; margin-right: 10px; color: var(--neon-teal); font-size: 1.2rem; }
+</style>
+
+<div class="media-card">
+    <div class="header-row">
+        <h2><i class="fas fa-folder-open"></i> Media Library</h2>
+        <input type="text" class="search-box" placeholder="Search files..." id="searchInput" onkeyup="searchTable()">
+    </div>
+
+    <table id="mediaTable">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Course</th>
+                <th>Uploaded By</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in materials %}
+            <tr>
+                <td>
+                    <i class="fas fa-file file-icon"></i> {{ m.title }}
+                </td>
+                <td style="opacity:0.8">{{ m.course.title }}</td>
+                <td>
+                    <i class="fas fa-user-circle" style="opacity:0.5; margin-right:5px;"></i>
+                    {{ m.uploaded_by.username }}
+                </td>
+                <td style="font-family:monospace; color:var(--neon-teal);">{{ m.created_at|date:"d M Y" }}</td>
+                <td>
+                    <a class="download" href="{{ m.file.url }}" target="_blank">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center; padding:30px; opacity:0.5;">No materials found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toUpperCase();
+        let rows = document.querySelector("tbody").rows;
+        for (let i = 0; i < rows.length; i++) {
+            let text = rows[i].innerText;
+            rows[i].style.display = text.toUpperCase().includes(input) ? "" : "none";
+        }
+    }
+</script>
+
+{% endblock %}

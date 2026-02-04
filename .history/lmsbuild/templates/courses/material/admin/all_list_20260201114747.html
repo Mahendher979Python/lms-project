@@ -1,0 +1,177 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+.section-title{
+    margin:40px 0 20px;
+    font-size:20px;
+    font-weight:700;
+    color:#1e293b;
+    display:flex;
+    align-items:center;
+    gap:10px
+}
+.material-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:20px
+}
+.material-card{
+    background:white;
+    border-radius:18px;
+    padding:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s
+}
+.material-card:hover{transform:translateY(-6px)}
+.preview-box{
+    height:160px;
+    border-radius:12px;
+    background:#f1f5f9;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    margin-bottom:10px
+}
+.preview-box img,video{width:100%;height:100%;object-fit:cover}
+.card-title{text-align:center;font-weight:600;margin-bottom:10px}
+
+.btn-group{display:flex;gap:6px}
+.btn{
+    flex:1;
+    padding:8px;
+    border-radius:8px;
+    text-align:center;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer
+}
+.preview{background:#eef2ff;color:#4f46e5}
+.download{background:#ecfdf5;color:#16a34a}
+.edit{background:#fef3c7;color:#d97706}
+.delete{background:#fee2e2;color:#dc2626}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    z-index:999;
+    justify-content:center;
+    align-items:center
+}
+.modal-content{
+    width:85%;
+    height:85%;
+    background:white;
+    border-radius:20px;
+    position:relative;
+    overflow:hidden
+}
+.close{
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size:28px;
+    cursor:pointer
+}
+iframe{width:100%;height:100%;border:none}
+.preview-img{max-width:100%;max-height:100%}
+</style>
+
+<h2>Material Library</h2>
+
+<div id="previewModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closePreview()">×</span>
+<div id="previewBody" style="width:100%;height:100%"></div>
+</div>
+</div>
+
+<script>
+function previewFile(url,type){
+ let body=document.getElementById("previewBody");
+ body.innerHTML="";
+ if(type=="pdf"){
+   body.innerHTML=`<iframe src="${url}"></iframe>`;
+ }
+ else if(type=="img"){
+   body.innerHTML=`<div style="display:flex;justify-content:center;align-items:center;height:100%">
+                    <img src="${url}" class="preview-img">
+                    </div>`;
+ }
+ else if(type=="video"){
+   body.innerHTML=`<video controls style="width:100%;height:100%"><source src="${url}"></video>`;
+ }
+ document.getElementById("previewModal").style.display="flex";
+}
+function closePreview(){
+ document.getElementById("previewModal").style.display="none";
+}
+</script>
+
+<!-- ================= PDF ================= -->
+<div class="section-title"><i class="fa-solid fa-file-pdf"></i> PDFs</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+<div class="material-card">
+<div class="preview-box"><i class="fa-solid fa-file-pdf fa-3x"></i></div>
+<div class="card-title">{{m.title}}</div>
+
+<div class="btn-group">
+<div class="btn preview" onclick="previewFile('{{m.file.url}}','pdf')">Preview</div>
+<a class="btn download" href="{{m.file.url}}" download>Save</a>
+<a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+<a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- ================= IMAGES ================= -->
+<div class="section-title"><i class="fa-solid fa-image"></i> Images</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+<div class="material-card">
+<div class="preview-box"><img src="{{m.file.url}}"></div>
+<div class="card-title">{{m.title}}</div>
+
+<div class="btn-group">
+<div class="btn preview" onclick="previewFile('{{m.file.url}}','img')">Preview</div>
+<a class="btn download" href="{{m.file.url}}" download>Save</a>
+<a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+<a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- ================= VIDEOS ================= -->
+<div class="section-title"><i class="fa-solid fa-video"></i> Videos</div>
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+<div class="material-card">
+<div class="preview-box"><video muted><source src="{{m.file.url}}"></video></div>
+<div class="card-title">{{m.title}}</div>
+
+<div class="btn-group">
+<div class="btn preview" onclick="previewFile('{{m.file.url}}','video')">Preview</div>
+<a class="btn download" href="{{m.file.url}}" download>Save</a>
+<a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+<a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

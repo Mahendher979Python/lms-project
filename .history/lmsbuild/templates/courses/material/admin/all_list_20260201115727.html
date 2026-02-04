@@ -1,0 +1,366 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 6D UI Variables --- */
+    :root {
+        --primary: #6366f1;
+        --accent: #a855f7;
+        --success: #10b981;
+        --danger: #f43f5e;
+        --warning: #f59e0b;
+        --glass: rgba(255, 255, 255, 0.9);
+        --sidebar-dark: #0f172a;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    /* --- Modern Header --- */
+    .library-header {
+        background: var(--glass);
+        backdrop-filter: blur(15px);
+        padding: 30px;
+        border-radius: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .header-info h2 {
+        margin: 0;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .btn-3d {
+        padding: 12px 25px;
+        border-radius: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-upload {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white !important;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-upload:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    /* --- Section Titles --- */
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 40px 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--sidebar-dark);
+    }
+
+    .section-title i { color: var(--primary); }
+
+    /* --- 3D Grid & Cards --- */
+    .material-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .material-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .material-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border-color: var(--primary);
+    }
+
+    .preview-box {
+        height: 160px;
+        background: #f8fafc;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+
+    .preview-box img, .preview-box video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 15px;
+        color: #334155;
+    }
+
+    /* --- Action Buttons --- */
+    .btn-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-sm {
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .preview { background: #eef2ff; color: var(--primary); }
+    .download { background: #ecfdf5; color: var(--success); }
+    .edit { background: #fffbeb; color: var(--warning); }
+    .delete { background: #fef2f2; color: var(--danger); }
+
+    .btn-sm:hover { filter: brightness(0.9); }
+
+    /* --- Interactive Modals --- */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        width: 90%;
+        height: 90%;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        padding: 15px 25px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close {
+        font-size: 24px;
+        cursor: pointer;
+        color: #64748b;
+        transition: 0.3s;
+    }
+
+    .close:hover { color: var(--danger); transform: rotate(90deg); }
+
+    /* --- Upload Selector Modal --- */
+    .upload-selector {
+        max-width: 450px;
+        height: auto;
+        padding: 30px;
+        text-align: center;
+    }
+
+    select {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        margin-top: 20px;
+        font-family: inherit;
+    }
+</style>
+
+<div class="dashboard-wrapper" style="padding: 20px;">
+    
+    <header class="library-header">
+        <div class="header-info">
+            <h2><i class="fa-solid fa-layer-group"></i> Material Library</h2>
+            <p style="color: #64748b;">Manage academic assets and curriculum files.</p>
+        </div>
+        <button class="btn-3d btn-upload" onclick="openUpload()">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload New
+        </button>
+    </header>
+
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="previewTitle" style="margin:0;">File Preview</h4>
+                <span class="close" onclick="closePreview()">&times;</span>
+            </div>
+            <div id="previewBody" style="flex:1;"></div>
+        </div>
+    </div>
+
+    <div id="uploadModal" class="modal">
+        <div class="modal-content upload-selector">
+            <span class="close" onclick="closeUpload()" style="position:absolute; top:15px; right:20px;">&times;</span>
+            <div style="width:60px; height:60px; background:#eef2ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                <i class="fa-solid fa-book fa-2x" style="color:var(--primary);"></i>
+            </div>
+            <h3 style="margin:0;">Select Course</h3>
+            <p style="color:#64748b; font-size:0.9rem;">To which course does this material belong?</p>
+
+            <select id="courseSelect">
+                {% for c in courses %}
+                <option value="{{c.id}}">{{c.title}}</option>
+                {% endfor %}
+            </select>
+
+            <button class="btn-3d btn-upload" onclick="goUpload()" style="width:100%; margin-top:25px; justify-content:center;">
+                Continue to Upload
+            </button>
+        </div>
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-file-pdf"></i> PDF Documents</div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+        <div class="material-card">
+            <div class="preview-box" style="background:#fef2f2;">
+                <i class="fa-solid fa-file-lines fa-4x" style="color:var(--danger);"></i>
+            </div>
+            <div class="card-title">{{m.title}}</div>
+            <div class="btn-group">
+                <button class="btn-sm preview" onclick="previewFile('{{m.file.url}}','pdf', '{{m.title}}')">Preview</button>
+                <a class="btn-sm download" href="{{m.file.url}}" download>Save</a>
+                <a class="btn-sm edit" href="{% url 'admin_material_edit' m.id %}"><i class="fa-solid fa-pen"></i></a>
+                <a class="btn-sm delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-image"></i> Media Gallery</div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+        <div class="material-card">
+            <div class="preview-box">
+                <img src="{{m.file.url}}">
+            </div>
+            <div class="card-title">{{m.title}}</div>
+            <div class="btn-group">
+                <button class="btn-sm preview" onclick="previewFile('{{m.file.url}}','img', '{{m.title}}')">Preview</button>
+                <a class="btn-sm download" href="{{m.file.url}}" download>Save</a>
+                <a class="btn-sm edit" href="{% url 'admin_material_edit' m.id %}"><i class="fa-solid fa-pen"></i></a>
+                <a class="btn-sm delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-circle-play"></i> Video Lectures</div>
+    <div class="material-grid">
+        {% for m in materials %}
+        {% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+        <div class="material-card">
+            <div class="preview-box" style="background:#000;">
+                <video muted><source src="{{m.file.url}}"></video>
+                <div style="position:absolute; color:white;"><i class="fa-solid fa-play fa-2x"></i></div>
+            </div>
+            <div class="card-title">{{m.title}}</div>
+            <div class="btn-group">
+                <button class="btn-sm preview" onclick="previewFile('{{m.file.url}}','video', '{{m.title}}')">Play</button>
+                <a class="btn-sm download" href="{{m.file.url}}" download>Save</a>
+                <a class="btn-sm edit" href="{% url 'admin_material_edit' m.id %}"><i class="fa-solid fa-pen"></i></a>
+                <a class="btn-sm delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    function previewFile(url, type, title) {
+        let body = document.getElementById("previewBody");
+        document.getElementById("previewTitle").innerText = title;
+        body.innerHTML = "";
+        
+        if (type == "pdf") {
+            // Added #toolbar=0 to discourage download but browser viewer usually allows it.
+            // iframe is the best way to open PDF inside modal.
+            body.innerHTML = `<iframe src="${url}#toolbar=0" style="width:100%; height:100%; border:none;"></iframe>`;
+        } 
+        else if (type == "img") {
+            body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; padding:20px;">
+                                <img src="${url}" style="max-width:100%; max-height:100%; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                              </div>`;
+        } 
+        else if (type == "video") {
+            body.innerHTML = `<video controls autoplay style="width:100%; height:100%; background:black;">
+                                <source src="${url}">
+                              </video>`;
+        }
+        document.getElementById("previewModal").style.display = "flex";
+    }
+
+    function closePreview() { document.getElementById("previewModal").style.display = "none"; document.getElementById("previewBody").innerHTML = ""; }
+    function openUpload() { document.getElementById("uploadModal").style.display = "flex"; }
+    function closeUpload() { document.getElementById("uploadModal").style.display = "none"; }
+    
+    function goUpload() {
+        let cid = document.getElementById("courseSelect").value;
+        // Adjusting path to match your logic
+        window.location.href = `/courses/admin/courses/${cid}/materials/upload/`;
+    }
+
+    // Close on background click
+    window.onclick = function(event) {
+        if (event.target.className == 'modal') {
+            closePreview();
+            closeUpload();
+        }
+    }
+</script>
+
+{% endblock %}

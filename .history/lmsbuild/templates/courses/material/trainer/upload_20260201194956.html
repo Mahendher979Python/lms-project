@@ -1,0 +1,89 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .upload-container { max-width: 650px; margin: 50px auto; }
+    .glass-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+    }
+    .drop-zone {
+        border: 2px dashed #cbd5e1;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        transition: 0.3s;
+        cursor: pointer;
+        background: #f8fafc;
+    }
+    .drop-zone:hover { border-color: #6366f1; background: #eff6ff; }
+    .form-label { font-weight: 700; color: #334155; margin-bottom: 8px; display: block; }
+    .btn-gradient {
+        background: linear-gradient(135deg, #6366f1, #4338ca);
+        color: white; border: none; padding: 14px; border-radius: 12px;
+        width: 100%; font-weight: 700; transition: 0.3s;
+    }
+    .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3); }
+</style>
+
+<div class="upload-container">
+    <div class="mb-4">
+        <a href="javascript:history.back()" class="text-decoration-none text-muted small">
+            <i class="fa-solid fa-arrow-left"></i> Back to Materials
+        </a>
+    </div>
+
+    <div class="glass-card">
+        <h3 class="fw-bold mb-1">Upload Material</h3>
+        <p class="text-muted mb-4">Course: <span class="text-primary fw-bold">{{ course.title }}</span></p>
+
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label">Resource Title</label>
+                <input type="text" name="title" class="form-control form-control-lg" 
+                       placeholder="e.g. Introduction to Django" required
+                       style="border-radius: 12px; border: 1.5px solid #e2e8f0;">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Select File</label>
+                <label class="drop-zone" id="dropZone">
+                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+                    <p class="mb-0 text-secondary fw-medium">Click to browse or drag & drop</p>
+                    <small class="text-muted">PDF, Video, or Images supported</small>
+                    <input type="file" name="file" hidden id="fileInput" onchange="updateFileName()" required>
+                    <div id="fileInfo" class="mt-3 fw-bold text-primary"></div>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-gradient" id="submitBtn">
+                <i class="fa-solid fa-paper-plane me-2"></i> Start Uploading
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        const info = document.getElementById('fileInfo');
+        if(input.files.length > 0) {
+            info.innerHTML = `<i class="fa-solid fa-circle-check"></i> Selected: ${input.files[0].name}`;
+        }
+    }
+
+    document.getElementById('uploadForm').onsubmit = function() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Processing File...`;
+    }
+</script>
+
+{% endblock %}

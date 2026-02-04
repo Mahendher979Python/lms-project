@@ -1,0 +1,218 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* --- 3D WELCOME CARD --- */
+    .welcome-card {
+        background: linear-gradient(120deg, #3b82f6, #6366f1);
+        color: white;
+        padding: 40px;
+        border-radius: 25px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+        /* The 3D Shadow/Lift */
+        box-shadow: 
+            0 20px 25px -5px rgba(59, 130, 246, 0.4), 
+            0 10px 10px -5px rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .welcome-card:hover { transform: translateY(-3px); }
+
+    /* Decorative Circle */
+    .welcome-card::after {
+        content: ''; position: absolute; right: -50px; top: -50px;
+        width: 200px; height: 200px; border-radius: 50%;
+        background: rgba(255,255,255,0.1); pointer-events: none;
+    }
+
+    .welcome-card h2 { font-size: 2rem; margin-bottom: 10px; font-weight: 800; text-shadow: 0 4px 4px rgba(0,0,0,0.2); }
+    .welcome-card p { font-size: 1.1rem; opacity: 0.9; }
+
+    /* --- 3D STATS GRID --- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 20px;
+        /* Floating Effect Shadow */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy transition */
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Hover effect: Card Lifts Up */
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Side Accent Bar */
+    .stat-card::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+        width: 6px; background: #cbd5e1;
+    }
+    
+    .stat-card.blue::before { background: #3b82f6; }
+    .stat-card.green::before { background: #10b981; }
+    .stat-card.orange::before { background: #f59e0b; }
+
+    .stat-card h3 { font-size: 2.5rem; color: #1e293b; font-weight: 800; margin-bottom: 5px; }
+    .stat-card p { color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+
+    /* Icon in background for decoration */
+    .stat-card i {
+        position: absolute; right: 20px; bottom: 20px;
+        font-size: 4rem; color: rgba(0,0,0,0.03);
+        transform: rotate(-15deg);
+    }
+
+    /* --- 3D CHARTS SECTION --- */
+    .charts-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 30px;
+    }
+
+    .chart-card {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    .chart-header { margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+    .chart-header h4 { font-size: 1.2rem; color: #334155; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="welcome-card">
+        <h2>Hello, {{ request.user.username }}! 👋</h2>
+        <p>You have <b>2 Assignments</b> pending. Keep up the momentum!</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <h3>{{ courses_count|default:"4" }}</h3>
+            <p>Active Courses</p>
+            <i class="fa-solid fa-book"></i>
+        </div>
+        <div class="stat-card green">
+            <h3>12</h3>
+            <p>Lessons Done</p>
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div class="stat-card orange">
+            <h3>85%</h3>
+            <p>Avg Score</p>
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+    </div>
+
+    <div class="charts-wrapper">
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="fa-solid fa-chart-simple" style="color:#3b82f6;"></i> Course Progress</h4>
+            </div>
+            <canvas id="courseProgressChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="fa-solid fa-clock" style="color:#8b5cf6;"></i> Time Distribution</h4>
+            </div>
+            <div style="height: 280px; display: flex; justify-content: center;">
+                <canvas id="timeSpentChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // Common Options for 3D look in Charts
+            Chart.defaults.font.family = "'Segoe UI', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            // --- CHART 1: Course Progress ---
+            const ctx1 = document.getElementById('courseProgressChart').getContext('2d');
+            
+            // Gradient for Bars
+            const gradientBlue = ctx1.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, '#3b82f6');
+            gradientBlue.addColorStop(1, '#60a5fa');
+
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Python', 'Django', 'React', 'Data Science'],
+                    datasets: [{
+                        label: 'Completion (%)',
+                        data: [75, 50, 90, 30],
+                        backgroundColor: gradientBlue,
+                        borderRadius: 8, // Rounded bar tops
+                        barThickness: 30,
+                        borderWidth: 0,
+                        hoverBackgroundColor: '#2563eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // --- CHART 2: Doughnut Chart ---
+            const ctx2 = document.getElementById('timeSpentChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Video Lectures', 'Assignments', 'Quizzes'],
+                    datasets: [{
+                        data: [12, 5, 3],
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#8b5cf6', // Purple
+                            '#06b6d4'  // Cyan
+                        ],
+                        borderWidth: 5, // Thicker gaps
+                        borderColor: '#ffffff', // Match card bg
+                        hoverOffset: 15 // Pops out on hover
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%', // Thinner ring
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

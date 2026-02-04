@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI", system-ui; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #e5e7eb;
+    }
+    .card {
+      width: 420px;
+      padding: 40px;
+      background: #020617;
+      border-radius: 20px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 30px 60px rgba(0,0,0,.6);
+      text-align: center;
+    }
+    h2 { color: #38bdf8; margin-bottom: 8px; }
+    p { color: #94a3b8; margin-bottom: 25px; font-size: 14px; }
+    .input {
+      display: flex;
+      gap: 10px;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    input {
+      width: 100%;
+      background: none;
+      border: none;
+      outline: none;
+      color: #e5e7eb;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: #38bdf8;
+      color: #020617;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+        opacity: 0.9;
+    }
+    .link { display: block; margin-top: 18px; font-size: 14px; color: #94a3b8; text-decoration: none; }
+    .link:hover { color: #38bdf8; }
+    /* Error Message Style */
+    .msg {
+      background: rgba(239, 68, 68, .15);
+      color: #f87171;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>LMS Login</h2>
+  <p>Please enter your credentials</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="msg">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if error %}
+    <div class="msg">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="input">
+      <input type="text" name="username" placeholder="Username" required>
+    </div>
+    
+    <div class="input">
+      <input type="password" name="password" placeholder="Password" required>
+    </div>
+    
+    <button type="submit">Login</button>
+  </form>
+
+  <a href="#" class="link">Forgot Password?</a>
+</div>
+
+</body>
+</html>

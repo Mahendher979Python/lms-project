@@ -1,0 +1,179 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    /* Reuse core styles for consistency */
+    :root {
+        --bg-img: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070');
+        --accent: #6366f1;
+    }
+    body {
+        background: var(--bg-img) no-repeat center center fixed;
+        background-size: cover;
+        color: #f8fafc;
+    }
+    body::before {
+        content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(2, 6, 23, 0.9); z-index: -1;
+    }
+
+    /* 3D Card */
+    .form-box {
+        max-width: 850px;
+        margin: 40px auto;
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Neon Top Border */
+    .form-box::after {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, #6366f1, #ec4899);
+        box-shadow: 0 0 15px #6366f1;
+    }
+
+    label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
+
+    /* Futuristic Inputs */
+    input[type="text"], select, textarea, input[type="file"] {
+        width: 100%;
+        background: rgba(2, 6, 23, 0.6);
+        border: 1px solid #334155;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+        box-sizing: border-box; 
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        background: rgba(2, 6, 23, 0.9);
+    }
+
+    /* Grid Layout */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* Custom Checkbox Area */
+    .assign-section {
+        background: rgba(0,0,0,0.3);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+    }
+
+    .filters { display: flex; gap: 15px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
+    
+    .chk-label {
+        cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+        color: #cbd5e1; font-size: 0.9rem;
+    }
+
+    .users-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px; max-height: 200px; overflow-y: auto;
+    }
+
+    /* Submit Button */
+    .btn-glow {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .btn-glow:hover {
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.6);
+        transform: scale(1.01);
+    }
+</style>
+
+<div class="form-box">
+    <h2 style="text-align:center; margin-bottom:30px;">➕ Create New Note</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label>Note Title</label>
+        <input type="text" name="title" placeholder="Enter topic title..." required>
+
+        <div class="grid-2">
+            <div>
+                <label>Related Course</label>
+                <select name="course">
+                    <option value="">-- General / Optional --</option>
+                    {% for c in courses %}
+                    <option value="{{c.id}}">{{c.title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Visibility</label>
+                <select name="visibility">
+                    <option value="private">🔒 Private (Only Assigned)</option>
+                    <option value="public">🌍 Public (Everyone)</option>
+                </select>
+            </div>
+        </div>
+
+        <label>Description / Content</label>
+        <textarea name="description" rows="4" placeholder="Brief details about the note..."></textarea>
+
+        <label>Upload Document (PDF/Image)</label>
+        <input type="file" name="file">
+
+        <div class="assign-section">
+            <div class="filters">
+                <span style="color:var(--accent); font-weight:bold;">Assign To:</span>
+                <label class="chk-label"><input type="checkbox" id="all"> All Users</label>
+                <label class="chk-label"><input type="checkbox" id="trainers"> Trainers Only</label>
+                <label class="chk-label"><input type="checkbox" id="students"> Students Only</label>
+            </div>
+
+            <div class="users-grid">
+                {% for u in admins %}
+                <label class="chk-label"><input type="checkbox" class="chk admin" name="assigned_to" value="{{u.id}}"> 🛡️ {{u.username}}</label>
+                {% endfor %}
+                {% for u in trainers %}
+                <label class="chk-label"><input type="checkbox" class="chk trainer" name="assigned_to" value="{{u.id}}"> 👨‍🏫 {{u.username}}</label>
+                {% endfor %}
+                {% for u in students %}
+                <label class="chk-label"><input type="checkbox" class="chk student" name="assigned_to" value="{{u.id}}"> 🎓 {{u.username}}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <br>
+        <button class="btn-glow">Publish Note</button>
+    </form>
+</div>
+
+<script>
+    const all = document.getElementById("all");
+    const t = document.getElementById("trainers");
+    const s = document.getElementById("students");
+    const chk = document.querySelectorAll(".chk");
+
+    // "Colors buttons hover" logic for checkboxes
+    all.onchange = () => chk.forEach(c => c.checked = all.checked);
+    t.onchange = () => document.querySelectorAll(".trainer").forEach(c => c.checked = t.checked);
+    s.onchange = () => document.querySelectorAll(".student").forEach(c => c.checked = s.checked);
+</script>
+
+{% endblock %}

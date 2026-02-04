@@ -1,0 +1,11 @@
+<h2>Inbox</h2>
+
+{% for msg in messages %}
+<p>
+<b>{{ msg.sender }}</b> — {{ msg.subject }} <br>
+{{ msg.body }}
+</p>
+<hr>
+{% empty %}
+No messages
+{% endfor %}

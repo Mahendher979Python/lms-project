@@ -1,0 +1,294 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* Content Area Styles */
+    .media-container {
+        padding: 20px;
+        background-color: #f1f5f9;
+        min-height: 100vh;
+    }
+
+    /* Compact Visualization Row */
+    .viz-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr; /* 3 Columns for smaller charts */
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .mini-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .mini-card h6 {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .chart-box {
+        width: 100%;
+        height: 120px; /* Chart size thagginchanu */
+    }
+
+    /* Expanded Table Section */
+    .table-section {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .table-header {
+        padding: 20px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border-radius: 15px 15px 0 0;
+    }
+
+    /* Custom Table Design */
+    .custom-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .custom-table thead th {
+        background: #f8fafc;
+        padding: 15px;
+        font-size: 13px;
+        color: #475569;
+        font-weight: 600;
+        border-bottom: 2px solid #edf2f7;
+    }
+
+    .custom-table tbody td {
+        padding: 18px 15px; /* Cell size penchanu */
+        font-size: 14px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* File Icon Badges */
+    .fmt-badge {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .fmt-pdf { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .fmt-video { background: #dcfce7; color: #22c55e; border: 1px solid #bbf7d0; }
+    .fmt-img { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
+
+    /* Action Buttons */
+    .act-btn {
+        height: 32px;
+        width: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: 0.2s;
+        margin: 0 3px;
+    }
+    .act-view { color: #6366f1; background: #eef2ff; }
+    .act-edit { color: #f59e0b; background: #fffbeb; }
+    .act-del { color: #ef4444; background: #fef2f2; }
+    
+    .act-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+    /* Search Bar */
+    .search-input {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 8px 15px;
+        width: 300px;
+        outline: none;
+    }
+</style>
+
+<div class="media-container">
+    
+    <div class="viz-section">
+        <div class="mini-card">
+            <h6><i class="fa-solid fa-file-invoice me-1"></i> Content Ratio</h6>
+            <div class="chart-box">
+                <canvas id="typeDoughnut"></canvas>
+            </div>
+        </div>
+        <div class="mini-card">
+            <h6><i class="fa-solid fa-arrow-trend-up me-1"></i> Upload Activity</h6>
+            <div class="chart-box">
+                <canvas id="activityLine"></canvas>
+            </div>
+        </div>
+        <div class="mini-card">
+            <h6 style="margin-bottom: 20px;">Quick Info</h6>
+            <div class="text-center">
+                <h3 class="fw-bold text-primary mb-0">{{ materials|length }}</h3>
+                <p class="text-muted small">Total Files Hosted</p>
+                <a href="{% url 'admin_material_upload' course_id=1 %}" class="btn btn-sm btn-primary mt-2">
+                    <i class="fa-solid fa-plus me-1"></i> New Upload
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <h5 class="fw-bold mb-0 text-dark">Material Inventory</h5>
+            <div class="d-flex gap-3">
+                <input type="text" id="fileSearch" class="search-input" placeholder="Search by title, course or user...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-table" id="materialTable">
+                <thead>
+                    <tr>
+                        <th class="text-center">Sino</th>
+                        <th>Material Title</th>
+                        <th>Course Module</th>
+                        <th>File Format</th>
+                        <th>Uploader</th>
+                        <th>Date Added</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in materials %}
+                    <tr>
+                        <td class="text-center text-muted">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    {% if ".pdf" in m.file.url %}
+                                        <i class="fa-solid fa-file-pdf text-danger fa-lg"></i>
+                                    {% elif ".mp4" in m.file.url %}
+                                        <i class="fa-solid fa-video text-success fa-lg"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-image text-primary fa-lg"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <span class="fw-bold text-dark d-block">{{ m.title }}</span>
+                                    <small class="text-muted">ID: {{ m.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="text-secondary fw-medium">{{ m.course.title }}</span></td>
+                        <td>
+                            {% if ".pdf" in m.file.url %}
+                                <span class="fmt-badge fmt-pdf">PDF Doc</span>
+                            {% elif ".mp4" in m.file.url %}
+                                <span class="fmt-badge fmt-video">Video MP4</span>
+                            {% else %}
+                                <span class="fmt-badge fmt-img">Media/JPG</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                <i class="fa-solid fa-user-circle me-1"></i> {{ m.uploaded_by.username }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ m.created_at|date:"M d, Y" }}</td>
+                        <td class="text-center">
+                            <a href="{{ m.file.url }}" target="_blank" class="act-btn act-view" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="{% url 'admin_material_edit' m.id %}" class="act-btn act-edit" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <a href="{% url 'admin_material_delete' m.id %}" class="act-btn act-del" title="Delete" onclick="return confirm('Delete this file?');">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-25">
+                            <p class="text-muted">No materials found in the hub.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search Filter
+    document.getElementById('fileSearch').addEventListener('keyup', function() {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#materialTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    // --- COMPACT CHARTS ---
+
+    // 1. Doughnut Chart (Content Ratio)
+    const ctx1 = document.getElementById('typeDoughnut').getContext('2d');
+    new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: ['PDF', 'Video', 'Images'],
+            datasets: [{
+                data: [45, 25, 30],
+                backgroundColor: ['#ef4444', '#22c55e', '#3b82f6'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 2. Line Chart (Activity)
+    const ctx2 = document.getElementById('activityLine').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: ['1', '2', '3', '4', '5'],
+            datasets: [{
+                data: [10, 25, 15, 35, 20],
+                borderColor: '#6366f1',
+                tension: 0.4,
+                pointRadius: 0,
+                fill: true,
+                backgroundColor: 'rgba(99, 102, 241, 0.1)'
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        }
+    });
+</script>
+
+{% endblock %}

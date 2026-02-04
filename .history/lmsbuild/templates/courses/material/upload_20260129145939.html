@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <h2>Upload Material</h2>
+    <p style="color: #666;">Adding content to: <strong>{{ course.title }}</strong></p>
+
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>Material Title</label>
+            <input type="text" name="title" placeholder="e.g. Week 1 Lecture Slides" required>
+        </div>
+
+        <div class="form-group">
+            <label>Select File</label>
+            <input type="file" name="file" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="submitBtn">Start Upload</button>
+    </form>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{% url 'trainer_material_list' course.id %}" class="btn btn-outline">Cancel & Go Back</a>
+    </div>
+</div>
+
+<script>
+    // Simple JS to prevent double-clicking and show "Uploading..."
+    const form = document.getElementById('uploadForm');
+    const btn = document.getElementById('submitBtn');
+
+    form.onsubmit = function() {
+        btn.innerHTML = "Uploading... Please wait";
+        btn.style.opacity = "0.7";
+        btn.style.pointerEvents = "none";
+    };
+</script>
+{% endblock %}

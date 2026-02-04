@@ -1,0 +1,78 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.card{background:#fff;padding:30px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.section{margin-bottom:30px;border-bottom:1px solid #e5e7eb;padding-bottom:20px}
+.section h3{margin-bottom:15px;color:#1e293b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+label{font-weight:600}
+input{width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1}
+.toggle{display:flex;gap:10px;align-items:center}
+button{background:#2563eb;color:#fff;padding:12px 30px;border:none;border-radius:10px;font-weight:700}
+</style>
+
+<div class="card">
+  <h2>🎓 Student Global Settings</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- APPROVAL -->
+    <div class="section">
+      <h3>Approval</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="student_approval_required"
+            {% if settings.student_approval_required %}checked{% endif %}>
+          <label>Student Approval Required</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSE LIMITS -->
+    <div class="section">
+      <h3>Course Limits</h3>
+      <div class="grid">
+        <div>
+          <label>Max Courses Per Student</label>
+          <input type="number" name="max_courses_per_student"
+            value="{{ settings.max_courses_per_student }}">
+        </div>
+        <div class="toggle">
+          <input type="checkbox" name="allow_course_preview"
+            {% if settings.allow_course_preview %}checked{% endif %}>
+          <label>Allow Course Preview</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="section">
+      <h3>Attendance Rules</h3>
+      <div class="grid">
+        <div>
+          <label>Required Attendance %</label>
+          <input type="number" name="student_attendance_required_percent"
+            value="{{ settings.student_attendance_required_percent }}">
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTO BLOCK -->
+    <div class="section">
+      <h3>Auto Block</h3>
+      <div class="grid">
+        <div>
+          <label>Inactive Days (Auto Block)</label>
+          <input type="number" name="auto_block_student_inactive_days"
+            value="{{ settings.auto_block_student_inactive_days }}">
+        </div>
+      </div>
+    </div>
+
+    <button type="submit">💾 Save Student Settings</button>
+  </form>
+</div>
+
+{% endblock %}

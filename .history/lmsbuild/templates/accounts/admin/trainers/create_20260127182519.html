@@ -1,0 +1,94 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .form-wrapper {
+        background: #f0f2f5;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .form-card {
+        background: #fff;
+        padding: 40px;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .form-header { text-align: center; margin-bottom: 30px; }
+    .form-header h2 { margin: 0; color: #333; }
+    .form-header p { color: #888; font-size: 14px; margin-top: 5px; }
+
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+    input:focus { border-color: #4361ee; outline: none; }
+
+    .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+    .btn {
+        flex: 1; padding: 12px; border: none; border-radius: 8px;
+        font-size: 16px; font-weight: 600; cursor: pointer;
+        text-align: center; text-decoration: none; transition: 0.2s;
+    }
+    .btn-primary { background: #22c55e; color: white; }
+    .btn-primary:hover { background: #16a34a; transform: translateY(-2px); }
+    .btn-secondary { background: #e9ecef; color: #495057; }
+    .btn-secondary:hover { background: #dee2e6; }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>➕ Add New Trainer</h2>
+            <p>Enter details to onboard a new trainer</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- USER DETAILS -->
+            <div class="form-group">
+                <label>Username</label>
+                <input name="username" placeholder="johndoe" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input name="password" type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input name="mobile" placeholder="+91 99999 99999" required>
+            </div>
+
+            <!-- TRAINER PROFILE DETAILS -->
+
+                <div class="form-group">
+                    <label>Domain / Subject</label>
+                    <input name="subject" placeholder="Python / Java / Web Dev" required>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'trainer_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Trainer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

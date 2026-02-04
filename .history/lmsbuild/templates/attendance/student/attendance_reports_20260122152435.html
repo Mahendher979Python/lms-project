@@ -1,0 +1,60 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.card{
+  background:#fff;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+.filter{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.filter input{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:12px;
+  text-align:center;
+  border-bottom:1px solid #e5e7eb;
+}
+th{background:#f1f5f9}
+</style>
+
+<div class="card">
+  <h2>📊 My Attendance Report</h2>
+
+  <form method="get" class="filter">
+    <input type="month" name="month" required>
+    <button class="btn edit">Generate</button>
+  </form>
+
+  {% if data %}
+  <table>
+    <tr>
+      <th>Month</th>
+      <th>Total Days Present</th>
+    </tr>
+    {% for d in data %}
+    <tr>
+      <td>{{ request.GET.month }}</td>
+      <td>{{ d.total_days }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p style="color:#64748b;">Select a month to view report</p>
+  {% endif %}
+</div>
+
+{% endblock %}

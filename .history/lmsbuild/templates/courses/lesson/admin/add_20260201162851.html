@@ -1,0 +1,16 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>Add Lesson – {{ course.title }}</h3>
+
+<form method="post">
+{% csrf_token %}
+
+<input class="form-control mb-2" name="title" placeholder="Lesson Title" required>
+<textarea class="form-control mb-2" name="description" placeholder="Description"></textarea>
+
+<button class="btn btn-success">Save</button>
+
+</form>
+
+{% endblock %}

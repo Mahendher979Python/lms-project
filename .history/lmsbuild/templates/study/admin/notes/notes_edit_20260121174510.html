@@ -1,0 +1,47 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>✏ Edit Note (Admin)</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>
+    Title<br>
+    <input type="text" name="title" value="{{ note.title }}" required>
+  </p>
+
+  <p>
+    Description<br>
+    <textarea name="description">{{ note.description }}</textarea>
+  </p>
+
+  <p>
+    Replace File<br>
+    <input type="file" name="file">
+  </p>
+
+  <h4>Assign To</h4>
+
+  {% for user in trainers %}
+    <label>
+      <input type="checkbox" name="assigned_to" value="{{ user.id }}"
+        {% if user in note.assigned_to.all %}checked{% endif %}>
+      {{ user.username }} (Trainer)
+    </label><br>
+  {% endfor %}
+
+  {% for user in students %}
+    <label>
+      <input type="checkbox" name="assigned_to" value="{{ user.id }}"
+        {% if user in note.assigned_to.all %}checked{% endif %}>
+      {{ user.username }} (Student)
+    </label><br>
+  {% endfor %}
+
+  <br>
+  <button type="submit">Update</button>
+  <a href="{% url 'admin_notes_list' %}">Back</a>
+</form>
+
+{% endblock %}

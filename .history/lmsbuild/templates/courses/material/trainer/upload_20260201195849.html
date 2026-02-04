@@ -1,0 +1,16 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>Upload – {{ course.title }}</h3>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input class="form-control mb-2" name="title" placeholder="Title">
+<input type="file" name="file" class="form-control mb-2">
+
+<button class="btn btn-success">Upload</button>
+
+</form>
+
+{% endblock %}

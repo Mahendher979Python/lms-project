@@ -1,0 +1,53 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.form-box{
+    max-width:500px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 6px 15px rgba(0,0,0,.1)
+}
+input,button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:6px;
+    border:1px solid #ddd
+}
+button{
+    background:#2563eb;
+    color:white;
+    border:none
+}
+video{margin-top:10px;border-radius:8px}
+</style>
+
+<div class="form-box">
+
+<h2>Edit Material</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label>
+<input type="text" name="title" value="{{material.title}}" required>
+
+<label>Replace File (optional)</label>
+<input type="file" name="file">
+
+{% if material.file %}
+<video width="100%" controls>
+<source src="{{material.file.url}}">
+</video>
+{% endif %}
+
+<button type="submit">Update</button>
+
+</form>
+
+</div>
+
+{% endblock %}

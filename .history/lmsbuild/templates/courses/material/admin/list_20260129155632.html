@@ -1,0 +1,134 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<style>
+    :root {
+        --neon-cyan: #00f3ff;
+        --neon-lime: #ccff00;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(10, 25, 30) 0%, rgb(5, 10, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: white;
+    }
+
+    .container { padding: 30px; }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: var(--glass-border);
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        margin-bottom: 30px;
+    }
+
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+    .page-title {
+        font-size: 2rem; font-weight: 700;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-lime));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .btn-upload {
+        background: linear-gradient(135deg, var(--neon-lime), #a3cc00);
+        color: #000 !important; padding: 12px 25px; border-radius: 50px;
+        text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 10px;
+        transition: 0.3s; box-shadow: 0 0 15px rgba(204, 255, 0, 0.2);
+    }
+    .btn-upload:hover { transform: translateY(-3px); box-shadow: 0 0 25px var(--neon-lime); }
+
+    /* Material Grid */
+    .material-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+    }
+
+    .file-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 15px; padding: 20px;
+        transition: 0.3s ease; position: relative; overflow: hidden;
+    }
+    .file-card:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--neon-cyan);
+        transform: translateY(-5px);
+    }
+
+    .file-icon { font-size: 2.5rem; color: var(--neon-cyan); margin-bottom: 15px; }
+    
+    .file-title { font-weight: 600; margin-bottom: 5px; display: block; }
+    
+    .download-link {
+        color: var(--neon-lime); text-decoration: none; font-size: 0.9rem;
+        display: flex; align-items: center; gap: 5px; margin-top: 15px;
+    }
+
+    #statsChart { height: 180px; width: 100%; }
+</style>
+
+<div class="container">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <div class="glass-card">
+            <div class="header-row">
+                <div>
+                    <h2 class="page-title"><i class="fa-solid fa-folder-tree"></i> Materials Vault</h2>
+                    <p style="opacity: 0.6;">Course: {{ course.title }}</p>
+                </div>
+                <a href="{% url 'admin_material_upload' course.id %}" class="btn-upload">
+                    <i class="fas fa-cloud-upload-alt"></i> New Upload
+                </a>
+            </div>
+
+            <div class="material-grid">
+                {% for m in materials %}
+                <div class="file-card">
+                    <div class="file-icon"><i class="fa-regular fa-file-lines"></i></div>
+                    <span class="file-title">{{ m.title }}</span>
+                    <a href="{{ m.file.url }}" target="_blank" class="download-link">
+                        <i class="fa-solid fa-circle-arrow-down"></i> Download File
+                    </a>
+                </div>
+                {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; opacity: 0.5; padding: 40px;">No materials available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h4 style="color: var(--neon-cyan); margin-top: 0;">Resource Allocation</h4>
+            <div id="statsChart"></div>
+            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+            <p style="font-size: 0.8rem; opacity: 0.7;">Total Files: {{ materials.count }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    var chartDom = document.getElementById('statsChart');
+    var myChart = echarts.init(chartDom);
+    var option = {
+        tooltip: { trigger: 'item' },
+        series: [{
+            type: 'pie',
+            radius: ['60%', '80%'],
+            avoidLabelOverlap: false,
+            itemStyle: { borderRadius: 10, borderColor: '#000', borderWidth: 2 },
+            label: { show: false },
+            data: [
+                { value: {{ materials.count }}, name: 'Documents', itemStyle: {color: '#00f3ff'} }
+            ]
+        }]
+    };
+    myChart.setOption(option);
+</script>
+{% endblock %}

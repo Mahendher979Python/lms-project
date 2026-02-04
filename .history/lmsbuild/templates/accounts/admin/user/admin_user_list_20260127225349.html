@@ -1,0 +1,47 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.container{padding:30px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+thead{background:#4361ee;color:#fff}
+</style>
+
+<div class="container">
+
+<h2>👥 Trainer → Student Overview</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Trainer</th>
+<th>Subject</th>
+<th>Total Students</th>
+<th>Batches</th>
+</tr>
+</thead>
+
+<tbody>
+{% for row in data %}
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{{ row.trainer.user.username }}</td>
+<td>{{ row.trainer.subject }}</td>
+<td>{{ row.total_students }}</td>
+<td>{{ row.batches }}</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="5" style="text-align:center">No data</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

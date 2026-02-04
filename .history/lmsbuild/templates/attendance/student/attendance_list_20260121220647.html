@@ -1,0 +1,105 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.login { background: #22c55e; color: #fff; }
+.logout { background: #ef4444; color: #fff; }
+</style>
+
+<div class="box">
+  <h2>📍 Attendance Tracker</h2>
+
+  <button class="btn login" onclick="markLogin()">Login</button>
+  <button class="btn logout" onclick="markLogout()">Logout</button>
+
+  <p id="status"></p>
+
+  <iframe
+    id="map"
+    width="100%"
+    height="300"
+    style="border-radius:12px; display:none;"
+    loading="lazy">
+  </iframe>
+</div>
+
+<script>
+function markLogin() {
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    fetch("{% url 'attendance_login' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: `latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}`
+    })
+    .then(res => res.json())
+    .then(() => {
+      document.getElementById("status").innerText = "✅ Logged In";
+      document.getElementById("map").style.display = "block";
+      document.getElementById("map").src =
+        `https://maps.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=15&output=embed`;
+      location.reload();
+    });
+  });
+}
+
+function markLogout() {
+  fetch("{% url 'attendance_logout' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}"
+    }
+  })
+  .then(res => res.json())
+  .then(() => {
+    document.getElementById("status").innerText = "❌ Logged Out";
+    location.reload();
+  });
+}
+</script>
+
+<hr>
+
+<h3>📅 My Attendance Records</h3>
+
+<table width="100%">
+<tr>
+  <th>Date</th><th>Login</th><th>Logout</th><th>Status</th><th>Map</th>
+</tr>
+
+{% for att in attendance_list %}
+<tr>
+  <td>{{ att.date }}</td>
+  <td>{{ att.login_time|default:"-" }}</td>
+  <td>{{ att.logout_time|default:"-" }}</td>
+  <td>{{ att.get_status_display }}</td>
+  <td>
+    {% if att.latitude %}
+    <a target="_blank"
+       href="https://www.google.com/maps?q={{ att.latitude }},{{ att.longitude }}">
+       View
+    </a>
+    {% else %}-{% endif %}
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No records</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}

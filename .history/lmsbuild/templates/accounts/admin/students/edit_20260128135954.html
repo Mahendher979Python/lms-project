@@ -1,0 +1,240 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- Shared 6D Styles (Same as Add Page) --- */
+    :root {
+        --neon-purple: #bc13fe;
+        --neon-green: #00ff88;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-color: #ffffff;
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(15, 15, 30) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-color);
+        min-height: 100vh;
+    }
+
+    .form-wrapper {
+        min-height: 85vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .form-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 40px 50px;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 20px;
+        border: var(--glass-border);
+        box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Purple Neon for Edit Mode */
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), #ff0055);
+    }
+
+    .form-header { text-align: center; margin-bottom: 30px; }
+    .form-header h2 { font-size: 2rem; margin: 0; text-shadow: 0 0 10px rgba(188, 19, 254, 0.4); }
+
+    .form-group { margin-bottom: 25px; }
+    
+    label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+        color: rgba(255,255,255,0.8);
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px 15px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 1rem;
+        transition: 0.3s;
+        outline: none;
+    }
+
+    input:focus, select:focus {
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23bc13fe%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px top 50%;
+        background-size: 12px auto;
+    }
+
+    /* --- Custom Toggle Switch for 'Active' --- */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+        background: rgba(255,255,255,0.05);
+        padding: 10px 15px;
+        border-radius: 10px;
+        width: fit-content;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: var(--neon-green);
+        box-shadow: 0 0 10px var(--neon-green);
+    }
+
+    input:checked + .slider:before { transform: translateX(26px); }
+
+    /* --- Buttons --- */
+    .btn-group { display: flex; gap: 15px; margin-top: 35px; }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--neon-purple), #764ba2);
+        color: #fff;
+        padding: 12px;
+        border-radius: 50px;
+        border: none;
+        width: 100%;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(188, 19, 254, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px var(--neon-purple);
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: #fff;
+    }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <div class="form-header">
+            <h2><i class="fas fa-user-edit" style="color:var(--neon-purple)"></i> Edit Student</h2>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Username</label>
+                <input name="username" value="{{ student.user.username }}" placeholder="Student Name">
+            </div>
+
+            <div class="form-group">
+                <label>New Password <small style="opacity:0.5; font-weight:400">(Leave blank to keep current)</small></label>
+                <input type="password" name="password" placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+                <label>Trainer</label>
+                <select name="trainer">
+                    {% for t in trainers %}
+                    <option value="{{ t.id }}" {% if student.trainer.user.id == t.id %}selected{% endif %} style="background:#1a1a2e">
+                        {{ t.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Batch</label>
+                <select name="batch">
+                    {% for b in batches %}
+                    <option value="{{ b.id }}" {% if student.batch.id == b.id %}selected{% endif %} style="background:#1a1a2e">
+                        {{ b.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="checkbox-wrapper">
+                <label class="switch">
+                    <input type="checkbox" name="is_active" {% if student.user.is_active %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight:600; color:white;">Active Account</span>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'admin_students' %}" class="btn-secondary">Back</a>
+                <button class="btn-primary">Update Student</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

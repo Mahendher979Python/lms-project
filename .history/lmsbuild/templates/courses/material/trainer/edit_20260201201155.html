@@ -1,0 +1,44 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+<style>
+    .edit-glass {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        border: 1px solid #ffffff;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="edit-glass">
+                <h3 class="fw-800 mb-4"><i class="fa-solid fa-pen-nib me-2"></i>Edit Asset</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="small fw-bold text-muted">TITLE</label>
+                        <input type="text" name="title" value="{{ material.title }}" class="form-control border-0 bg-light py-3">
+                    </div>
+
+                    <div class="p-3 bg-light rounded-4 mb-4 d-flex align-items-center justify-content-between">
+                        <span class="small text-muted">Current file is active</span>
+                        <a href="{{ material.file.url }}" class="btn btn-sm btn-dark rounded-pill">View</a>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="small fw-bold text-muted">REPLACE FILE (OPTIONAL)</label>
+                        <input type="file" name="file" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold" style="border-radius: 15px;">
+                        UPDATE CHANGES
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

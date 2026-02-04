@@ -1,0 +1,98 @@
+<style>
+  :root {
+    --bg-color: #e0e5ec;
+    --text-main: #4a4a4a;
+    --shadow-light: #ffffff;
+    --shadow-dark: #a3b1c6;
+    --primary: #6d5dfc;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  /* The 3D Card Effect */
+  .neu-card {
+    background: var(--bg-color);
+    box-shadow: 9px 9px 16px var(--shadow-dark), 
+                -9px -9px 16px var(--shadow-light);
+    border-radius: 20px;
+    padding: 30px;
+    border: none;
+  }
+
+  /* The "Pressed" Input Effect */
+  .neu-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: var(--bg-color);
+    box-shadow: inset 6px 6px 10px var(--shadow-dark), 
+                inset -6px -6px 10px var(--shadow-light);
+    border-radius: 15px;
+    padding: 15px;
+    color: var(--text-main);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .neu-input:focus {
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), 
+                inset -4px -4px 8px var(--shadow-light);
+  }
+
+  /* 3D Button */
+  .neu-btn {
+    border: none;
+    outline: none;
+    background: var(--bg-color);
+    box-shadow: 6px 6px 10px var(--shadow-dark), 
+                -6px -6px 10px var(--shadow-light);
+    border-radius: 50px;
+    padding: 12px 25px;
+    color: var(--primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .neu-btn:active {
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), 
+                inset -4px -4px 8px var(--shadow-light);
+    transform: translateY(2px);
+  }
+
+  .neu-btn.primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 6px 6px 10px rgba(109, 93, 252, 0.3), 
+                -6px -6px 10px var(--shadow-light);
+  }
+
+  /* Layout Helpers */
+  .container-3d {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+  
+  .grid-3d {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+  }
+
+  .form-group { margin-bottom: 25px; }
+  .label-3d { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.9rem; margin-left: 10px;}
+  
+  /* Scrollable Student Box */
+  .student-box {
+    height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+  }
+</style>

@@ -1,0 +1,29 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>👨‍🏫 Trainers</h2>
+<a href="{% url 'admin_trainer_create' %}" class="btn btn-primary">+ Add Trainer</a>
+
+<table class="admin-table">
+<tr>
+  <th>Emp ID</th>
+  <th>Name</th>
+  <th>Qualification</th>
+  <th>Phone</th>
+  <th>Actions</th>
+</tr>
+
+{% for t in trainers %}
+<tr>
+  <td>{{ t.employee_id }}</td>
+  <td>{{ t.first_name }} {{ t.surname }}</td>
+  <td>{{ t.qualification }}</td>
+  <td>{{ t.phone }}</td>
+  <td>
+    <a href="{% url 'admin_trainer_edit' t.id %}">Edit</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

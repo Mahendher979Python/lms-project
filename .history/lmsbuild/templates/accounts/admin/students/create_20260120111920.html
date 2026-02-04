@@ -1,0 +1,30 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+<h2>Add Student</h2>
+
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <label>Username</label><br>
+  <input type="text" name="username" required><br><br>
+
+  <label>Password</label><br>
+  <input type="password" name="password" required><br><br>
+
+  <label>Courses</label><br>
+  <select name="courses" multiple>
+    {% for course in courses %}
+      <option value="{{ course.id }}">{{ course.title }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <button type="submit">Create Student</button>
+</form>
+
+<a href="{% url 'student_list' %}">⬅ Back</a>
+
+{% endblock %}

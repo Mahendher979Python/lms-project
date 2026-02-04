@@ -1,0 +1,25 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>🧑‍💼 Staff</h2>
+<a href="{% url 'admin_staff_create' %}" class="btn btn-primary">+ Add Staff</a>
+
+<table class="admin-table">
+<tr>
+  <th>Emp ID</th>
+  <th>Name</th>
+  <th>Designation</th>
+  <th>Phone</th>
+</tr>
+
+{% for s in staff %}
+<tr>
+  <td>{{ s.employee_id }}</td>
+  <td>{{ s.first_name }} {{ s.surname }}</td>
+  <td>{{ s.designation }}</td>
+  <td>{{ s.phone }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

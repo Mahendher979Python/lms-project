@@ -1,0 +1,130 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+    /* Reusing existing UI look */
+    .page-wrapper {
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        margin: 0;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    thead {
+        background: #4361ee;
+        color: white;
+    }
+
+    th, td {
+        padding: 14px 12px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-active {
+        background: #e6f4ea;
+        color: #1e7e34;
+    }
+
+    .badge-inactive {
+        background: #fdecea;
+        color: #b02a37;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 40px;
+        color: #777;
+    }
+</style>
+
+<div class="page-wrapper">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h2>👨‍🎓 My Students</h2>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card">
+
+        {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Roll No</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr id="student-{{ student.id }}">
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.user.username }}</td>
+                    <td>{{ student.roll_no }}</td>
+                    <td>{{ student.phone }}</td>
+                    <td>
+                        {% if student.user.is_active %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div class="empty-box">
+                <h4>No students assigned yet</h4>
+                <p>Students added by admin will appear here.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

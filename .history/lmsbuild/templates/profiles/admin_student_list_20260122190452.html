@@ -1,0 +1,31 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h2>Student Directory</h2>
+
+    <table class="table-container">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Education</th>
+                <th>College</th>
+                <th style="text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr class="table-row-3d">
+                <td><strong>{{ s.user.username }}</strong></td>
+                <td>{{ s.education }}</td>
+                <td>{{ s.college }}</td>
+                <td style="text-align: right;">
+                    <a href="{% url 'admin_profile_detail' 'student' s.id %}" class="btn-3d btn-secondary" style="padding: 5px 15px; font-size: 0.8rem;">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

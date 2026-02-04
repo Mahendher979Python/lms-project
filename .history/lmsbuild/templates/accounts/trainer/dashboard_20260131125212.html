@@ -1,0 +1,380 @@
+{% extends 'accounts/trainer/base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root {
+        --primary: #4e73df;
+        --secondary: #858796;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+        --dark: #5a5c69;
+        --light: #f8f9fc;
+        --card-shadow: 0 10px 20px rgba(0,0,0,0.08), 0 6px 6px rgba(0,0,0,0.1);
+        --hover-lift: translateY(-5px);
+    }
+
+    body {
+        background-color: #f3f4f6;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .dashboard-container {
+        padding: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* --- 1. GLASS HEADER --- */
+    .glass-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .search-box {
+        position: relative;
+    }
+    .search-box input {
+        background: #f1f3f9;
+        border: none;
+        padding: 12px 20px 12px 45px;
+        border-radius: 50px;
+        width: 300px;
+        transition: all 0.3s;
+        box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+    }
+    .search-box input:focus {
+        background: #fff;
+        width: 320px;
+        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.2);
+        outline: none;
+    }
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+    }
+
+    /* --- 2. 3D ACTION CARDS --- */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .card-3d {
+        position: relative;
+        height: 160px;
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        overflow: hidden;
+        text-decoration: none;
+        color: white;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-3d:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+    }
+
+    /* Card Gradients */
+    .bg-video { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .bg-ads { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
+    .bg-course { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+    .card-title { font-size: 1.4rem; font-weight: 700; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .card-subtitle { font-size: 0.9rem; opacity: 0.9; z-index: 2; margin-top: 5px; }
+    
+    /* Huge Background Icon */
+    .card-bg-icon {
+        position: absolute;
+        right: -10px;
+        bottom: -20px;
+        font-size: 8rem;
+        opacity: 0.15;
+        transform: rotate(-15deg);
+        z-index: 1;
+        transition: transform 0.4s;
+    }
+    .card-3d:hover .card-bg-icon { transform: rotate(0deg) scale(1.1); }
+
+    /* --- 3. CHARTS SECTION --- */
+    .charts-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .chart-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+    }
+    
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .chart-header h3 { margin: 0; color: var(--dark); font-size: 1.2rem; }
+
+    /* --- 4. FLOATING TABLE --- */
+    .table-wrapper {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+    }
+
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    
+    thead th {
+        color: #b0b3c5;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0 20px 10px 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    tbody tr {
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    tbody tr:hover {
+        transform: scale(1.01);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        z-index: 5;
+        position: relative;
+    }
+
+    td { padding: 20px; vertical-align: middle; color: #555; }
+    td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+    td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+    .status-pill {
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .pill-published { background: #d1fae5; color: #065f46; }
+    .pill-draft { background: #fee2e2; color: #991b1b; }
+
+    .action-btn {
+        width: 35px; height: 35px;
+        display: inline-flex; justify-content: center; align-items: center;
+        border-radius: 10px;
+        color: #fff;
+        margin-left: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .action-btn:hover { transform: translateY(-3px); }
+    .btn-edit { background: linear-gradient(45deg, #36b9cc, #258391); }
+    .btn-pdf { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+
+</style>
+
+<div class="dashboard-container">
+
+    <div class="glass-header">
+        <div>
+            <h2 style="margin:0; color:#4e73df;">Trainer Dashboard</h2>
+            <p style="margin:5px 0 0; color:#888;">Welcome back, {{ request.user.username|title }}</p>
+        </div>
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Search courses or students...">
+        </div>
+    </div>
+
+    <div class="cards-grid">
+        <a href="#" class="card-3d bg-video">
+            <div>
+                <div class="card-title">My Videos</div>
+                <div class="card-subtitle">Manage {{ posts.count }} Recordings</div>
+            </div>
+            <i class="fas fa-video card-bg-icon"></i>
+        </a>
+
+        <a href="#" class="card-3d bg-ads">
+            <div>
+                <div class="card-title">Promotions</div>
+                <div class="card-subtitle">Manage Ads</div>
+            </div>
+            <i class="fas fa-bullhorn card-bg-icon"></i>
+        </a>
+
+        <a href="{% url 'trainer_course_create' %}" class="card-3d bg-course">
+            <div>
+                <div class="card-title">New Course</div>
+                <div class="card-subtitle">Create Curriculum</div>
+            </div>
+            <i class="fas fa-plus-circle card-bg-icon"></i>
+        </a>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3><i class="fas fa-chart-line" style="color: #4e73df; margin-right:10px;"></i> Student Enrollment History</h3>
+            </div>
+            <canvas id="enrollmentChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3><i class="fas fa-chart-pie" style="color: #1cc88a; margin-right:10px;"></i> Course Distribution</h3>
+            </div>
+            <div style="height: 250px; display:flex; justify-content:center;">
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <div class="chart-header">
+            <h3><i class="fas fa-folder-open" style="color: #f6c23e; margin-right:10px;"></i> Recent Courses</h3>
+        </div>
+        
+        <table id="courseTable">
+            <thead>
+                <tr>
+                    <th>Course Name</th>
+                    <th>Level</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>
+                        <strong style="color:#2c3e50; font-size:1.05rem;">{{ course.title }}</strong>
+                        <div style="font-size:0.8rem; color:#aaa; margin-top:2px;">Created: {{ course.created_at|date:"M d, Y" }}</div>
+                    </td>
+                    <td>
+                        <span style="background:#f0f2f5; padding:4px 8px; border-radius:5px; font-size:0.85rem; color:#555;">
+                            {{ course.level|title }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if course.is_published %}
+                            <span class="status-pill pill-published">Live</span>
+                        {% else %}
+                            <span class="status-pill pill-draft">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="#" class="action-btn btn-pdf"><i class="fas fa-file-pdf"></i></a>
+                        <a href="{% url 'trainer_course_edit' course.id %}" class="action-btn btn-edit"><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center; padding: 40px; color: #ccc;">No courses found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // --- SEARCH FUNCTIONALITY ---
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#courseTable tbody tr");
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(value) ? "" : "none";
+        });
+    });
+
+    // --- CHART 1: Enrollment (Area with Gradient) ---
+    const ctx1 = document.getElementById('enrollmentChart').getContext('2d');
+    const gradientFill = ctx1.createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(78, 115, 223, 0.5)'); // Blue
+    gradientFill.addColorStop(1, 'rgba(78, 115, 223, 0.05)');
+
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Students Enrolled',
+                data: [10, 25, 40, 35, 60, 90], // Replace with dynamic data in production
+                borderColor: '#4e73df',
+                backgroundColor: gradientFill,
+                borderWidth: 3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#4e73df',
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.4 // Smooth curves
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { borderDash: [2, 4], color: '#eaecf4' }, beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // --- CHART 2: Course Distribution (Doughnut) ---
+    const ctx2 = document.getElementById('distributionChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Beginner', 'Intermediate', 'Advanced'],
+            datasets: [{
+                data: [5, 3, 2], // Replace with dynamic counts based on Course level
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>{{course.title}} - Materials</h2>
+
+<a href="{% url 'admin_material_upload' course.id %}">+ Upload Material</a>
+
+<hr>
+
+{% for m in materials %}
+
+<div style="background:#fff;padding:15px;margin-bottom:15px;border-radius:10px">
+
+<b>{{m.title}}</b><br><br>
+
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+<a href="{{m.file.url}}" target="_blank">View PDF</a>
+
+{% elif m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+<img src="{{m.file.url}}" width="150">
+
+{% elif m.file.url|lower|slice:"-4:" == ".mp4" %}
+<video width="300" controls>
+<source src="{{m.file.url}}">
+</video>
+
+{% else %}
+<a href="{{m.file.url}}" download>Download File</a>
+{% endif %}
+
+<br><br>
+
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}"
+onclick="return confirm('Delete?')">Delete</a>
+
+</div>
+
+{% empty %}
+<p>No materials uploaded yet.</p>
+{% endfor %}
+
+{% endblock %}

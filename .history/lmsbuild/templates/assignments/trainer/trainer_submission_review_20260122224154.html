@@ -1,0 +1,22 @@
+<h2>Submission Review</h2>
+
+<p><strong>Student:</strong> {{ submission.student }}</p>
+<p><strong>Score:</strong> {{ submission.score }}</p>
+
+<hr>
+
+{% for a in answers %}
+  <p>
+    <strong>{{ forloop.counter }}. {{ a.question.question_text }}</strong><br>
+
+    Student Answer: {{ a.selected_option }}<br>
+    Correct Answer: {{ a.question.correct_option }}<br>
+
+    {% if a.is_correct %}
+      <span style="color:green;">Correct ✅</span>
+    {% else %}
+      <span style="color:red;">Wrong ❌</span>
+    {% endif %}
+  </p>
+  <hr>
+{% endfor %}

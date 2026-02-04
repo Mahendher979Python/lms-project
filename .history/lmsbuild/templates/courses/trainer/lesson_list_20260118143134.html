@@ -1,0 +1,36 @@
+<h2>Lessons – {{ course.title }}</h2>
+
+<a href="{% url 'trainer_lesson_add' course.id %}">➕ Add Lesson</a>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Order</th>
+    <th>Title</th>
+    <th>Video</th>
+    <th>Notes</th>
+</tr>
+
+{% for lesson in lessons %}
+<tr>
+    <td>{{ lesson.order }}</td>
+    <td>{{ lesson.title }}</td>
+    <td>
+        {% if lesson.video_url %}
+            <a href="{{ lesson.video_url }}" target="_blank">Watch</a>
+        {% else %}-{% endif %}
+    </td>
+    <td>
+        {% if lesson.notes %}
+            <a href="{{ lesson.notes.url }}">Download</a>
+        {% else %}-{% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="4">No lessons yet</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'trainer_course_list' %}">⬅ Back</a>

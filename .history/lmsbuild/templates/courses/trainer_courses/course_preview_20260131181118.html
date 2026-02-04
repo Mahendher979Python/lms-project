@@ -1,0 +1,26 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+
+<style>
+.preview{background:white;padding:25px;border-radius:12px}
+.btn{padding:8px 14px;border-radius:6px;background:#2563eb;color:white;text-decoration:none;margin-right:10px}
+</style>
+
+<div class="preview">
+
+<h2>{{course.title}}</h2>
+
+<p>{{course.description}}</p>
+
+<p><b>Level:</b> {{course.level}}</p>
+<p><b>Duration:</b> {{course.duration}}</p>
+
+<br>
+
+<a class="btn" href="{% url 'trainer_materials' course.id %}">Materials</a>
+
+<a class="btn" href="{% url 'trainer_students' course.id %}">Students</a>
+
+</div>
+
+{% endblock %}

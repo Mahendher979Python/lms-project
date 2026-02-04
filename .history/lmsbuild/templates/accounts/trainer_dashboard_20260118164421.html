@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trainer Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f1f5f9;
+        }
+
+        /* ===== Layout ===== */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 240px;
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: white;
+            border-radius: 6px;
+            background: #334155;
+        }
+
+        .sidebar a:hover {
+            background: #475569;
+        }
+
+        .logout {
+            background: #dc2626 !important;
+        }
+
+        /* ===== Main Content ===== */
+        .content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #1e293b;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 14px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .card a:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <h2>Trainer Panel</h2>
+
+        <a href="{% url 'trainer_dashboard' %}">🏠 Dashboard</a>
+        <a href="{% url 'trainer_course_list' %}">📚 My Courses</a>
+        <a href="{% url 'trainer_course_create' %}">➕ Add Course</a>
+        <a href="{% url 'trainer_video_list' %}">🎥 Videos</a>
+        <a href="{% url 'trainer_ad_list' %}">🖼 Images</a>
+        <a href="{% url 'public_media_view' %}">🌐 Public Media</a>
+
+        <a href="{% url 'logout' %}" class="logout">🚪 Logout</a>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="content">
+
+        <!-- Header -->
+        <div class="header">
+            <h1>Welcome, {{ request.user.username }}</h1>
+            <p>Manage your courses, lessons, videos and images from here.</p>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>📚 Courses</h3>
+                <p>Create and manage your courses</p>
+                <a href="{% url 'trainer_course_list' %}">View Courses</a>
+            </div>
+
+            <div class="card">
+                <h3>🎥 Videos</h3>
+                <p>Upload and manage session videos</p>
+                <a href="{% url 'trainer_video_list' %}">Manage Videos</a>
+            </div>
+
+            <div class="card">
+                <h3>🖼 Images</h3>
+                <p>Upload posters & advertisements</p>
+                <a href="{% url 'trainer_ad_list' %}">Manage Images</a>
+            </div>
+
+            <div class="card">
+                <h3>📖 Lessons</h3>
+                <p>Add lessons inside your courses</p>
+                <a href="{% url 'trainer_course_list' %}">Manage Lessons</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

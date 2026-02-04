@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin | Todo List</title>
+</head>
+<body>
+
+<h2>📝 Todo List</h2>
+
+<a href="{% url 'admin_todo_add' %}">➕ Add Todo</a>
+
+<hr>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    <th>File</th>
+    <th>Assigned</th>
+    <th>Created</th>
+  </tr>
+
+  {% for todo in todos %}
+  <tr>
+    <td>{{ todo.title }}</td>
+    <td>{{ todo.description }}</td>
+    <td>
+      {% if todo.file %}
+        <a href="{{ todo.file.url }}" target="_blank">View</a>
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td>{{ todo.assigned_to.count }}</td>
+    <td>{{ todo.created_at }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5">No Todos Found</td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "trainer/base.html" %}
+{% block content %}
+
+<style>
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,.08)}
+.card h3{margin:0}
+.btn{padding:6px 12px;border-radius:6px;background:#2563eb;color:white;text-decoration:none}
+</style>
+
+<h2>My Courses</h2>
+
+<div class="grid">
+{% for c in courses %}
+<div class="card">
+<h3>{{c.title}}</h3>
+<p>{{c.level}} | {{c.duration}}</p>
+
+<a class="btn" href="{% url 'trainer_course_preview' c.id %}">Open</a>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}

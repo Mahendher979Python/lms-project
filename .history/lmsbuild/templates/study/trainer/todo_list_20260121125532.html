@@ -1,0 +1,29 @@
+{% extends "accounts/trainer/base.html" %}
+
+{% block content %}
+<h2>📝 My Todos</h2>
+
+<a href="{% url 'trainer_todo_add' %}">➕ Add Todo</a>
+
+<table border="1" cellpadding="10" style="margin-top:20px;">
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Assigned Students</th>
+    <th>Created</th>
+  </tr>
+
+  {% for todo in todos %}
+  <tr>
+    <td>{{ todo.title }}</td>
+    <td>{{ todo.description }}</td>
+    <td>{{ todo.assigned_to.count }}</td>
+    <td>{{ todo.created_at }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="4">No Todos Created</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

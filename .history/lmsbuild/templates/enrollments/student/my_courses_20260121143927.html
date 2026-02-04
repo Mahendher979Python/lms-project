@@ -1,0 +1,92 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.course-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:30px;
+}
+
+.folder{
+  background:#facc15;
+  height:200px;
+  border-radius:12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  font-weight:600;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+</style>
+
+<h2>📚 My Courses</h2>
+
+<div class="course-grid">
+{% for course in courses %}
+  <div class="folder"
+       onclick="openCourse('{{ course.id }}','{{ course.title }}')">
+    {{ course.title }}
+  </div>
+{% empty %}
+  <p>No courses enrolled</p>
+{% endfor %}
+</div>
+
+
+<!-- MODAL -->
+<div id="courseModal" style="display:none;
+position:fixed;inset:0;background:rgba(0,0,0,.6);
+align-items:center;justify-content:center;">
+
+  <div style="background:#fff;width:420px;
+  border-radius:12px;padding:20px;position:relative">
+
+    <span onclick="closeModal()"
+          style="position:absolute;right:15px;
+          top:10px;font-size:24px;cursor:pointer">×</span>
+
+    <h3 id="modalTitle"></h3>
+
+    <ul id="topicList"></ul>
+
+    <a id="downloadBtn"
+       style="display:block;margin-top:15px;
+       background:#16a34a;color:#fff;
+       padding:10px;text-align:center;
+       border-radius:6px;text-decoration:none">
+       📥 Download Materials
+    </a>
+  </div>
+</div>
+
+<script>
+function openCourse(id,title){
+  document.getElementById("modalTitle").innerText = title;
+  document.getElementById("courseModal").style.display = "flex";
+
+  fetch(`/courses/student/course/${id}/topics/`)
+    .then(res=>res.json())
+    .then(data=>{
+      let list=document.getElementById("topicList");
+      list.innerHTML="";
+      data.topics.forEach(t=>{
+        list.innerHTML+=`
+          <li style="padding:8px 0">
+            📘 ${t.title}
+            ${t.video ? `<a href="${t.video}" target="_blank">▶</a>` : ""}
+          </li>`;
+      });
+      document.getElementById("downloadBtn").href =
+        `/courses/student/course/${id}/download/`;
+    });
+}
+
+function closeModal(){
+  document.getElementById("courseModal").style.display="none";
+}
+</script>
+
+{% endblock %}

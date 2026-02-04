@@ -1,0 +1,28 @@
+/* Find the .menu a CSS in your <style> tag and replace it with this: */
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 8px; /* Rounded corners */
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother transition */
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Enhanced Hover Effect */
+.menu a:hover, .menu a.active {
+    background: rgba(56, 189, 248, 0.1); /* Subtle background tint */
+    color: var(--accent);
+    transform: translateX(8px); /* Slides to the right */
+    box-shadow: -4px 0 0 var(--accent); /* Adds a colored line on the left */
+}
+
+/* Optional: Add a subtle glow on hover */
+.menu a:hover i {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}

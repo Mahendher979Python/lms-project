@@ -1,0 +1,136 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+  :root {
+    --trainer-bg: #eff6ff;
+    --trainer-shadow: 10px 10px 25px #dbeafe, -10px -10px 25px #ffffff;
+    --trainer-inset: inset 5px 5px 10px #dbeafe, inset -5px -5px 10px #ffffff;
+    --accent: #2563eb;
+  }
+
+  body { background: var(--trainer-bg); font-family: 'Segoe UI', sans-serif; }
+
+  .trainer-card {
+    max-width: 500px;
+    margin: 50px auto;
+    background: var(--trainer-bg);
+    border-radius: 24px;
+    box-shadow: var(--trainer-shadow);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--trainer-bg);
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  h2 { margin: 0; color: #1e3a8a; font-size: 1.5rem; letter-spacing: -0.5px; }
+
+  .filter-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  input[type="month"] {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 8px 15px;
+    border-radius: 8px;
+    color: #1e40af;
+    font-weight: 600;
+  }
+
+  .btn-view {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  }
+
+  /* Data Display Section */
+  .data-body { padding: 40px; display: flex; flex-direction: column; align-items: center; }
+
+  .stat-box {
+    width: 100%;
+    background: var(--trainer-bg);
+    box-shadow: var(--trainer-inset);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+  }
+
+  .big-number {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    text-shadow: 2px 2px 0px #fff;
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .label {
+    display: block;
+    margin-top: 10px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+
+  .month-tag {
+    margin-top: 20px;
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 6px 15px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+</style>
+
+<div class="trainer-card">
+  <div class="card-header">
+    <h2>👨‍🏫 Trainer Monthly Report</h2>
+    <form method="get" class="filter-row">
+      <input type="month" name="month" required value="{{ request.GET.month }}">
+      <button class="btn-view">View</button>
+    </form>
+  </div>
+
+  <div class="data-body">
+    {% if data %}
+      {% for d in data %}
+      <div class="stat-box">
+        <div class="big-number">{{ d.total_days }}</div>
+        <span class="label">Days Worked</span>
+      </div>
+      <div class="month-tag">{{ request.GET.month }}</div>
+      {% endfor %}
+    {% else %}
+      <div style="color: #94a3b8; font-style: italic;">
+        Select a month to view your workload statistics.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

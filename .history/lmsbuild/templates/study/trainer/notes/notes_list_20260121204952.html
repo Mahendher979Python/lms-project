@@ -1,0 +1,174 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+/* ===== PAGE SETUP ===== */
+.page-wrap {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  perspective: 1000px;
+}
+
+/* ===== 3D CARD ===== */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 
+    0 20px 50px rgba(0,0,0,0.1),
+    0 1px 3px rgba(0,0,0,0.05);
+  transform: rotateX(0.5deg);
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px dashed #e5e7eb;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1e293b;
+  text-shadow: 2px 2px 0px #e2e8f0;
+  font-weight: 800;
+}
+
+/* ===== 3D BUTTONS ===== */
+.btn-3d {
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: all 0.1s;
+}
+
+.btn-add {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 5px 0 #4338ca;
+}
+.btn-add:hover { background: #5558e6; transform: translateY(-2px); box-shadow: 0 7px 0 #4338ca; }
+.btn-add:active { transform: translateY(5px); box-shadow: none; }
+
+.btn-edit {
+  background: #f1f5f9;
+  color: #475569;
+  box-shadow: 0 4px 0 #cbd5e1;
+  border: 1px solid #e2e8f0;
+}
+.btn-edit:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 6px 0 #cbd5e1; color:#1e293b; }
+.btn-edit:active { transform: translateY(4px); box-shadow: none; }
+
+/* ===== 3D FLOATING TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px; /* Vertical gap between 3D rows */
+}
+
+th {
+  text-align: left;
+  padding: 0 20px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Row Styling */
+tbody tr {
+  background: #ffffff;
+  /* Deep shadow for floating effect */
+  box-shadow: 0 5px 0 #e2e8f0, 0 10px 20px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+tbody tr:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 0 #cbd5e1, 0 15px 30px rgba(0,0,0,0.1);
+  z-index: 10;
+  position: relative;
+}
+
+td {
+  padding: 20px;
+  color: #334155;
+  border-top: 1px solid #f8fafc;
+}
+
+td:first-child { border-radius: 12px 0 0 12px; border-left: 1px solid #f8fafc; font-weight: 600; color: #0f172a; }
+td:last-child { border-radius: 0 12px 12px 0; border-right: 1px solid #f8fafc; }
+
+/* Empty state styling */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+}
+</style>
+
+<div class="page-wrap">
+  <div class="card">
+    
+    <div class="header">
+      <h2>📘 My Notes</h2>
+      <a href="{% url 'trainer_notes_add' %}" class="btn-3d btn-add">➕ Add New Note</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Assigned Users</th>
+          <th>Date Created</th>
+          <th style="text-align:right">Action</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {% for note in notes %}
+        <tr>
+          <td>{{ note.title }}</td>
+          <td>
+            <span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-weight:bold; font-size:0.85rem;">
+              👥 {{ note.assigned_to.count }}
+            </span>
+          </td>
+          <td style="color:#64748b;">
+            {{ note.created_at|date:"d M Y" }}
+          </td>
+          <td style="text-align:right">
+            <a href="{% url 'trainer_notes_edit' note.id %}" class="btn-3d btn-edit">Edit Note</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="padding:0; box-shadow:none; background:none;">
+            <div class="empty-state">
+              You haven't added any notes yet. Click the button above to start!
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

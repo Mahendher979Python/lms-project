@@ -1,0 +1,140 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    /* Use a responsive grid: stacks on mobile, side-by-side on desktop */
+    .media-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    @media (min-width: 1024px) {
+        .media-grid {
+            grid-template-columns: 1fr 400px;
+        }
+    }
+
+    .card {
+        background: rgba(255, 255, 255, .05);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+        backdrop-filter: blur(10px); /* Adds that nice frosted glass look */
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, .2);
+        background: #0f172a;
+        color: white;
+        margin-bottom: 15px;
+        outline: none;
+    }
+
+    input:focus { border-color: #38f9d7; }
+
+    .upload-btn {
+        background: linear-gradient(135deg, #38f9d7, #4facfe);
+        border: none;
+        padding: 14px;
+        border-radius: 30px;
+        width: 100%;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .upload-btn:hover {
+        box-shadow: 0 0 15px rgba(56, 249, 215, 0.4);
+        transform: translateY(-2px);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tbody tr:hover { background: rgba(255, 255, 255, .03); }
+
+    .file-box {
+        display: block;
+        border: 2px dashed rgba(255, 255, 255, .3);
+        padding: 30px;
+        text-align: center;
+        border-radius: 15px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        transition: border-color 0.3s;
+    }
+
+    .file-box:hover { border-color: #38f9d7; }
+    #file-name { display: block; margin-top: 10px; font-size: 0.85em; color: #38f9d7; }
+</style>
+
+<div class="media-grid">
+    <div class="card">
+        <h2>📂 Media Library</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Course</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in materials %}
+                    <tr>
+                        <td><strong>{{m.title}}</strong></td>
+                        <td>{{m.course.title}}</td>
+                        <td>{{m.created_at|date:"d M Y"}}</td>
+                        <td>
+                            <a href="{{m.file.url}}" target="_blank" style="text-decoration: none; color: #4facfe;">View ⬇</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">No materials uploaded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>⬆ Upload Media</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input name="title" placeholder="Material Title" required>
+            
+            <select name="course" required>
+                <option value="">Select Course</option>
+                {% for c in courses %}
+                <option value="{{c.id}}">{{c.title}}</option>
+                {% endfor %}
+            </select>
+
+            <label class="file-box">
+                <span id="label-text">Click to choose or drag file</span>
+                <span id="file-name"></span>
+                <input type="file" hidden name="file" id="file-input" required>
+            </label>
+
+            <button type="submit" class="upload-btn">Upload to Library</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Show the file name once selected
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : "";
+        document.getElementById('file-name').textContent = fileName;
+        if(fileName) {
+            document.getElementById('label-text').textContent = "File Selected:";
+        }
+    });
+</script>
+
+{% endblock %}

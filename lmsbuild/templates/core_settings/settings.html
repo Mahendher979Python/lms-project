@@ -1,0 +1,416 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
+    --border: #e2e8f0;
+    --success: #22c55e;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.3);
+  }
+
+  body { background-color: var(--bg-light); font-family: 'Inter', system-ui, sans-serif; }
+
+  /* --- Main Container --- */
+  .settings-container {
+    max-width: 900px;
+    margin: 40px auto;
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-area {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .header-area h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -1px;
+    margin: 0;
+  }
+
+  /* --- Card Styling --- */
+  .settings-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .section {
+    padding: 30px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .section:hover { background: #fafafa; }
+  .section:last-child { border-bottom: none; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+  .section-icon {
+    font-size: 1.5rem;
+    background: #eef2ff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+
+  /* --- Grid Layout --- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  /* --- Inputs & Selects --- */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-sub);
+  }
+
+  input[type="text"], input[type="number"], select {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    transform: translateY(-1px);
+  }
+
+  /* --- iOS Style Toggle Switch --- */
+  .toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+  
+  /* State for disabled toggles (JS controlled) */
+  .toggle-wrapper.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    background: #f1f5f9;
+  }
+
+  .toggle-label {
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 1rem;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+  }
+
+  .switch input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input:checked + .slider { background-color: var(--success); }
+  input:checked + .slider:before { transform: translateX(22px); }
+  input:focus + .slider { box-shadow: 0 0 1px var(--success); }
+
+  /* --- Save Button --- */
+  .action-bar {
+    position: sticky;
+    bottom: 20px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 100;
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    padding: 14px 40px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: transform 0.2s, width 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-save:hover { transform: translateY(-2px); }
+  .btn-save:active { transform: translateY(0); }
+
+  /* Loading Spinner inside button */
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+
+<div class="settings-container">
+  
+  <div class="header-area">
+    <h2>⚙️ System Configuration</h2>
+  </div>
+
+  <form method="post" id="settingsForm">
+    {% csrf_token %}
+    
+    <div class="settings-card">
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🌐</div>
+          <h3 class="section-title">General Settings</h3>
+        </div>
+        
+        <div class="grid">
+          <div class="input-group">
+            <label>Site Name</label>
+            <input type="text" name="site_name" value="{{ settings.site_name }}" placeholder="e.g. My LMS Academy">
+          </div>
+
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Maintenance Mode</span>
+            <label class="switch">
+              <input type="checkbox" name="maintenance_mode" {% if settings.maintenance_mode %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <h3 class="section-title">User Management</h3>
+        </div>
+
+        <div class="grid">
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Allow Self Registration</span>
+            <label class="switch">
+              <input type="checkbox" name="allow_self_registration" {% if settings.allow_self_registration %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label>Default User Role</label>
+            <select name="default_user_role">
+              <option value="student" {% if settings.default_user_role == "student" %}selected{% endif %}>🎓 Student</option>
+              <option value="trainer" {% if settings.default_user_role == "trainer" %}selected{% endif %}>👨‍🏫 Trainer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">⏱</div>
+          <h3 class="section-title">Attendance Controls</h3>
+        </div>
+
+        <div class="grid">
+          <div class="toggle-wrapper" style="grid-column: 1 / -1; background: #eef2ff; border-color: #c7d2fe;">
+            <span class="toggle-label" style="color: var(--primary);">Enable Attendance Module</span>
+            <label class="switch">
+              <input type="checkbox" id="masterAttendanceToggle" name="attendance_enabled" {% if settings.attendance_enabled %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="attendance-dependent">
+            <div class="grid">
+              <div class="toggle-wrapper">
+                <span class="toggle-label">GPS Geofencing Required</span>
+                <label class="switch">
+                  <input type="checkbox" name="gps_required" {% if settings.gps_required %}checked{% endif %}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="input-group">
+                <label>Geofence Radius (Meters)</label>
+                <input type="number" name="gps_radius_meters" value="{{ settings.gps_radius_meters }}">
+              </div>
+
+              <div class="input-group">
+                <label>Half-Day Threshold (Hours)</label>
+                <input type="number" step="0.5" name="half_day_hours" value="{{ settings.half_day_hours }}">
+              </div>
+
+              <div class="toggle-wrapper">
+                <span class="toggle-label">Require Admin Approval</span>
+                <label class="switch">
+                  <input type="checkbox" name="attendance_approval_required" {% if settings.attendance_approval_required %}checked{% endif %}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📊</div>
+          <h3 class="section-title">Reporting</h3>
+        </div>
+
+        <div class="grid">
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Enable Analytics Dashboard</span>
+            <label class="switch">
+              <input type="checkbox" name="reports_enabled" {% if settings.reports_enabled %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Allow Excel Export</span>
+            <label class="switch">
+              <input type="checkbox" name="allow_excel_export" {% if settings.allow_excel_export %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-bar">
+      <button type="submit" class="btn-save" id="saveButton">
+        <div class="spinner"></div>
+        <span class="btn-text">Save Changes</span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  
+  // 1. Dependency Logic for Attendance
+  const masterToggle = document.getElementById('masterAttendanceToggle');
+  const dependentFields = document.querySelectorAll('.attendance-dependent input, .attendance-dependent .toggle-wrapper');
+
+  function toggleDependencies() {
+    const isEnabled = masterToggle.checked;
+    dependentFields.forEach(field => {
+      if(field.classList.contains('toggle-wrapper')) {
+        // Handle Toggle Wrappers styling
+        if(isEnabled) {
+          field.classList.remove('disabled');
+        } else {
+          field.classList.add('disabled');
+        }
+      } else {
+        // Handle Inputs
+        field.disabled = !isEnabled;
+        field.style.opacity = isEnabled ? '1' : '0.5';
+      }
+    });
+  }
+
+  // Run on load and on change
+  toggleDependencies();
+  masterToggle.addEventListener('change', toggleDependencies);
+
+
+  // 2. Save Button Animation
+  const form = document.getElementById('settingsForm');
+  const btn = document.getElementById('saveButton');
+  const spinner = btn.querySelector('.spinner');
+  const text = btn.querySelector('.btn-text');
+
+  form.addEventListener('submit', function() {
+    // Show loading state
+    btn.style.width = "60px"; // Shrink to circle
+    text.style.display = "none";
+    spinner.style.display = "block";
+    
+    // Allow form submission to proceed...
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+<h2>Admin – Course List</h2>
+
+<a href="/admin/courses/course/add/">➕ Add Course (Admin Panel)</a>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Title</th>
+    <th>Level</th>
+    <th>Trainer</th>
+    <th>Status</th>
+    <th>Created</th>
+</tr>
+
+{% for course in courses %}
+<tr>
+    <td>{{ course.title }}</td>
+    <td>{{ course.level }}</td>
+    <td>{{ course.trainer }}</td>
+    <td>
+        {% if course.is_published %} Published {% else %} Draft {% endif %}
+    </td>
+    <td>{{ course.created_at }}</td>
+</tr>
+{% endfor %}
+</table>

@@ -1,0 +1,275 @@
+{% extends 'accounts/trainer/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ============ LAYOUT & SCROLL ============ */
+    .dashboard-container {
+        height: 100vh;
+        overflow-y: auto; /* Scroll only inside content */
+        background: #f0f4f8;
+        font-family: 'Segoe UI', sans-serif;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+
+    /* ============ TOP HEADER (Welcome + Search) ============ */
+    .top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: #fff;
+        padding: 15px 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .welcome-text h2 { margin: 0; color: #2c3e50; font-size: 24px; }
+    .welcome-text p { margin: 5px 0 0; color: #7f8c8d; font-size: 14px; }
+
+    .search-wrapper {
+        position: relative;
+        width: 300px;
+    }
+    .search-wrapper input {
+        width: 100%;
+        padding: 12px 20px 12px 45px;
+        border-radius: 30px;
+        border: 2px solid #eef2f7;
+        background: #f8faff;
+        outline: none;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+    .search-wrapper input:focus {
+        border-color: #3498db;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+    }
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #bdc3c7;
+    }
+
+    /* ============ QUICK ACTION CARDS ============ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card {
+        padding: 25px;
+        border-radius: 16px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 140px;
+        text-decoration: none;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    /* Gradients for Cards */
+    .card-video { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .card-ads { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #fff; } /* Adjusted for contrast */
+    .card-ads { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); } /* Better Pink/Red */
+    .card-course { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #0f5132; } 
+    .card-course { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+    .stat-card h3 { margin: 0; font-size: 22px; font-weight: 700; z-index: 1; }
+    .stat-card p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; z-index: 1; }
+    
+    .card-icon {
+        position: absolute;
+        right: 15px;
+        bottom: 10px;
+        font-size: 80px;
+        opacity: 0.2;
+        transform: rotate(-10deg);
+    }
+
+    .btn-arrow {
+        align-self: flex-start;
+        background: rgba(255,255,255,0.25);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-top: 15px;
+        backdrop-filter: blur(5px);
+        font-weight: bold;
+    }
+
+    /* ============ COURSES TABLE SECTION ============ */
+    .table-container {
+        background: #fff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .section-header h3 { margin: 0; color: #34495e; font-size: 20px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; color: #95a5a6; font-size: 13px; padding: 15px; border-bottom: 1px solid #f0f0f0; }
+    td { padding: 15px; border-bottom: 1px solid #f4f6f8; color: #2c3e50; font-size: 15px; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+
+    .course-info h4 { margin: 0 0 4px; font-size: 16px; color: #2c3e50; }
+    .course-info span { font-size: 12px; color: #7f8c8d; background: #ecf0f1; padding: 3px 8px; border-radius: 4px; }
+
+    /* Status Badges */
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .published { background: #d4edda; color: #155724; }
+    .draft { background: #f8d7da; color: #721c24; }
+
+    /* Action Buttons */
+    .action-btn { 
+        text-decoration: none; 
+        width: 35px; 
+        height: 35px; 
+        display: inline-flex; 
+        justify-content: center; 
+        align-items: center; 
+        border-radius: 8px; 
+        transition: 0.2s; 
+        font-size: 16px;
+    }
+    .btn-edit { background: #e3f2fd; color: #2196f3; }
+    .btn-edit:hover { background: #2196f3; color: white; }
+    .btn-pdf { background: #fff3e0; color: #ff9800; margin-right: 5px; }
+    .btn-pdf:hover { background: #ff9800; color: white; }
+
+</style>
+
+<div class="dashboard-container">
+    
+    <div class="top-header">
+        <div class="welcome-text">
+            <h2>Hello, {{ request.user.username|title }}! 👋</h2>
+            <p>Here's what's happening with your courses today.</p>
+        </div>
+        
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search courses...">
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <a href="{% url 'trainer_video_list' %}" class="stat-card card-video">
+            <div>
+                <h3>My Videos</h3>
+                <p>Manage Recordings</p>
+                <div class="btn-arrow">View All ➔</div>
+            </div>
+            <div class="card-icon">🎥</div>
+        </a>
+
+        <a href="{% url 'trainer_ad_list' %}" class="stat-card card-ads">
+            <div>
+                <h3>Advertisements</h3>
+                <p>Posters & Promos</p>
+                <div class="btn-arrow">Manage ➔</div>
+            </div>
+            <div class="card-icon">📢</div>
+        </a>
+
+        <a href="{% url 'trainer_course_create' %}" class="stat-card card-course">
+            <div>
+                <h3>New Course</h3>
+                <p>Create Curriculum</p>
+                <div class="btn-arrow">Create +</div>
+            </div>
+            <div class="card-icon">🎓</div>
+        </a>
+    </div>
+
+    <div class="table-container">
+        <div class="section-header">
+            <h3>📂 Recent Courses</h3>
+        </div>
+
+        <table id="courseTable">
+            <thead>
+                <tr>
+                    <th>COURSE NAME</th>
+                    <th>LEVEL & DURATION</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>
+                        <div class="course-info">
+                            <h4>{{ course.title }}</h4>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="course-info">
+                            <span>{{ course.level|title }}</span>
+                            <span style="margin-left:5px;">⏱ {{ course.duration }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if course.is_published %}
+                            <span class="status-badge published">Published</span>
+                        {% else %}
+                            <span class="status-badge draft">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="#" class="action-btn btn-pdf" title="View PDF">📄</a>
+                        <a href="{% url 'trainer_course_edit' course.id %}" class="action-btn btn-edit" title="Edit Course">✏</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center; padding: 40px; color: #95a5a6;">
+                        <p>No courses found. Start by creating one!</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // Search Functionality
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#courseTable tbody tr");
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(value) ? "" : "none";
+        });
+    });
+</script>
+
+{% endblock %}

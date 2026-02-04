@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  /* ================= GLOBALS ================= */
+  :root {
+    --primary: #2563eb;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --accent: #f59e0b; /* Amber for stars */
+  }
+  
+  /* ================= HERO SECTION (Upgraded) ================= */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 100px 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Animated Background Circle */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, rgba(0,0,0,0) 70%);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .hero-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    position: relative;
+    z-index: 1;
+    padding: 0 20px;
+  }
+
+  .hero-text { width: 50%; }
+  
+  .hero-text h1 {
+    font-size: 48px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-weight: 800;
+  }
+  
+  .hero-text span { color: var(--primary); }
+
+  .hero-text p {
+    font-size: 18px;
+    color: #cbd5e1;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+
+  /* Search Bar in Hero */
+  .hero-search {
+    background: #fff;
+    padding: 8px;
+    border-radius: 50px;
+    display: flex;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 450px;
+    margin-bottom: 25px;
+  }
+  
+  .hero-search input {
+    border: none;
+    outline: none;
+    padding: 12px 20px;
+    flex: 1;
+    border-radius: 50px;
+    font-size: 16px;
+  }
+  
+  .hero-search button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+  
+  .hero-search button:hover { background: #1d4ed8; }
+
+  .hero-img { width: 50%; perspective: 1000px; }
+  .hero-img img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: rotateY(-5deg);
+    transition: transform 0.5s ease;
+  }
+  .hero-img:hover img { transform: rotateY(0deg) scale(1.02); }
+
+  /* ================= STATS SECTION ================= */
+  .stats-section {
+    background: #fff;
+    padding: 40px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 2;
+    margin-top: -50px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+  }
+
+  .stat-item h3 { font-size: 32px; color: var(--primary); margin-bottom: 5px; }
+  .stat-item p { color: #64748b; font-weight: 500; }
+
+  /* ================= COURSES SECTION ================= */
+  .section-title {
+    text-align: center;
+    margin: 80px 0 50px;
+  }
+  .section-title h2 { font-size: 36px; color: var(--dark); margin-bottom: 10px; }
+  .section-title p { color: #64748b; }
+
+  .course-grid {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+  }
+
+  .course-card {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .course-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  }
+
+  .course-thumb {
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+  .course-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  
+  .badge-cat {
+    position: absolute;
+    top: 15px; left: 15px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .course-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+  
+  .course-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+  .rating { color: var(--accent); font-weight: bold; }
+
+  .course-content h3 { font-size: 20px; margin-bottom: 10px; color: var(--dark); }
+  
+  .instructor-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .instructor-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+  .price { margin-left: auto; font-size: 18px; font-weight: 700; color: var(--primary); }
+
+  /* ================= FEATURES (RGB Style Kept) ================= */
+  .features-container {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  /* Using your existing nice RGB styles here just cleaning layout */
+  .feature-card {
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-5px); }
+  .feature-icon { width: 60px; height: 60px; margin-bottom: 15px; }
+
+  /* ================= TESTIMONIALS ================= */
+  .testimonials { background: #f1f5f9; padding: 80px 0; margin-top: 80px; }
+  
+  .testimonial-grid {
+    max-width: 1000px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+  }
+
+  .testi-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    position: relative;
+  }
+  .quote-icon { font-size: 40px; color: #cbd5e1; position: absolute; top: 10px; right: 20px; }
+  .testi-text { font-style: italic; color: #475569; margin-bottom: 20px; }
+  .student-info { display: flex; align-items: center; gap: 15px; }
+  .student-pic { width: 50px; height: 50px; border-radius: 50%; }
+
+  /* ================= CTA SECTION ================= */
+  .cta-section {
+    background: var(--primary);
+    padding: 60px 20px;
+    text-align: center;
+    color: #fff;
+    border-radius: 20px;
+    max-width: 1200px;
+    margin: 80px auto;
+  }
+  .cta-section h2 { margin-bottom: 15px; }
+  .btn-white {
+    background: #fff; color: var(--primary);
+    padding: 12px 30px; border-radius: 50px;
+    text-decoration: none; font-weight: 700;
+    display: inline-block; margin-top: 20px;
+    transition: 0.3s;
+  }
+  .btn-white:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+  /* Responsive Fixes */
+  @media (max-width: 768px) {
+    .hero-container { flex-direction: column; text-align: center; }
+    .hero-text, .hero-img { width: 100%; }
+    .hero-search { margin: 0 auto 25px; }
+    .stats-section { flex-direction: column; gap: 20px; width: 90%; }
+    .features-container { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-container">
+    <div class="hero-text">
+      <h1>Unlock Your Potential with <span>LMS Platform</span></h1>
+      <p>Join thousands of learners worldwide. Master new skills in Development, Design, and Business from industry experts.</p>
+      
+      <form action="#" method="get" class="hero-search">
+        <input type="text" placeholder="What do you want to learn? (e.g. Python)">
+        <button type="submit">Search</button>
+      </form>
+
+      <div class="hero-btns">
+        <a href="{% url 'login' %}" class="btn primary" style="background:var(--accent); margin-right:10px; color:#fff; padding:10px 25px; border-radius:50px; text-decoration:none;">Get Started</a>
+        <a href="#" style="color:#fff; text-decoration:underline;">View All Courses</a>
+      </div>
+    </div>
+
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="LMS Learning">
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stat-item">
+    <h3>10k+</h3>
+    <p>Active Students</p>
+  </div>
+  <div class="stat-item">
+    <h3>500+</h3>
+    <p>Quality Courses</p>
+  </div>
+  <div class="stat-item">
+    <h3>50+</h3>
+    <p>Expert Instructors</p>
+  </div>
+  <div class="stat-item">
+    <h3>4.8</h3>
+    <p>Average Rating</p>
+  </div>
+</section>
+
+<section class="courses">
+  <div class="section-title">
+    <h2>Explore Popular Courses</h2>
+    <p>Pick a course and start learning today</p>
+  </div>
+
+  <div class="course-grid">
+    
+    <div class="course-card">
+      <div class="course-thumb">
+        <span class="badge-cat">Development</span>
+        <img src="{% static 'images/webdevelopment.png' %}" onerror="this.src='https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=500'">
+      </div>
+      <div class="course-content">
+        <div class="course-meta">
+          <span><i class="fas fa-book"></i> 12 Lessons</span>
+          <span class="rating">★ 4.9</span>
+        </div>
+        <h3>Full Stack Web Development</h3>
+        <p style="font-size:14px; color:#777;">Master React, Django & Node.</p>
+        <div class="instructor-row">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" class="instructor-img">
+          <span style="font-size:14px;">Prof. Mahendher</span>
+          <span class="price">$49</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="course-thumb">
+        <span class="badge-cat">Data Science</span>
+        <img src="{% static 'images/datascience.png' %}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500'">
+      </div>
+      <div class="course-content">
+        <div class="course-meta">
+          <span><i class="fas fa-video"></i> 20 Lessons</span>
+          <span class="rating">★ 4.7</span>
+        </div>
+        <h3>Python for Data Science</h3>
+        <p style="font-size:14px; color:#777;">Analyze data like a pro.</p>
+        <div class="instructor-row">
+          <img src="https://randomuser.me/api/portraits/men/45.jpg" class="instructor-img">
+          <span style="font-size:14px;">Prof. John</span>
+          <span class="price">$59</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="course-thumb">
+        <span class="badge-cat">Marketing</span>
+        <img src="{% static 'images/digitalmarket.png' %}" onerror="this.src='https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=500'">
+      </div>
+      <div class="course-content">
+        <div class="course-meta">
+          <span><i class="fas fa-clock"></i> 8 Weeks</span>
+          <span class="rating">★ 4.5</span>
+        </div>
+        <h3>Digital Marketing Masterclass</h3>
+        <p style="font-size:14px; color:#777;">SEO, SMM & Content Strategy.</p>
+        <div class="instructor-row">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" class="instructor-img">
+          <span style="font-size:14px;">Prof. Shilpa</span>
+          <span class="price">Free</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section-title" style="margin-bottom: 20px;">
+  <h2>Why Choose Our LMS?</h2>
+</section>
+
+<div class="features-container">
+  <div class="feature-card">
+    <img src="{% static 'images/online-session.png' %}" class="feature-icon" onerror="this.style.display='none'">
+    <h4>Online Courses</h4>
+    <p style="font-size:13px; color:#666;">Learn from anywhere, anytime.</p>
+  </div>
+  <div class="feature-card">
+    <img src="{% static 'images/video-session.png' %}" class="feature-icon" onerror="this.style.display='none'">
+    <h4>HD Video Sessions</h4>
+    <p style="font-size:13px; color:#666;">High quality lectures.</p>
+  </div>
+  <div class="feature-card">
+    <img src="{% static 'images/assignment-list.png' %}" class="feature-icon" onerror="this.style.display='none'">
+    <h4>Assignments</h4>
+    <p style="font-size:13px; color:#666;">Practice what you learn.</p>
+  </div>
+  <div class="feature-card">
+    <img src="{% static 'images/study-material.png' %}" class="feature-icon" onerror="this.style.display='none'">
+    <h4>Certificates</h4>
+    <p style="font-size:13px; color:#666;">Earn industry recognition.</p>
+  </div>
+</div>
+
+<section class="about-section" style="max-width:1200px; margin:auto;">
+  <div class="about-content">
+    <h2>About Our Platform</h2>
+    <h3>Transforming Education Digitally</h3>
+    <p>
+      We provide a comprehensive learning ecosystem. Whether you are a student looking to upskill, 
+      or a trainer wanting to share knowledge, our LMS is the perfect bridge. 
+      Enjoy seamless video streaming, real-time quizzes, and peer interaction.
+    </p>
+    <a href="#" class="about-btn">Read More</a>
+  </div>
+  <div class="about-image">
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600" style="width:100%; border-radius:15px;">
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="section-title" style="margin-top:0;">
+    <h2>What Students Say</h2>
+  </div>
+  <div class="testimonial-grid">
+    <div class="testi-card">
+      <span class="quote-icon">❝</span>
+      <p class="testi-text">"This LMS changed my career. The Web Development course was fantastic and the assignments were very practical."</p>
+      <div class="student-info">
+        <img src="https://randomuser.me/api/portraits/men/11.jpg" class="student-pic">
+        <div>
+          <strong>Raju Kumar</strong><br>
+          <small>Software Engineer</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <span class="quote-icon">❝</span>
+      <p class="testi-text">"I loved the UI of the platform. It's so easy to navigate and the video quality is top notch. Highly recommended!"</p>
+      <div class="student-info">
+        <img src="https://randomuser.me/api/portraits/women/12.jpg" class="student-pic">
+        <div>
+          <strong>Sneha Reddy</strong><br>
+          <small>Data Analyst</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <h2>Ready to Start Learning?</h2>
+  <p>Join over 10,000 students and start your journey today.</p>
+  <a href="{% url 'login' %}" class="btn-white">Sign Up Now</a>
+</div>
+
+{% endblock %}

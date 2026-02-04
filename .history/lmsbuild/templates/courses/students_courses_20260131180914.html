@@ -1,0 +1,25 @@
+{% extends "trainer/base.html" %}
+{% block content %}
+
+<style>
+table{width:100%;background:white;border-radius:10px}
+td,th{padding:10px}
+</style>
+
+<h2>{{course.title}} Students</h2>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Batch</th>
+</tr>
+
+{% for s in students %}
+<tr>
+<td>{{s.student.username}}</td>
+<td>{{s.batch.name}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

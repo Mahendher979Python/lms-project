@@ -1,0 +1,84 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#" class="text-info text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active text-light" aria-current="page">Upload Material</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark border-secondary shadow-lg">
+                <div class="card-header border-secondary bg-transparent py-3">
+                    <h4 class="mb-0 text-white">Upload Material – <span class="text-info">{{ lesson.title }}</span></h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small uppercase fw-bold">Material Title</label>
+                            <input class="form-control bg-dark text-white border-secondary shadow-none" 
+                                   name="title" 
+                                   placeholder="e.g. Introduction to Django" 
+                                   required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small uppercase fw-bold">Material Type</label>
+                                <select name="material_type" class="form-select bg-dark text-white border-secondary shadow-none">
+                                    <option value="video">Video</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="image">Image</option>
+                                    <option value="note">Notes</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-secondary small uppercase fw-bold">Select File</label>
+                                <input type="file" name="file" class="form-control bg-dark text-white border-secondary shadow-none" required>
+                            </div>
+                        </div>
+
+                        <hr class="border-secondary my-4">
+
+                        <div class="d-flex align-items-center justify-content-between">
+                            <a href="javascript:history.back()" class="text-secondary text-decoration-none small">
+                                <i class="bi bi-arrow-left"></i> Go Back
+                            </a>
+                            <button type="submit" class="btn btn-success px-5 fw-bold" id="submitBtn">
+                                <span id="btnText">Upload Now</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0dcaf0 !important;
+        background-color: #1a1a1a !important;
+    }
+    input::placeholder { color: #666 !important; }
+</style>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const btn = document.getElementById('submitBtn');
+    
+    form.onsubmit = function() {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> Uploading...`;
+    };
+</script>
+
+{% endblock %}

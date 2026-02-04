@@ -1,0 +1,54 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.form-wrapper{background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.form-card{background:#fff;padding:40px;width:100%;max-width:500px;border-radius:12px}
+.form-group{margin-bottom:20px}
+label{font-weight:600}
+input,select{width:100%;padding:12px;border:2px solid #e1e5eb;border-radius:8px}
+.btn-group{display:flex;gap:15px;margin-top:30px}
+.btn-primary{background:#4361ee;color:#fff;padding:12px;border-radius:8px}
+.btn-secondary{background:#e9ecef;padding:12px;border-radius:8px}
+</style>
+
+<div class="form-wrapper">
+<div class="form-card">
+<h2>✏ Edit Student</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-group">
+<label>Username</label>{{ form.username }}
+</div>
+
+<div class="form-group">
+<label>Email</label>{{ form.email }}
+</div>
+
+<div class="form-group">
+<label>Roll No</label>{{ form.roll_no }}
+</div>
+
+<div class="form-group">
+<label>Phone</label>{{ form.phone }}
+</div>
+
+<div class="form-group">
+<label>Trainer</label>
+<select name="trainer">
+{% for t in trainers %}
+<option value="{{ t.id }}" {% if student.trainer.id == t.id %}selected{% endif %}>
+{{ t.user.username }} — {{ t.subject }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Change Password</label>{{ form.password }}
+</div>
+
+<div class="btn-group">
+<a href="{% url 'admin_students' %}" c_

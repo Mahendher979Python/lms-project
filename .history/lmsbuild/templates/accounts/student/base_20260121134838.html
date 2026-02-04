@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        /* 3D Color Palette */
+        --bg-body: #eef2f6; /* Light Blue-Grey for depth contrast */
+        --bg-sidebar: #1e293b;
+        --sidebar-gradient: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        --text-main: #334155;
+        --text-light: #f8fafc;
+        --accent: #3b82f6;
+        --accent-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+        --shadow-3d: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+
+    body { 
+        background: var(--bg-body); 
+        display: flex; 
+        flex-direction: column; 
+        height: 100vh; 
+        overflow: hidden; 
+    }
+
+    /* --- 3D Topbar --- */
+    .topbar {
+        height: 70px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px); /* Glass Effect */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .brand { display: flex; align-items: center; gap: 15px; }
+    .brand h2 { 
+        font-size: 1.4rem; 
+        font-weight: 700; 
+        color: #1e293b; 
+        text-shadow: 1px 1px 0px rgba(0,0,0,0.1); 
+    }
+    
+    .toggle-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #1e293b; display: none; }
+
+    .user-actions { display: flex; align-items: center; gap: 20px; }
+
+    /* 3D Logout Button */
+    .logout-btn {
+        background: linear-gradient(145deg, #ffffff, #e6e6e6);
+        color: #ef4444;
+        width: 40px; height: 40px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none; 
+        box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff; /* Neumorphism */
+        transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        color: #dc2626;
+    }
+
+    /* --- Layout --- */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* --- 3D Sidebar --- */
+    .sidebar {
+        width: 260px;
+        background: var(--sidebar-gradient);
+        color: #fff;
+        padding: 25px 20px;
+        display: flex; flex-direction: column;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        z-index: 900;
+        transition: 0.3s;
+    }
+
+    .sidebar-header {
+        text-align: center; margin-bottom: 35px;
+        color: var(--accent); font-weight: 800;
+        text-transform: uppercase; letter-spacing: 2px;
+        font-size: 0.85rem; opacity: 0.8;
+    }
+
+    .menu { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+    /* 3D Menu Items */
+    .menu a {
+        display: flex; align-items: center; gap: 15px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .menu a:hover, .menu a.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Glow effect */
+        transform: translateX(5px) scale(1.02);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .menu a i { width: 25px; text-align: center; }
+
+    /* --- 3D Upgrade Box --- */
+    .upgrade-box {
+        background: var(--accent-gradient);
+        padding: 25px; border-radius: 20px;
+        text-align: center; margin-top: auto;
+        color: white; position: relative;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        transform-style: preserve-3d;
+    }
+
+    .upgrade-box h4 { font-size: 1.1rem; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .upgrade-box small { display: block; margin-bottom: 15px; font-size: 0.8rem; opacity: 0.9; }
+
+    .upgrade-btn {
+        background: white; color: #2563eb; border: none;
+        padding: 10px 0; border-radius: 12px; width: 100%;
+        font-weight: bold; cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+    .upgrade-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 12px rgba(0,0,0,0.2); }
+
+    /* --- Content Area --- */
+    .content { flex: 1; padding: 40px; overflow-y: auto; perspective: 1000px; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .sidebar { position: absolute; left: -260px; height: calc(100vh - 70px); top: 70px; }
+        .sidebar.active { left: 0; }
+        .toggle-btn { display: block; }
+        .content { padding: 20px; }
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="brand">
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <h2><i class="fa-solid fa-cube" style="color:var(--accent);"></i> Dashboard <span style="font-weight:300; font-size:0.8em; color:#64748b;">3D</span></h2>
+        </div>
+
+        <div class="user-actions">
+            <span>Hi, <b>{{ request.user.username }}</b></span>
+            <a href="{% url 'logout' %}" class="logout-btn" onclick="return confirmLogout()" title="Logout">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">Main Navigation</div>
+            <div class="menu">
+                <a href="{% url 'student_dashboard' %}" class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house-chimney"></i> Dashboard
+                </a>
+                <a href="{% url 'student_course_list' %}" class="{% if request.resolver_match.url_name == 'student_course_list' %}active{% endif %}">
+                    <i class="fa-solid fa-layer-group"></i> My Courses
+                </a>
+                <a href="{% url 'student_todo_list' %}" class="{% if request.resolver_match.url_name == 'student_todo_list' %}active{% endif %}">
+                    <i class="fa-solid fa-list-check"></i> To-Do List
+                </a>
+                <a href="#"><i class="fa-solid fa-chart-pie"></i> Analytics</a>
+                <a href="#"><i class="fa-solid fa-certificate"></i> Certificates</a>
+            </div>
+
+            <div class="upgrade-box">
+                <h4>Go Pro 🚀</h4>
+                <small>Unlock 3D Features</small>
+                <button class="upgrade-btn">Upgrade</button>
+            </div>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function confirmLogout() { return confirm("Are you sure you want to logout?"); }
+    </script>
+</body>
+</html>

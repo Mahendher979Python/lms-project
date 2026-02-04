@@ -1,0 +1,397 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
+from .models import Student, TeacherProfile, Batch
+from .decorators import admin_required
+from django.db import IntegrityError
+import uuid
+
+
+User = get_user_model()
+
+
+# ==================================================
+# 🔐 ROLE DECORATORS
+# ==================================================
+
+def role_required(role):
+    def decorator(view_func):
+        def wrapper(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return redirect("login")
+
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+
+            if request.user.role != role:
+                return redirect("login")
+
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def admin_required(view_func):
+    return role_required("admin")(view_func)
+
+
+# ==================================================
+# 🏠 HOME
+# ==================================================
+
+def home(request):
+    return render(request, "accounts/home.html")
+
+
+# ==================================================
+# 🔑 LOGIN / LOGOUT
+# ==================================================
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user:
+            login(request, user)
+
+            if user.is_superuser or user.role == "admin":
+                return redirect("admin_dashboard")
+            elif user.role == "trainer":
+                return redirect("trainer_dashboard")
+            elif user.role == "student":
+                return redirect("student_dashboard")
+
+        messages.error(request, "Invalid username or password")
+
+    return render(request, "accounts/login.html")
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("login")
+
+
+# ==================================================
+# 👑 ADMIN DASHBOARD
+# ==================================================
+
+@login_required
+@admin_required
+def admin_dashboard(request):
+    return render(request, "accounts/admin/dashboard.html")
+
+
+# ==================================================
+# 👨‍🏫 TRAINER DASHBOARD
+# ==================================================
+
+@login_required
+@role_required("trainer")
+def trainer_dashboard(request):
+    trainer_profile = request.user.teacherprofile
+
+    students_count = Student.objects.filter(trainer=trainer_profile).count()
+
+    context = {
+        "students_count": students_count,
+        # "courses": Course.objects.filter(trainer=trainer_profile)
+    }
+    return render(request, "accounts/trainer/dashboard.html", context)
+
+
+# ==================================================
+# 👨‍🎓 STUDENT DASHBOARD
+# ==================================================
+
+@login_required
+@role_required("student")
+def student_dashboard(request):
+    return render(request, "accounts/student/dashboard.html")
+
+
+# ==================================================
+# 👑 ADMIN → TRAINER CRUD
+# ==================================================
+
+@admin_required
+def trainer_list(request):
+    trainers = TeacherProfile.objects.select_related("user")
+    return render(request, "accounts/admin/trainers/list.html", {
+        "trainers": trainers
+    })
+
+
+@admin_required
+def trainer_create(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect("trainer_create")
+
+        user = User.objects.create_user(
+            username=username,
+            password=request.POST.get("password"),
+            role="trainer",
+            mobile=request.POST.get("mobile"),
+            is_active=True
+        )
+
+        TeacherProfile.objects.create(
+            user=user,
+            emp_id="EMP-" + uuid.uuid4().hex[:6].upper(),
+            subject=request.POST.get("subject")
+        )
+
+        messages.success(request, "Trainer created successfully")
+        return redirect("trainer_list")
+
+    return render(request, "accounts/admin/trainers/create.html")
+
+
+@admin_required
+def trainer_edit(request, id):
+    trainer_user = get_object_or_404(User, id=id, role="trainer")
+    profile = TeacherProfile.objects.filter(user=trainer_user).first()
+
+    if request.method == "POST":
+        trainer_user.username = request.POST.get("username")
+        trainer_user.mobile = request.POST.get("mobile")
+        trainer_user.is_active = request.POST.get("is_active") == "on"
+        trainer_user.save()
+
+        profile.emp_id = request.POST.get("emp_id")
+        profile.subject = request.POST.get("subject")
+        profile.save()
+
+        messages.success(request, "Trainer updated")
+        return redirect("trainer_list")
+
+    return render(request, "accounts/admin/trainers/edit.html", {
+        "trainer": trainer_user,
+        "profile": profile
+    })
+
+
+@admin_required
+def trainer_delete(request, id):
+    trainer = get_object_or_404(User, id=id, role="trainer")
+    trainer.is_active = False
+    trainer.save()
+    messages.warning(request, "Trainer deactivated")
+    return redirect("trainer_list")
+
+
+# ==================================================
+# 👑 ADMIN → STUDENT CRUD
+# ==================================================
+
+# ==============================
+# STUDENT LIST
+# ==============================
+
+@admin_required
+def admin_students(request):
+    students = Student.objects.select_related("user", "trainer", "trainer__user", "batch")
+    return render(request, "accounts/admin/students/list.html", {
+        "students": students
+    })
+
+
+# ==============================
+# ADD STUDENT
+# ==============================
+
+from django.db import IntegrityError
+import uuid
+
+
+@admin_required
+def admin_add_student(request):
+
+    trainers = TeacherProfile.objects.select_related("user")
+    batches = Batch.objects.all()
+
+    if request.method == "POST":
+
+        username = request.POST.get("username", "").strip()
+        trainer_id = request.POST.get("trainer")
+        batch_id = request.POST.get("batch")
+
+        # Safety check
+        if not username:
+            messages.error(request, "Username required")
+            return redirect("admin_add_student")
+
+        # Username exists check
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect("admin_add_student")
+
+        try:
+            trainer = get_object_or_404(TeacherProfile, id=trainer_id)
+            batch = get_object_or_404(Batch, id=batch_id)
+
+            password = get_random_string(8)
+
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                role="student",
+                is_active=True
+            )
+
+            roll_no = "STD-" + uuid.uuid4().hex[:6].upper()
+
+            Student.objects.create(
+                user=user,
+                trainer=trainer,
+                batch=batch,
+                roll_no=roll_no,
+                is_active=True
+            )
+
+            messages.success(request, f"Student created. Password: {password}")
+            return redirect("admin_students")
+
+        except IntegrityError:
+            messages.error(request, "Username already exists (DB level)")
+            return redirect("admin_add_student")
+
+    return render(request, "accounts/admin/students/add.html", {
+        "trainers": trainers,
+        "batches": batches
+    })
+
+# ==============================
+# EDIT STUDENT
+# ==============================
+
+@admin_required
+def admin_edit_student(request, id):
+
+    student = get_object_or_404(Student, id=id)
+    trainers = TeacherProfile.objects.select_related("user")
+    batches = Batch.objects.all()
+
+    if request.method == "POST":
+
+        # Username
+        student.user.username = request.POST.get("username")
+
+        # Optional password reset
+        password = request.POST.get("password")
+        if password:
+            student.user.set_password(password)
+
+        student.user.is_active = request.POST.get("is_active") == "on"
+        student.user.save()
+
+        # Trainer + Batch
+        student.trainer = get_object_or_404(
+            TeacherProfile, id=request.POST.get("trainer")
+        )
+
+        student.batch = get_object_or_404(
+            Batch, id=request.POST.get("batch")
+        )
+
+        student.save()
+
+        messages.success(request, "Student updated successfully")
+        return redirect("admin_students")
+
+    return render(request, "accounts/admin/students/edit.html", {
+        "student": student,
+        "trainers": trainers,
+        "batches": batches
+    })
+
+
+# ==============================
+# DELETE (DEACTIVATE)
+# ==============================
+
+@admin_required
+def admin_delete_student(request, id):
+
+    student = get_object_or_404(Student, id=id)
+    student.user.is_active = False
+    student.user.save()
+
+    messages.warning(request, "Student deactivated")
+    return redirect("admin_students")
+
+# ==================================================
+# 👨‍🏫 TRAINER → OWN STUDENTS ONLY
+# ==================================================
+
+@login_required
+@role_required("trainer")
+def trainer_students(request):
+    students = Student.objects.filter(
+        trainer=request.user.teacherprofile
+    ).select_related("user")
+
+    return render(request, "accounts/trainer/students/list.html", {"students": students})
+
+
+@login_required
+@role_required("trainer")
+def trainer_add_student(request):
+    trainer = request.user.teacherprofile
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username exists")
+            return redirect("trainer_add_student")
+
+        user = User.objects.create_user(
+            username=username,
+            password=request.POST.get("password"),
+            role="student",
+            is_active=True
+        )
+
+        Student.objects.create(user=user, trainer=trainer)
+
+        messages.success(request, "Student added")
+        return redirect("trainer_students")
+
+    return render(request, "accounts/trainer/students/add.html")
+
+
+
+# ==================================================
+# ADMIN → USERS
+# ==================================================
+@admin_required
+def admin_user_list(request):
+    users = User.objects.all().order_by("id")
+    return render(request, "accounts/admin/user/list.html", {"users": users})
+
+
+@admin_required
+def admin_user_view(request, id):
+    user = get_object_or_404(User, id=id)
+    teacher_profile = TeacherProfile.objects.filter(user=user).first()
+    student_profile = Student.objects.filter(user=user).first()
+
+    return render(request, "accounts/admin/user/user.html", {
+        "user": user,
+        "teacher_profile": teacher_profile,
+        "student_profile": student_profile
+    })

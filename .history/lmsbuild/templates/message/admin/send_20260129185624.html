@@ -1,0 +1,168 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --cyan: #00f3ff;
+    --lime: #ccff00;
+    --glass: rgba(255, 255, 255, .05);
+    --border: rgba(255, 255, 255, .1);
+    --bg-dark: #020617;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #e5e7eb; }
+
+.wrap { padding: 50px 20px; display: flex; justify-content: center; }
+
+/* Message Card Styling */
+.msg-card {
+    width: 100%;
+    max-width: 600px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle glow effect in the corner */
+.msg-card::after {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(0, 243, 255, 0.15), transparent);
+    z-index: 0;
+}
+
+.header-area { margin-bottom: 30px; }
+.header-area h2 {
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Form Styling */
+.form-group { margin-bottom: 20px; position: relative; z-index: 1; }
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Input Fields */
+select, input[type="text"], textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #fff;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+select { cursor: pointer; appearance: none; }
+
+select:focus, input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+textarea { height: 150px; resize: vertical; }
+
+/* Button Styling */
+.btn-send {
+    width: 100%;
+    background: linear-gradient(135deg, var(--lime), #9acd00);
+    color: #000;
+    border: none;
+    padding: 16px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-send:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(204, 255, 0, 0.3);
+}
+
+.btn-send:active { transform: translateY(0); }
+
+/* Animation for Sending */
+.sending { pointer-events: none; opacity: 0.8; }
+
+</style>
+
+<div class="wrap">
+    <div class="msg-card">
+        <div class="header-area">
+            <h2><i class="fa-solid fa-paper-plane"></i> Send Message</h2>
+            <p style="color: #64748b; font-size: 0.9rem; margin-top: 5px;">Dispatch a notification to another user.</p>
+        </div>
+
+        <form method="post" id="msgForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-user-tag"></i> Select Recipient</label>
+                <select name="receiver" required>
+                    <option value="" disabled selected>Choose a user...</option>
+                    {% for u in users %}
+                    <option value="{{u.id}}">{{u.username}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-bookmark"></i> Subject</label>
+                <input type="text" name="subject" placeholder="What is this regarding?" required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-envelope-open-text"></i> Message Body</label>
+                <textarea name="body" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-send" id="sendBtn">
+                <span>SEND MESSAGE</span>
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('msgForm');
+    const btn = document.getElementById('sendBtn');
+
+    form.onsubmit = function() {
+        btn.classList.add('sending');
+        btn.innerHTML = `<span>DISPATCHING...</span> <i class="fa-solid fa-circle-notch fa-spin"></i>`;
+    };
+</script>
+
+{% endblock %}

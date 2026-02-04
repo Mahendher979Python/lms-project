@@ -1,0 +1,83 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.page-wrap {
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.status-present {
+  color: green;
+  font-weight: 700;
+}
+
+.status-half {
+  color: orange;
+  font-weight: 700;
+}
+
+.status-absent {
+  color: red;
+  font-weight: 700;
+}
+</style>
+
+<div class="page-wrap">
+  <h2>📅 My Attendance</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Login</th>
+        <th>Logout</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for att in attendance_list %}
+      <tr>
+        <td>{{ att.date }}</td>
+        <td>{{ att.login_time|default:"-" }}</td>
+        <td>{{ att.logout_time|default:"-" }}</td>
+        <td class="
+          {% if att.status == 'present' %}status-present
+          {% elif att.status == 'half_day' %}status-half
+          {% else %}status-absent{% endif %}
+        ">
+          {{ att.get_status_display }}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No attendance records</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

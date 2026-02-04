@@ -1,0 +1,121 @@
+{% extends 'accounts/admin/base.html' %}
+
+{% block content %}
+<style>
+    /* Custom CSS for Dashboard Cards */
+    .dashboard-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none; /* Removes underline from links */
+        color: inherit;
+        overflow: hidden;
+        height: 100%;
+        display: block; /* Makes anchor tag behave like a block */
+    }
+
+    /* Hover Effect - Card paiki lestundi */
+    .dashboard-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+        cursor: pointer;
+        color: inherit;
+    }
+
+    /* Icons Styling */
+    .card-icon-wrapper {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, #f8f9fc, #eaecf4);
+        font-size: 4rem;
+    }
+
+    .trainer-card:hover .card-icon-wrapper {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+        color: white;
+    }
+
+    .student-card:hover .card-icon-wrapper {
+        background: linear-gradient(45deg, #1cc88a, #13855c);
+        color: white;
+    }
+
+    .card-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark">Admin Dashboard</h2>
+        <p class="text-muted">Select a category to manage accounts and create passwords</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        
+        <div class="col-md-5 col-lg-4">
+            <a href="{% url 'trainer_list' %}" class="card dashboard-card trainer-card shadow-sm h-100">
+                <div class="card-icon-wrapper text-primary transition-colors">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                
+                <div class="card-body text-center p-4">
+                    <h4 class="card-title text-primary mb-3">Trainers</h4>
+                    <p class="card-text text-muted mb-4">
+                        Manage trainer profiles, classes, and credentials.
+                    </p>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary rounded-pill btn-sm">
+                            <i class="fas fa-key me-1"></i> Create Password / Add
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+            <a href="{% url 'admin_students' %}" class="card dashboard-card student-card shadow-sm h-100">
+                <div class="card-icon-wrapper text-success transition-colors">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                
+                <div class="card-body text-center p-4">
+                    <h4 class="card-title text-success mb-3">Students</h4>
+                    <p class="card-text text-muted mb-4">
+                        Manage student admissions, roll numbers, and credentials.
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-success rounded-pill btn-sm">
+                            <i class="fas fa-key me-1"></i> Create Password / Add
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add a subtle fade-in effect when page loads
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 150); // Staggered animation
+        });
+    });
+</script>
+
+{% endblock %}

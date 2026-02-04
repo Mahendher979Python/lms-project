@@ -1,0 +1,60 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.form-wrapper{background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.form-card{background:#fff;padding:40px;width:100%;max-width:500px;border-radius:12px}
+.form-group{margin-bottom:20px}
+label{font-weight:600}
+input{width:100%;padding:12px;border:2px solid #e1e5eb;border-radius:8px}
+.btn-group{display:flex;gap:15px;margin-top:30px}
+.btn-primary{background:#4361ee;color:#fff;padding:12px;border-radius:8px;border:none}
+.btn-secondary{background:#e9ecef;padding:12px;border-radius:8px;text-decoration:none}
+</style>
+
+<div class="form-wrapper">
+<div class="form-card">
+
+<h2>Edit Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-group">
+<label>Username</label>
+<input name="username" value="{{ trainer.username }}">
+</div>
+
+<div class="form-group">
+<label>Mobile</label>
+<input name="mobile" value="{{ trainer.mobile }}">
+</div>
+
+<div class="form-group">
+<label>New Password (optional)</label>
+<input type="password" name="password">
+</div>
+
+<div class="form-group">
+<label>Subject / Domain</label>
+<input name="subject" value="{{ profile.subject }}">
+</div>
+
+<div class="form-group">
+<label>
+<input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+ Active
+</label>
+</div>
+
+<div class="btn-group">
+<a href="{% url 'trainer_list' %}" class="btn-secondary">Back</a>
+<button class="btn-primary">Update</button>
+</div>
+
+</form>
+
+</div>
+</div>
+
+{% endblock %}

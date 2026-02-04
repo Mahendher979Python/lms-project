@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>{{ course.title }} – Materials</h2>
+        <a href="{% url 'trainer_material_upload' course.id %}" class="btn btn-success">+ Add Material</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>File</th>
+                <th>Uploaded Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in materials %}
+            <tr>
+                <td><strong>{{ m.title }}</strong></td>
+                <td>
+                    <a href="{{ m.file.url }}" target="_blank" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.9em;">
+                        View/Download
+                    </a>
+                </td>
+                <td>{{ m.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #888; padding: 40px;">No materials found for this course.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

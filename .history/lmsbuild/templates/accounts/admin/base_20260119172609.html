@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel - Dark Mode</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <style>
+    /* --- CSS VARIABLES FOR DARK THEME --- */
+    :root {
+      --bg-dark: #0f172a;       /* Deepest background */
+      --bg-panel: #1e293b;      /* Sidebar/Header */
+      --bg-card: #334155;       /* Card background */
+      --text-main: #f1f5f9;     /* Main text */
+      --text-muted: #94a3b8;    /* Muted text */
+      --accent: #3b82f6;        /* Primary Blue */
+      --accent-hover: #2563eb;  /* Blue Hover */
+      --danger: #ef4444;        /* Red */
+      --success: #10b981;       /* Green */
+      --border: #475569;        /* Border color */
+      --transition: all 0.3s ease;
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Roboto", sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* --- LAYOUT --- */
+    .container { display: flex; flex: 1; overflow: hidden; }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-panel);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      transition: var(--transition);
+      z-index: 10;
+    }
+
+    .sidebar-header {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-menu {
+      padding: 20px 0;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 14px 24px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 15px;
+      border-left: 4px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .sidebar a .material-icons-round {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-main);
+      border-left-color: var(--accent);
+    }
+
+    /* --- TOPBAR --- */
+    header.topbar {
+      height: 70px;
+      background: var(--bg-panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+    .search-box input {
+      width: 100%;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 15px 10px 40px;
+      border-radius: 8px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .search-box .material-icons-round {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .user-info span { font-weight: 600; }
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-logout:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* --- MAIN CONTENT --- */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      background: var(--bg-dark);
+    }
+
+    /* CARDS & TABLES UI (For demonstration) */
+    .card {
+      background: var(--bg-panel);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      text-align: left;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status.active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .status.inactive { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+    /* MESSAGES */
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="search-box">
+    <span class="material-icons-round">search</span>
+    <input type="text" id="globalSearch" placeholder="Search anything...">
+  </div>
+
+  <div class="user-info">
+    <span>Welcome, {{ request.user.username|default:"Admin" }}</span>
+    <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      🚀 LMS Admin
+    </div>
+
+    <nav class="sidebar-menu">
+      <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        <span class="material-icons-round">dashboard</span> Dashboard
+      </a>
+
+      <a href="{% url 'admin_users' %}" class="{% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+        <span class="material-icons-round">people</span> User Management
+      </a>
+
+      <a href="{% url 'admin_create_user' %}" class="{% if request.resolver_match.url_name == 'admin_create_user' %}active{% endif %}">
+        <span class="material-icons-round">person_add</span> Create User
+      </a>
+
+      <a href="{% url 'admin_course_list' %}" class="{% if request.resolver_match.url_name == 'admin_course_list' %}active{% endif %}">
+        <span class="material-icons-round">menu_book</span> Courses
+      </a>
+
+      <a href="{% url 'admin_media_list' %}" class="{% if request.resolver_match.url_name == 'admin_media_list' %}active{% endif %}">
+        <span class="material-icons-round">video_library</span> Media & Ads
+      </a>
+
+      <a href="#" class="{% if request.resolver_match.url_name == 'admin_settings' %}active{% endif %}">
+        <span class="material-icons-round">settings</span> Settings
+      </a>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    
+    <div class="card">
+      <h3 style="margin-top:0">Recent Users (Demo Data)</h3>
+      <div class="table-container">
+        <table id="searchableTable">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Date Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ravi Kumar</td>
+              <td>Student</td>
+              <td><span class="status active">Active</span></td>
+              <td>12 Jan 2024</td>
+            </tr>
+            <tr>
+              <td>Anita Sharma</td>
+              <td>Instructor</td>
+              <td><span class="status active">Active</span></td>
+              <td>10 Jan 2024</td>
+            </tr>
+            <tr>
+              <td>Rahul Verma</td>
+              <td>Student</td>
+              <td><span class="status inactive">Inactive</span></td>
+              <td>05 Jan 2024</td>
+            </tr>
+            <tr>
+              <td>Priya Singh</td>
+              <td>Admin</td>
+              <td><span class="status active">Active</span></td>
+              <td>01 Jan 2024</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endblock %}
+  </main>
+
+</div>
+
+<script>
+  // Wait for the DOM to load
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    const searchInput = document.getElementById('globalSearch');
+    
+    // Listen for typing events
+    if(searchInput) {
+      searchInput.addEventListener('keyup', function() {
+        const filter = searchInput.value.toLowerCase();
+        
+        // Target any table inside the main content
+        const table = document.getElementById('searchableTable');
+        if(table) {
+          const tr = table.getElementsByTagName('tr');
+
+          // Loop through all table rows, hide those who don't match the search
+          for (let i = 1; i < tr.length; i++) { // Start at 1 to skip header
+            let rowText = tr[i].textContent || tr[i].innerText;
+            if (rowText.toLowerCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

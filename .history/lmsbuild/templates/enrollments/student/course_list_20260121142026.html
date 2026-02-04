@@ -1,0 +1,88 @@
+{% extends "accounts/student/base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<style>
+.viewer{
+    display:flex;
+    height:85vh;
+    gap:20px;
+}
+.sidebar{
+    width:320px;
+    background:#fff;
+    border-radius:14px;
+    border:1px solid #e2e8f0;
+    overflow-y:auto;
+}
+.topic{
+    padding:15px;
+    border-bottom:1px solid #f1f5f9;
+    text-decoration:none;
+    display:block;
+    color:#334155;
+}
+.topic.active{
+    background:#eef2ff;
+    font-weight:600;
+}
+.content{
+    flex:1;
+    background:#fff;
+    border-radius:14px;
+    padding:30px;
+    overflow-y:auto;
+    position:relative;
+}
+.close-btn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:#fee2e2;
+    color:#ef4444;
+    padding:10px;
+    border-radius:50%;
+    text-decoration:none;
+}
+.download{
+    margin-top:30px;
+    background:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+}
+</style>
+
+<div class="viewer">
+
+    <!-- LEFT -->
+    <div class="sidebar">
+        {% for t in topics %}
+        <a href="?topic={{ t.id }}"
+           class="topic {% if selected_topic and selected_topic.id == t.id %}active{% endif %}">
+           {{ forloop.counter }}. {{ t.title }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- RIGHT -->
+    <div class="content">
+        <a href="{% url 'student_course_list' %}" class="close-btn">✖</a>
+
+        {% if selected_topic %}
+            <h2>{{ selected_topic.title }}</h2>
+            <p>{{ selected_topic.description|linebreaks }}</p>
+
+            {% if selected_topic.file %}
+            <div class="download">
+                <a href="{{ selected_topic.file.url }}" download>
+                    📥 Download Material
+                </a>
+            </div>
+            {% endif %}
+        {% else %}
+            <h3>Select a topic from left</h3>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-book-open text-primary"></i> Manage All Notes</h2>
+        <a href="{% url 'admin_notes_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Upload New Note
+        </a>
+    </div>
+
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body p-2">
+            <input type="text" id="adminSearch" onkeyup="filterTable('adminSearch', 'notesTable')" 
+                   class="form-control border-0" placeholder="Search notes by title...">
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="notesTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="width: 25%;">Title & File</th>
+                            <th style="width: 30%;">Description</th>
+                            <th style="width: 15%;">Created By</th>
+                            <th style="width: 15%;">Assigned To</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ note.title }}</div>
+                                {% if note.file %}
+                                    <a href="{{ note.file.url }}" target="_blank" class="small text-decoration-none">
+                                        <i class="fas fa-paperclip"></i> View File
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">No file</span>
+                                {% endif %}
+                                <div class="text-muted small" style="font-size: 0.75rem;">
+                                    {{ note.created_at|date:"M d, Y" }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="desc-truncate">{{ note.description }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ note.created_by.username }}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ note.assigned_to.count }} Students
+                                </small>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'admin_notes_edit' note.pk %}" class="btn btn-sm btn-outline-info btn-icon" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_notes_delete' note.pk %}" onclick="confirmDelete(event)" 
+                                   class="btn btn-sm btn-outline-danger btn-icon" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No notes found. Click "Upload New Note" to start.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

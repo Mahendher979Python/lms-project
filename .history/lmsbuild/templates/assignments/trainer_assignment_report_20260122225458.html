@@ -1,0 +1,18 @@
+<h2>Report – {{ assignment.title }}</h2>
+
+<ul>
+  <li>Total Submissions: {{ total }}</li>
+  <li>Average Score: {{ avg_score }}</li>
+  <li>Pass Count: {{ pass_count }}</li>
+  <li>Fail Count: {{ fail_count }}</li>
+  <li>Pass Percentage: {{ pass_percent }}%</li>
+</ul>
+
+<h3>Top Performers</h3>
+<ol>
+{% for s in toppers %}
+  <li>{{ s.student }} – {{ s.score }}</li>
+{% empty %}
+  <li>No submissions</li>
+{% endfor %}
+</ol>

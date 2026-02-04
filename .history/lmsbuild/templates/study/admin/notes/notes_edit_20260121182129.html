@@ -1,0 +1,101 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+
+<style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+    .edit-container {
+        display: flex; justify-content: center; align-items: center; min-height: 85vh;
+    }
+    .form-box {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border: 1px solid #334155;
+        width: 100%; max-width: 650px;
+    }
+    input, select, textarea {
+        width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px;
+        background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px;
+        box-sizing: border-box;
+    }
+    label { color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
+    .assign-box {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        max-height: 150px; overflow-y: auto;
+        background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155;
+    }
+    .btn-save { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; }
+    .btn-save:hover { background: #4f46e5; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .close-link { color: #94a3b8; text-decoration: none; font-size: 1.5rem; }
+</style>
+
+<div class="edit-container">
+    <div class="form-box">
+        <div class="header-row">
+            <h2 style="margin:0;">✏ Edit Note</h2>
+            <a href="{% url 'admin_notes_list' %}" class="close-link">&times;</a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label>Title</label>
+            <input type="text" name="title" value="{{ note.title }}" required>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Course</label>
+                    <select name="course">
+                        <option value="">-- Optional --</option>
+                        {% for c in courses %}
+                            <option value="{{ c.id }}" {% if note.course.id == c.id %}selected{% endif %}>{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Visibility</label>
+                    <select name="visibility">
+                        <option value="private" {% if note.visibility == "private" %}selected{% endif %}>Private</option>
+                        <option value="public" {% if note.visibility == "public" %}selected{% endif %}>Public</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Description</label>
+            <textarea name="description" rows="4">{{ note.description }}</textarea>
+
+            <label>Current File: 
+                {% if note.file %}
+                    <a href="{{ note.file.url }}" target="_blank" style="color:#6366f1;">View File</a>
+                {% else %}
+                    <span style="color:#64748b">None</span>
+                {% endif %}
+            </label>
+            <input type="file" name="file">
+
+            <label>Assign To</label>
+            <div class="assign-box">
+                {% for u in trainers %}
+                <label>
+                    <input type="checkbox" name="assigned_to" value="{{ u.id }}" {% if u in note.assigned_to.all %}checked{% endif %}> 
+                    {{ u.username }} (Trainer)
+                </label>
+                {% endfor %}
+                {% for u in students %}
+                <label>
+                    <input type="checkbox" name="assigned_to" value="{{ u.id }}" {% if u in note.assigned_to.all %}checked{% endif %}> 
+                    {{ u.username }} (Student)
+                </label>
+                {% endfor %}
+            </div>
+
+            <br>
+            <button class="btn-save">Update Note</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

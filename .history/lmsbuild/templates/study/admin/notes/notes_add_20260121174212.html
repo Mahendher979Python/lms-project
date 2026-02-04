@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h4><i class="fas fa-pen-fancy text-primary"></i> {% if note %}Edit Note{% else %}Add New Note{% endif %}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Title <span class="text-danger">*</span></label>
+                                <input type="text" name="title" class="form-control" value="{{ note.title|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Course</label>
+                                <select name="course" class="form-select">
+                                    <option value="">-- General / No Course --</option>
+                                    {% for course in courses %}
+                                        <option value="{{ course.id }}" {% if note.course_id == course.id %}selected{% endif %}>{{ course.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="4">{{ note.description|default:'' }}</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Visibility</label>
+                                <select name="visibility" class="form-select">
+                                    <option value="public" {% if note.visibility == 'public' %}selected{% endif %}>Public</option>
+                                    <option value="private" {% if note.visibility == 'private' %}selected{% endif %}>Private</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Attach File</label>
+                                <input type="file" name="file" class="form-control">
+                                {% if note.file %}
+                                    <small class="text-muted">Current: <a href="{{ note.file.url }}">{{ note.file.name }}</a></small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Assign To Users</label>
+                            <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                <small class="d-block text-muted mb-2">Select Students:</small>
+                                {% for student in students %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="assigned_to" value="{{ student.id }}" 
+                                            id="st_{{ student.id }}"
+                                            {% if student in note.assigned_to.all %}checked{% endif %}>
+                                        <label class="form-check-label" for="st_{{ student.id }}">
+                                            {{ student.username }} (Student)
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                                
+                                <hr class="my-2">
+                                <small class="d-block text-muted mb-2">Select Trainers:</small>
+                                {% for trainer in trainers %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="assigned_to" value="{{ trainer.id }}" 
+                                            id="tr_{{ trainer.id }}"
+                                            {% if trainer in note.assigned_to.all %}checked{% endif %}>
+                                        <label class="form-check-label" for="tr_{{ trainer.id }}">
+                                            {{ trainer.username }} (Trainer)
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {% if note %}
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if note.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="isActive">Is Active?</label>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-custom btn-lg">Save Note</button>
+                            <a href="{% url 'admin_notes_list' %}" class="btn btn-light">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,339 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
+    --border: #e2e8f0;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.3);
+  }
+
+  body { background-color: var(--bg-light); font-family: 'Inter', system-ui, sans-serif; }
+
+  /* --- Main Container --- */
+  .settings-container {
+    max-width: 900px;
+    margin: 40px auto;
+    animation: slideUp 0.5s ease-out;
+    padding-bottom: 80px;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-area {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .header-area h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -1px;
+    margin: 0;
+  }
+
+  /* --- Card Styling --- */
+  .settings-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .section {
+    padding: 30px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .section:hover { background: #fafafa; }
+  .section:last-child { border-bottom: none; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+  .section-icon {
+    font-size: 1.5rem;
+    background: #eef2ff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--primary);
+  }
+
+  /* --- Grid Layout --- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  /* --- Inputs & Selects --- */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: opacity 0.3s;
+  }
+  
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-sub);
+  }
+
+  input[type="text"], input[type="number"], select {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    transform: translateY(-1px);
+  }
+
+  /* --- iOS Style Toggle Switch --- */
+  .toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+
+  .toggle-label {
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 1rem;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+  }
+
+  .switch input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input:checked + .slider { background-color: var(--success); }
+  input:checked + .slider:before { transform: translateX(22px); }
+  input:focus + .slider { box-shadow: 0 0 1px var(--success); }
+
+  /* --- Save Button --- */
+  .action-bar {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    z-index: 100;
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    padding: 14px 40px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: transform 0.2s, width 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-save:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4); }
+  .btn-save:active { transform: translateY(0); }
+
+  /* Spinner */
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Alert Hint */
+  .hint-text {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    margin-top: 5px;
+  }
+
+</style>
+
+<div class="settings-container">
+  
+  <div class="header-area">
+    <h2>🎓 Student Configuration</h2>
+  </div>
+
+  <form method="post" id="studentSettingsForm">
+    {% csrf_token %}
+    
+    <div class="settings-card">
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🔐</div>
+          <h3 class="section-title">Registration & Access</h3>
+        </div>
+        
+        <div class="grid">
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Require Admin Approval</span>
+            <label class="switch">
+              <input type="checkbox" name="student_approval_required" {% if settings.student_approval_required %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🎒</div>
+          <h3 class="section-title">Learning Controls</h3>
+        </div>
+
+        <div class="grid">
+          <div class="input-group">
+            <label>Max Enrollments per Student</label>
+            <input type="number" name="max_courses_per_student" value="{{ settings.max_courses_per_student }}" placeholder="0 for unlimited">
+            <div class="hint-text">Set to 0 for unlimited courses.</div>
+          </div>
+
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Allow Course Previews</span>
+            <label class="switch">
+              <input type="checkbox" name="allow_course_preview" {% if settings.allow_course_preview %}checked{% endif %}>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📉</div>
+          <h3 class="section-title">Attendance Policy</h3>
+        </div>
+
+        <div class="grid">
+          <div class="input-group">
+            <label>Minimum Attendance Required (%)</label>
+            <input type="number" name="student_attendance_required_percent" value="{{ settings.student_attendance_required_percent }}">
+            <div class="hint-text">Students below this threshold may be flagged.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="color: var(--danger); background: #fef2f2;">🛡️</div>
+          <h3 class="section-title">Security & Auto-Block</h3>
+        </div>
+
+        <div class="grid">
+          <div class="input-group">
+            <label>Auto-Block Inactive Days</label>
+            <input type="number" name="auto_block_student_inactive_days" value="{{ settings.auto_block_student_inactive_days }}">
+            <div class="hint-text">Accounts inactive for this many days will be locked automatically.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-bar">
+      <button type="submit" class="btn-save" id="saveButton">
+        <div class="spinner"></div>
+        <span class="btn-text">Save Settings</span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  
+  // Save Button Animation
+  const form = document.getElementById('studentSettingsForm');
+  const btn = document.getElementById('saveButton');
+  const spinner = btn.querySelector('.spinner');
+  const text = btn.querySelector('.btn-text');
+
+  form.addEventListener('submit', function() {
+    btn.style.width = "60px";
+    btn.style.padding = "14px";
+    text.style.display = "none";
+    spinner.style.display = "block";
+  });
+});
+</script>
+
+{% endblock %}

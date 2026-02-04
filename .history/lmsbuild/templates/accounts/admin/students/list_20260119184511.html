@@ -1,0 +1,27 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>🎓 Students</h2>
+<a href="{% url 'admin_student_create' %}" class="btn btn-primary">+ Add Student</a>
+
+<table class="admin-table">
+<tr>
+  <th>Student ID</th>
+  <th>Name</th>
+  <th>Phone</th>
+  <th>Actions</th>
+</tr>
+
+{% for s in students %}
+<tr>
+  <td>{{ s.student_id }}</td>
+  <td>{{ s.first_name }} {{ s.surname }}</td>
+  <td>{{ s.phone }}</td>
+  <td>
+    <a href="{% url 'admin_student_edit' s.id %}">Edit</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

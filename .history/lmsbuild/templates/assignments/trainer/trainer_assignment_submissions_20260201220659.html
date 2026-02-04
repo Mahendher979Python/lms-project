@@ -1,0 +1,11 @@
+<h2>{{ assignment.title }} - Submissions</h2>
+
+<ul>
+{% for s in submissions %}
+<li>
+{{ s.student }} - {{ s.score }}
+</li>
+{% empty %}
+<li>No submissions</li>
+{% endfor %}
+</ul>

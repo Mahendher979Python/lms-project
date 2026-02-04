@@ -1,0 +1,272 @@
+{% extends 'accounts/admin/base.html' %}
+
+{% block content %}
+
+<style>
+    /* === GLOBAL VARS & FONTS === */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap');
+
+    :root {
+        --bg-deep: #050511;
+        --glass: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glow-primary: #6366f1; /* Trainer Purple/Blue */
+        --glow-secondary: #10b981; /* Student Green */
+        --text-white: #ffffff;
+    }
+
+    /* === LAYOUT === */
+    .portal-wrapper {
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+        font-family: 'Outfit', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        overflow: hidden;
+    }
+
+    .portal-header {
+        text-align: center;
+        margin-bottom: 60px;
+        z-index: 2;
+    }
+
+    .portal-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+    }
+
+    .portal-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    /* === 3D CARDS CONTAINER === */
+    .cards-container {
+        display: flex;
+        gap: 50px;
+        z-index: 2;
+        perspective: 1000px;
+    }
+
+    /* === THE CARD === */
+    .role-card {
+        position: relative;
+        width: 350px;
+        height: 500px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 40px 20px;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        overflow: hidden;
+    }
+
+    /* Image Area */
+    .img-wrapper {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: opacity 0.8s ease-in-out, transform 0.8s ease;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+
+    /* Text Area */
+    .card-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-content h2 {
+        color: var(--text-white);
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .card-content span {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* === SPECIFIC CARD STYLES === */
+    /* TRAINER */
+    .card-trainer:hover {
+        border-color: var(--glow-primary);
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(99, 102, 241, 0.1);
+        transform: translateY(-10px) rotateX(5deg);
+    }
+    .card-trainer span {
+        color: #a5b4fc;
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* STUDENT */
+    .card-student:hover {
+        border-color: var(--glow-secondary);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.1);
+        transform: translateY(-10px) rotateX(5deg);
+    }
+    .card-student span {
+        color: #6ee7b7;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+        .cards-container { flex-direction: column; }
+        .role-card { width: 100%; max-width: 320px; height: 400px; }
+        .img-wrapper { width: 150px; height: 150px; }
+    }
+
+    .fade-out {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+</style>
+
+<div class="portal-wrapper">
+
+    <div class="portal-header">
+        <h1>Command Center</h1>
+        <p>Access and manage your academy resources.</p>
+    </div>
+
+    <div class="cards-container">
+        
+        <a href="{% url 'trainer_list' %}" class="role-card card-trainer">
+            <div class="card-content">
+                <h2>Trainers</h2>
+                <span>Manage Staff</span>
+            </div>
+            
+            <div class="img-wrapper">
+                <img id="trainer-img" src="https://cdn3d.iconscout.com/3d/premium/thumb/teacher-5692631-4743265.png" alt="Trainer 3D">
+            </div>
+
+            <div style="color:#64748b; font-size:12px;">Create Passwords & Assign Courses</div>
+        </a>
+
+        <a href="{% url 'admin_students' %}" class="role-card card-student">
+            <div class="card-content">
+                <h2>Students</h2>
+                <span>Manage Batches</span>
+            </div>
+
+            <div class="img-wrapper">
+                <img id="student-img" src="https://cdn3d.iconscout.com/3d/premium/thumb/graduate-student-5692633-4743267.png" alt="Student 3D">
+            </div>
+
+            <div style="color:#64748b; font-size:12px;">Admissions & Roll Numbers</div>
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+    /* === 3D IMAGE AUTO-CHANGER ===
+       We use an array of high-quality 3D renders from online CDNs.
+       The script swaps them every 3 seconds with a fade effect.
+    */
+
+    // 1. Define Image Lists
+    const trainerImages = [
+        "https://cdn3d.iconscout.com/3d/premium/thumb/teacher-5692631-4743265.png", // Male Teacher
+        "https://cdn3d.iconscout.com/3d/premium/thumb/female-teacher-5692632-4743266.png", // Female Teacher
+        "https://cdn3d.iconscout.com/3d/premium/thumb/presentation-board-6632239-5504364.png", // Board
+        "https://cdn3d.iconscout.com/3d/premium/thumb/online-learning-5353592-4468603.png" // Laptop
+    ];
+
+    const studentImages = [
+        "https://cdn3d.iconscout.com/3d/premium/thumb/graduate-student-5692633-4743267.png", // Grad Hat
+        "https://cdn3d.iconscout.com/3d/premium/thumb/student-reading-book-5692639-4743273.png", // Reading
+        "https://cdn3d.iconscout.com/3d/premium/thumb/backpack-4035917-3342621.png", // Backpack
+        "https://cdn3d.iconscout.com/3d/premium/thumb/graduation-hat-4035928-3342632.png" // Hat
+    ];
+
+    let tIndex = 0;
+    let sIndex = 0;
+
+    const tImg = document.getElementById('trainer-img');
+    const sImg = document.getElementById('student-img');
+
+    // Function to change image with fade
+    function cycleImages() {
+        // --- TRAINER ---
+        tIndex = (tIndex + 1) % trainerImages.length;
+        
+        // Add fade-out class
+        tImg.classList.add('fade-out');
+        
+        // Wait 400ms (half animation), swap src, remove fade-out
+        setTimeout(() => {
+            tImg.src = trainerImages[tIndex];
+            tImg.onload = () => {
+                tImg.classList.remove('fade-out');
+            };
+        }, 800);
+
+
+        // --- STUDENT ---
+        // Offset student animation slightly for visual variety
+        setTimeout(() => {
+            sIndex = (sIndex + 1) % studentImages.length;
+            sImg.classList.add('fade-out');
+            
+            setTimeout(() => {
+                sImg.src = studentImages[sIndex];
+                sImg.onload = () => {
+                    sImg.classList.remove('fade-out');
+                };
+            }, 800);
+        }, 400); // 400ms delay after trainer starts
+    }
+
+    // Run every 3.5 seconds
+    setInterval(cycleImages, 3500);
+
+</script>
+
+{% endblock %}

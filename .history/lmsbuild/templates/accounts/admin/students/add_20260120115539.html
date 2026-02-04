@@ -1,0 +1,42 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<style>
+/* Same 3D Form Logic */
+.form-wrap { display: flex; justify-content: center; align-items: center; min-height: 80vh; background: radial-gradient(circle, #1e293b, #020617); }
+.form-card { background: #0f172a; padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #334155; }
+h2 { color: white; text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px #38bdf8; }
+input { width: 100%; padding: 12px; margin: 10px 0; background: #020617; border: 1px solid #334155; color: white; border-radius: 8px; }
+input:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 10px rgba(56,189,248,0.3); }
+.btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, #38bdf8, #2563eb); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+.btn-submit:hover { opacity: 0.9; transform: scale(1.02); }
+.error { color: #f87171; background: rgba(248,113,113,0.1); padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; }
+</style>
+
+<div class="form-wrap">
+    <div class="form-card">
+        <h2>Add Student</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <label style="color:#94a3b8; font-size:14px;">Username</label>
+            <input type="text" name="username" required placeholder="Ex: student123">
+
+            <label style="color:#94a3b8; font-size:14px;">Email</label>
+            <input type="email" name="email" required placeholder="student@example.com">
+
+            <p style="color:#64748b; font-size:12px; text-align:center; margin-top:10px;">
+                * Password will be auto-generated.
+            </p>
+
+            <button type="submit" class="btn-submit">Create Student</button>
+            <a href="{% url 'admin_students' %}" style="display:block; text-align:center; margin-top:15px; color:#94a3b8; text-decoration:none;">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

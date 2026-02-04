@@ -1,0 +1,103 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Stats Grid Layout */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        border-left: 5px solid var(--accent);
+        transition: transform 0.3s;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card h3 { font-size: 32px; color: #1e293b; margin-bottom: 5px; }
+    .stat-card p { color: #64748b; font-size: 14px; }
+    
+    /* --- WELCOME BOX WITH HOVER MARQUEE --- */
+    .welcome-box {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        overflow: hidden; /* Contains the animation */
+        position: relative;
+    }
+
+    .welcome-wrapper {
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        max-width: 100%;
+    }
+
+    .user-name-text {
+        display: inline-block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    /* ANIMATION TRIGGER: Only on Hover */
+    .welcome-box:hover .user-name-text {
+        /* This makes it slide left and right */
+        animation: marqueeScroll 3s ease-in-out infinite alternate;
+        
+        /* This makes the color change randomly/rainbow */
+        background: linear-gradient(90deg, #fff, #facc15, #fff, #4ade80);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation-composition: add; /* Combines movement and color */
+    }
+
+    @keyframes marqueeScroll {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="welcome-box">
+        <div class="welcome-wrapper">
+            <div class="user-name-text">
+                👋 Welcome back, {{ request.user.username }}!
+            </div>
+        </div>
+        <p>You have <strong>2 pending assignments</strong> due this week. Keep learning!</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ courses_count|default:"0" }}</h3>
+            <p>Enrolled Courses</p>
+        </div>
+        <div class="stat-card" style="border-color: #10b981;">
+            <h3>12</h3>
+            <p>Lessons Completed</p>
+        </div>
+        <div class="stat-card" style="border-color: #f59e0b;">
+            <h3>85%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+
+    <div class="page-header">
+        <h3 style="color:var(--bg-panel);">Recent Activity</h3>
+        <p style="color: #64748b;">Here is what you accessed recently.</p>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.card{background:#fff;padding:25px;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,.08)}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:12px;text-align:center;border-bottom:1px solid #e5e7eb}
+th{background:#f1f5f9}
+.filter{display:flex;gap:15px;flex-wrap:wrap}
+input{padding:10px;border-radius:8px;border:1px solid #cbd5e1}
+</style>
+
+<div class="card">
+  <h2>📊 Monthly Attendance Report (Admin)</h2>
+
+  <form method="get" class="filter">
+    <input type="month" name="month" required>
+    <button class="btn edit">Generate</button>
+    <a href="{% url 'admin_attendance_export' %}" class="btn add">📤 Export Excel</a>
+  </form>
+
+  {% if data %}
+  <table>
+    <tr>
+      <th>User</th>
+      <th>Role</th>
+      <th>Days Present</th>
+    </tr>
+    {% for d in data %}
+    <tr>
+      <td>{{ d.user__username }}</td>
+      <td>{{ d.role|title }}</td>
+      <td>{{ d.total_days }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="margin-top:20px;color:#64748b;">Select month to generate report</p>
+  {% endif %}
+</div>
+
+{% endblock %}

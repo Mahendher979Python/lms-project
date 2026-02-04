@@ -1,0 +1,56 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.card{
+ background:#fff;border-radius:16px;padding:25px;margin-bottom:25px;
+ box-shadow:0 15px 40px rgba(0,0,0,.08)
+}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:center;padding:12px;border-bottom:1px solid #e5e7eb}
+th{background:#f1f5f9}
+.map{height:180px;border-radius:10px;overflow:hidden}
+iframe{width:100%;height:100%;border:0}
+</style>
+
+<div class="card">
+<h2>👨‍🏫 My Attendance</h2>
+<table>
+<tr><th>Date</th><th>Login</th><th>Logout</th><th>Hours</th></tr>
+{% for a in my_attendance %}
+<tr>
+<td>{{a.date}}</td>
+<td>{{a.login_time|default:"-"}}</td>
+<td>{{a.logout_time|default:"-"}}</td>
+<td>{{a.total_work_hours|default:"-"}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2>🎓 Students Attendance</h2>
+<table>
+<tr>
+<th>Student</th><th>Date</th><th>Login</th><th>Logout</th><th>Hours</th><th>Map</th>
+</tr>
+{% for a in students_attendance %}
+<tr>
+<td>{{a.user.username}}</td>
+<td>{{a.date}}</td>
+<td>{{a.login_time|default:"-"}}</td>
+<td>{{a.logout_time|default:"-"}}</td>
+<td>{{a.total_work_hours|default:"-"}}</td>
+<td>
+{% if a.latitude %}
+<div class="map">
+<iframe src="https://maps.google.com/maps?q={{a.latitude}},{{a.longitude}}&z=14&output=embed"></iframe>
+</div>
+{% else %}-{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+/* --- General Layout --- */
+.container-fluid {
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* --- Card Styling --- */
+.att-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid #edf2f7;
+}
+
+.att-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Login/Logout Section --- */
+.tracker-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-login { background: #22c55e; color: #fff; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+.btn-logout { background: #ef4444; color: #fff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+
+/* --- Location Card Design (Like Image 2) --- */
+.history-item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.date-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.work-hours {
+    font-weight: 700;
+    color: #334155;
+}
+
+.time-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.time-row b { color: #334155; }
+
+/* Location Section Styles */
+.location-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px dashed #cbd5e1;
+}
+
+.loc-title {
+    color: #ef4444; /* Red pin color */
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.lat-lon-text {
+    color: #16a34a; /* Green text like image */
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 6px; }
+.btn-blue { background: #3b82f6; color: white; }
+.btn-green { background: #22c55e; color: white; }
+.btn-grey { background: #64748b; color: white; }
+
+/* Map Frame */
+.map-frame-container {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+</style>
+
+<div class="att-card">
+  <div class="att-title">
+    <span>📍</span> Attendance Tracker
+  </div>
+
+  <div class="tracker-actions">
+    <button class="btn btn-login" onclick="markLogin()">Login Check-in</button>
+    <button class="btn btn-logout" onclick="markLogout()">Logout Check-out</button>
+  </div>
+
+  {% if attendance_today %}
+    <div class="time-row">
+        <span><b>In Time:</b> {{ attendance_today.login_time|default:"-" }}</span>
+        <span><b>Out Time:</b> {{ attendance_today.logout_time|default:"-" }}</span>
+    </div>
+  {% endif %}
+
+  <div id="liveMap" class="map-frame-container" style="display:none; margin-top:15px;">
+    <iframe id="liveMapFrame"></iframe>
+  </div>
+</div>
+
+<div class="att-card">
+  <div class="att-title">
+    <span>📅</span> Attendance History
+  </div>
+
+  {% for a in attendance_list %}
+  <div class="history-item">
+    <div class="history-header">
+        <span class="date-badge">{{ a.date }}</span>
+        <span class="work-hours">Work Hours: {{ a.total_work_hours|default:"00:00" }}</span>
+    </div>
+
+    <div class="time-row">
+        <div>Login: <b>{{ a.login_time|default:"-" }}</b></div>
+        <div>Logout: <b>{{ a.logout_time|default:"-" }}</b></div>
+    </div>
+
+    {% if a.latitude and a.longitude %}
+    <div class="location-section">
+        <div class="loc-title">📍 Location Detected</div>
+        <div class="lat-lon-text">
+            Lat: {{ a.latitude }}, Lon: {{ a.longitude }}
+        </div>
+        
+        <div class="action-buttons">
+            <a href="https://www.google.com/maps?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn btn-sm btn-blue">
+                Open in Google Maps
+            </a>
+            <button onclick="copyCoords('{{ a.latitude }}, {{ a.longitude }}')" class="btn btn-sm btn-grey">
+                Copy Coordinates
+            </button>
+        </div>
+
+        <div class="map-frame-container">
+            <iframe 
+                loading="lazy"
+                src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed">
+            </iframe>
+        </div>
+    </div>
+    {% else %}
+    <div class="location-section" style="text-align:center; color:#94a3b8;">
+        <i>No location data available for this date.</i>
+    </div>
+    {% endif %}
+
+  </div>
+  {% empty %}
+    <p style="text-align:center; color:#64748b;">No attendance history found.</p>
+  {% endfor %}
+
+</div>
+
+<form hidden>{% csrf_token %}</form>
+
+<script>
+function csrf(){
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+/* ---------- LOGIN ---------- */
+function markLogin(){
+  if(!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser");
+    return;
+  }
+  
+  // Show loading state
+  const btn = document.querySelector('.btn-login');
+  const originalText = btn.innerText;
+  btn.innerText = "Locating...";
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    fetch("{% url 'attendance_login' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrf(),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ latitude: lat, longitude: lng })
+    }).then(response => {
+        if(response.ok) {
+            // Show Live Map immediately
+            const mapBox = document.getElementById("liveMap");
+            const frame = document.getElementById("liveMapFrame");
+            mapBox.style.display = "block";
+            frame.src = `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=15&output=embed`;
+            
+            setTimeout(() => location.reload(), 1500);
+        }
+    });
+  }, error => {
+    alert("Unable to retrieve location. Please allow location access.");
+    btn.innerText = originalText;
+    btn.disabled = false;
+  });
+}
+
+/* ---------- LOGOUT ---------- */
+function markLogout(){
+  if(!confirm("Are you sure you want to logout?")) return;
+
+  fetch("{% url 'attendance_logout' %}", {
+    method: "POST",
+    headers: { "X-CSRFToken": csrf() }
+  }).then(() => setTimeout(() => location.reload(), 500));
+}
+
+/* ---------- UTILS ---------- */
+function copyCoords(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Coordinates copied: " + text);
+    });
+}
+</script>
+
+{% endblock %}

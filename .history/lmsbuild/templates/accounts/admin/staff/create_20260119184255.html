@@ -1,0 +1,22 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Add Staff</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" placeholder="Username">
+<input name="email" placeholder="Email">
+
+<input name="employee_id" placeholder="Employee ID">
+<input name="first_name" placeholder="First Name">
+<input name="surname" placeholder="Surname">
+<input name="designation" placeholder="Designation">
+<input name="phone" placeholder="Phone">
+<textarea name="address"></textarea>
+
+<button class="btn btn-primary">Create Staff</button>
+</form>
+
+{% endblock %}

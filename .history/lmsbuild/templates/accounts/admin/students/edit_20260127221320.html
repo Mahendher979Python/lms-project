@@ -1,0 +1,41 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<div class="box">
+
+<h2>Edit Student</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" value="{{student.user.username}}">
+
+<input type="password" name="password" placeholder="New Password">
+
+<select name="trainer">
+{% for t in trainers %}
+<option value="{{t.id}}" {% if student.trainer.id==t.id %}selected{% endif %}>
+{{t.user.username}}
+</option>
+{% endfor %}
+</select>
+
+<select name="batch">
+{% for b in batches %}
+<option value="{{b.id}}" {% if student.batch.id==b.id %}selected{% endif %}>
+{{b.name}}
+</option>
+{% endfor %}
+</select>
+
+<label>
+<input type="checkbox" name="is_active" {% if student.user.is_active %}checked{% endif %}>
+ Active
+</label>
+
+<button>Update</button>
+
+</form>
+</div>
+
+{% endblock %}

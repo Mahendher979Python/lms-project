@@ -1,0 +1,16 @@
+<h2>{{ assignment.title }}</h2>
+
+<h3 id="timer" style="color:red;"></h3>
+
+<form id="examForm" method="post"
+      action="{% url 'assignments:submit_exam' assignment.id %}">
+  {% csrf_token %}
+    {% for q in questions %}
+        <p><strong>{{ forloop.counter }}. {{ q.question_text }}</strong></p>
+    
+        <label><input type="radio" name="{{ q.id }}" value="A"> {{ q.option_a }}</label><br>
+        <label><input type="radio" name="{{ q.id }}" value="B"> {{ q.option_b }}</label><br>
+        <label><input type="radio" name="{{ q.id }}" value="C"> {{ q.option_c }}</label><br>
+        <label><input type="radio" name="{{ q.id }}" value="D"> {{ q.option_d }}</label><br>
+        <hr>
+    {% endfor %}

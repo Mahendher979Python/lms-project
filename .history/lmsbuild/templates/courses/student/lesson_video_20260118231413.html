@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ lesson.title }} - Video</title>
+</head>
+<body>
+
+<h2>{{ lesson.title }}</h2>
+
+<video controls autoplay width="800">
+    <source src="{{ lesson.video.url }}">
+</video>
+
+<p>{{ lesson.description }}</p>
+
+<a href="{% url 'student_course_detail' lesson.course.id %}">⬅ Back</a>
+
+</body>
+</html>

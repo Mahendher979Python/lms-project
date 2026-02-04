@@ -1,0 +1,144 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .form-wrapper {
+        background: #f0f2f5;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .form-card {
+        background: #fff;
+        padding: 40px;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .form-header { text-align: center; margin-bottom: 30px; }
+    .form-group { margin-bottom: 20px; }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #444;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    input:focus {
+        border-color: #4361ee;
+        outline: none;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .btn-primary {
+        background: #4361ee;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #3f37c9;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .checkbox-wrapper input {
+        width: auto;
+        margin: 0;
+        transform: scale(1.2);
+    }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>✏️ Edit Trainer</h2>
+            <p>Update trainer information</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- USER DETAILS -->
+            <div class="form-group">
+                <label>Username</label>
+                <input name="username" value="{{ trainer.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile</label>
+                <input name="mobile" value="{{ trainer.mobile }}" required>
+            </div>
+
+            <!-- TRAINER PROFILE -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <input name="emp_id" value="{{ profile.emp_id }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Domain / Subject</label>
+                    <input name="subject" value="{{ profile.subject }}" required>
+                </div>
+            </div>
+
+            <!-- STATUS -->
+            <div class="checkbox-wrapper">
+                <label style="margin:0; cursor:pointer;">
+                    <input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+                    Active Account
+                </label>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'trainer_list' %}" class="btn btn-secondary">Go Back</a>
+                <button type="submit" class="btn btn-primary">Update Trainer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

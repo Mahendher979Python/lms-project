@@ -1,0 +1,35 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>📋 Attendance Management</h2>
+
+<a href="{% url 'admin_attendance_create' %}" class="btn btn-primary">➕ Add Attendance</a>
+
+<table class="table mt-3">
+  <tr>
+    <th>User</th>
+    <th>Date</th>
+    <th>Login</th>
+    <th>Logout</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+
+  {% for a in attendance_list %}
+  <tr>
+    <td>{{ a.user.username }}</td>
+    <td>{{ a.date }}</td>
+    <td>{{ a.login_time|default:"-" }}</td>
+    <td>{{ a.logout_time|default:"-" }}</td>
+    <td>{{ a.get_status_display }}</td>
+    <td>
+      <a href="{% url 'admin_attendance_edit' a.id %}">✏ Edit</a> |
+      <a href="{% url 'admin_attendance_delete' a.id %}">🗑 Delete</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">No records</td></tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

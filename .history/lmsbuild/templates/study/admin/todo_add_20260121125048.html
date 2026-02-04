@@ -1,0 +1,197 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+/* 1. Dynamic Background Animation */
+body {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 2. 3D Glassmorphism Container */
+.form-box {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 30px;
+  margin: 20px auto;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.form-box:hover {
+  transform: translateY(-5px); /* Floating effect on hover */
+}
+
+.form-box h2 {
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 28px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* 3. Modern Inputs */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-group label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 16px;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); /* Inner shadow for depth */
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  background: #fff;
+  transform: scale(1.02); /* Slight pop on focus */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* 4. Student List - Inset 3D Look */
+.student-list {
+  max-height: 150px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2); /* Deep inset look */
+  color: #fff;
+}
+
+.student-list label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.student-list input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    accent-color: #ff4757;
+}
+
+/* Scrollbar styling */
+.student-list::-webkit-scrollbar {
+  width: 8px;
+}
+.student-list::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1); 
+  border-radius: 10px;
+}
+.student-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.5); 
+  border-radius: 10px;
+}
+
+/* 5. 3D Action Button */
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: #2ed573;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  
+  /* The 3D effect part */
+  box-shadow: 0 6px #1dbf5e, 0 10px 20px rgba(0,0,0,0.2); 
+  transition: all 0.1s;
+  top: 0;
+}
+
+.submit-btn:active {
+  /* Button press animation */
+  top: 6px; 
+  box-shadow: 0 0 #1dbf5e, inset 0 3px 5px rgba(0,0,0,0.2);
+}
+
+.submit-btn:hover {
+  background: #26af61;
+}
+
+</style>
+
+<div class="form-box">
+  <h2>➕ Add Todo</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" name="title" required placeholder="Enter task title...">
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="3" placeholder="Task details..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Upload File</label>
+      <input type="file" name="file">
+    </div>
+
+    <div class="form-group">
+      <label>Assign Trainers</label>
+      <div class="student-list">
+        {% for student in students %}
+          <label>
+              <input type="checkbox" name="students" value="{{ student.id }}">
+              {{ student.username }}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Save Todo</button>
+  </form>
+</div>
+
+{% endblock %}

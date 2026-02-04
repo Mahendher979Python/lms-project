@@ -1,0 +1,180 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+    --primary:#38f9d7;
+    --secondary:#4facfe;
+    --danger:#ff4d4d;
+    --bg-dark:#050914;
+    --glass:rgba(255,255,255,.05);
+    --border:rgba(255,255,255,.1);
+}
+
+body{background:radial-gradient(circle at top,#0b1225,#02040b);color:white;font-family:Inter}
+
+/* DASHBOARD */
+.dashboard-stats{display:grid;grid-template-columns:350px 1fr;gap:20px;margin-bottom:25px}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:20px;height:220px}
+
+/* MEDIA CARD */
+.media-card{background:var(--glass);padding:30px;border-radius:24px;border:1px solid var(--border);box-shadow:0 40px 80px rgba(0,0,0,.5)}
+
+.custom-table{width:100%;border-collapse:separate;border-spacing:0 12px}
+.custom-table th{padding:12px;font-size:12px;text-transform:uppercase}
+.custom-table td{padding:15px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+.custom-table tbody tr{background:rgba(255,255,255,.03)}
+.custom-table tbody tr:hover{background:rgba(255,255,255,.08);transform:scale(1.01)}
+
+.badge-course{background:rgba(79,172,254,.15);color:#4facfe;padding:5px 12px;border-radius:6px}
+
+.action-btn{
+background:linear-gradient(135deg,#38f9d7,#4facfe);
+padding:8px 14px;border-radius:10px;color:#000;font-weight:700
+}
+
+.icon-btn{font-size:16px;margin:0 6px;transition:.2s}
+.edit{color:#38f9d7}
+.delete{color:#ff4d4d}
+.download{color:#ccff00}
+
+.icon-btn:hover{transform:scale(1.2)}
+
+.view-preview-btn{
+background:rgba(240,147,251,.1);
+border:1px solid rgba(240,147,251,.3);
+color:#f093fb;
+padding:6px 14px;border-radius:8px;font-size:11px
+}
+
+.search-input{
+background:rgba(0,0,0,.3);
+border:1px solid var(--border);
+color:white;padding:10px 20px;border-radius:30px;width:250px
+}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center}
+.window-box{width:90%;max-width:800px;background:#0f172a;border-radius:15px}
+.window-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot-red{background:#ff5f56}
+.window-content{padding:25px}
+</style>
+
+<!-- DASHBOARD -->
+<div class="dashboard-stats">
+    <div class="stat-card"><canvas id="typeChart"></canvas></div>
+    <div class="stat-card" style="display:flex;align-items:center;justify-content:center">
+        <div>
+            <h1 style="font-size:60px">{{materials|length}}</h1>
+            <p>Total Media</p>
+        </div>
+    </div>
+</div>
+
+<!-- MEDIA HUB -->
+<div class="media-card">
+
+<div style="display:flex;justify-content:space-between;margin-bottom:20px">
+    <h2>🎞 Media Hub</h2>
+    <div style="display:flex;gap:15px">
+        <input class="search-input" id="searchInput" onkeyup="searchTable()" placeholder="Search...">
+        <a href="{% url 'admin_media_upload' %}" class="action-btn"><i class="fa-solid fa-plus"></i> Upload</a>
+    </div>
+</div>
+
+<table class="custom-table" id="mediaTable">
+<thead>
+<tr>
+<th>Name</th><th>Course</th><th>Preview</th><th>By</th><th>Status</th><th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for m in materials %}
+<tr>
+<td>{{m.title}}</td>
+
+<td><span class="badge-course">{{m.course.title}}</span></td>
+
+<td>
+<button class="view-preview-btn" onclick="openPreview('{{m.file.url}}','{{m.title}}')">
+<i class="fa-solid fa-eye"></i> Preview
+</button>
+</td>
+
+<td>{{m.uploaded_by.username}}</td>
+
+<td style="color:#38f9d7"><i class="fa-solid fa-circle-check"></i> Active</td>
+
+<td style="text-align:center">
+
+<a href="{% url 'admin_media_edit' m.id %}" class="icon-btn edit">
+<i class="fa-solid fa-pen-to-square"></i>
+</a>
+
+<a href="{{m.file.url}}" download class="icon-btn download">
+<i class="fa-solid fa-download"></i>
+</a>
+
+<a href="{% url 'admin_media_delete' m.id %}"
+onclick="return confirm('Delete permanently?')"
+class="icon-btn delete">
+<i class="fa-solid fa-trash"></i>
+</a>
+
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="modal-overlay" id="previewModal">
+<div class="window-box">
+<div class="window-header">
+<div class="dot dot-red" onclick="closePreview()"></div>
+<div id="modalTitle"></div>
+</div>
+<div class="window-content" id="modalBody"></div>
+</div>
+</div>
+
+<script>
+function searchTable(){
+let v=document.getElementById("searchInput").value.toUpperCase();
+document.querySelectorAll("#mediaTable tbody tr").forEach(r=>{
+r.style.display=r.innerText.toUpperCase().includes(v)?"":"none";
+})
+}
+
+function openPreview(url,title){
+modalTitle.innerText=title;
+let ext=url.split('.').pop().toLowerCase();
+if(['jpg','png','jpeg'].includes(ext))
+modalBody.innerHTML=`<img src="${url}" style="width:100%">`;
+else if(ext=='mp4')
+modalBody.innerHTML=`<video controls autoplay style="width:100%"><source src="${url}"></video>`;
+else if(ext=='pdf')
+modalBody.innerHTML=`<iframe src="${url}" width="100%" height="500"></iframe>`;
+else modalBody.innerHTML="Preview not supported";
+previewModal.style.display="flex";
+}
+
+function closePreview(){previewModal.style.display="none"}
+
+new Chart(typeChart,{
+type:'doughnut',
+data:{labels:['Media'],datasets:[{data:[{{materials|length}}],backgroundColor:['#38f9d7']}]},
+options:{cutout:'75%'}
+})
+</script>
+
+{% endblock %}

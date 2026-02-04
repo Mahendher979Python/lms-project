@@ -1,0 +1,38 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+<style>
+.upload{
+max-width:600px;margin:50px auto;
+background:white;padding:40px;border-radius:25px;
+box-shadow:0 25px 60px rgba(0,0,0,.15)
+}
+.drop{
+border:2px dashed #6366f1;padding:40px;border-radius:20px;text-align:center
+}
+</style>
+
+<div class="upload">
+<h2>Upload</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<input name="title" class="form-control mb-3" placeholder="Title">
+
+<div class="drop">
+<input type="file" name="file" id="file">
+<div id="preview"></div>
+</div>
+
+<button class="btn btn-primary mt-3">Upload</button>
+</form>
+</div>
+
+<script>
+file.onchange=e=>{
+let f=e.target.files[0];
+preview.innerHTML=f.type.includes('image')?
+`<img src="${URL.createObjectURL(f)}" style="max-width:100%">`:
+`<p>${f.name}</p>`;
+}
+</script>
+{% endblock %}

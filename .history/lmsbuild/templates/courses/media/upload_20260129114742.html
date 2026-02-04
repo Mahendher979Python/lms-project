@@ -1,0 +1,102 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+.upload-card{
+max-width:600px;
+margin:auto;
+background:rgba(255,255,255,.05);
+padding:40px;
+border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+
+.upload-title{
+font-size:24px;
+font-weight:700;
+color:#38f9d7;
+margin-bottom:10px;
+}
+
+.form-group{margin-bottom:20px;}
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:10px;
+background:#0f172a;
+border:1px solid rgba(255,255,255,.2);
+color:white;
+}
+
+.upload-box{
+border:2px dashed rgba(255,255,255,.3);
+padding:35px;
+text-align:center;
+border-radius:15px;
+cursor:pointer;
+}
+
+.btn-upload{
+margin-top:20px;
+background:linear-gradient(135deg,#38f9d7,#4facfe);
+padding:12px 35px;
+border:none;
+border-radius:30px;
+font-weight:700;
+cursor:pointer;
+}
+
+.file-name{margin-top:10px;opacity:.7;}
+</style>
+
+<div class="upload-card">
+
+<div class="upload-title">
+<i class="fa-solid fa-cloud-arrow-up"></i> Upload Media
+</div>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="form-group">
+<input name="title" placeholder="Material title" required>
+</div>
+
+<div class="form-group">
+<select name="course" required>
+<option value="">Select Course</option>
+{% for c in courses %}
+<option value="{{c.id}}">{{c.title}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label class="upload-box">
+<i class="fa-solid fa-file-arrow-up"></i><br>
+Choose File
+<input type="file" name="file" hidden required onchange="showFile(this)">
+</label>
+<div id="fileName" class="file-name"></div>
+</div>
+
+<center>
+<button type="submit" class="btn-upload">
+Upload
+</button>
+</center>
+
+</form>
+
+</div>
+
+<script>
+function showFile(input){
+document.getElementById("fileName").innerText="Selected: "+input.files[0].name;
+}
+</script>
+
+{% endblock %}

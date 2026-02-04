@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        --bg-dark: #0f172a;
+        --bg-panel: #1e293b;
+        --bg-light: #f1f5f9;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-hover: #0ea5e9;
+        --danger: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+
+    body { background: var(--bg-light); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* --- Topbar --- */
+    .topbar {
+        height: 60px;
+        background: var(--bg-panel);
+        color: var(--text-main);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .brand h2 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
+    
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: var(--text-main);
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: none; /* Hidden on desktop */
+    }
+
+    .user-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 0.95rem;
+    }
+
+    /* Power Button Logout */
+    .logout-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .logout-btn:hover {
+        background: var(--danger);
+        color: white;
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+
+    /* --- Layout --- */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* --- Sidebar --- */
+    .sidebar {
+        width: 250px;
+        background: var(--bg-dark);
+        color: #fff;
+        padding: 20px 15px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--accent);
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 15px;
+    }
+
+    .menu { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+
+    .menu a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        border-radius: 8px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .menu a:hover, .menu a.active {
+        background: var(--accent);
+        color: #0f172a;
+        transform: translateX(5px);
+    }
+
+    .menu a i { width: 20px; text-align: center; }
+
+    /* --- Upgrade Box --- */
+    .upgrade-box {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin-top: auto; /* Pushes to bottom */
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upgrade-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255,255,255,0.1);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+
+    .upgrade-box h4 { margin-bottom: 5px; font-size: 1rem; }
+    .upgrade-box small { display: block; margin-bottom: 15px; font-size: 0.75rem; opacity: 0.9; }
+
+    .upgrade-btn {
+        background: white;
+        color: #2563eb;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .upgrade-btn:hover { transform: translateY(-2px); }
+
+    /* --- Content Area --- */
+    .content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: absolute;
+            left: -250px;
+            height: calc(100vh - 60px);
+            z-index: 999;
+        }
+        .sidebar.active { left: 0; }
+        .toggle-btn { display: block; }
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="brand">
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <h2><i class="fa-solid fa-graduation-cap" style="color:var(--accent);"></i> Student Dashboard</h2>
+        </div>
+
+        <div class="user-actions">
+            <span>Hello, <b>{{ request.user.username }}</b></span>
+            <a href="{% url 'logout' %}" class="logout-btn" onclick="return confirmLogout()" title="Logout">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                Main Menu
+            </div>
+
+            <div class="menu">
+                <a href="{% url 'student_dashboard' %}" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="{% url 'student_course_list' %}"><i class="fa-solid fa-book-open"></i> My Courses</a>
+                <a href="{% url 'student_todo_list' %}">💬 Message</a>
+                <a href="{% url 'student_notes_list' %}">📘 Notes</a>
+
+                <a href="#"><i class="fa-solid fa-pen-to-square"></i> Assignments</a>
+                <a href="{% url 'student_attendance' %}"><i class="fa-solid fa-calendar-check"></i>📅 My Attendance</a>
+</a>
+                <a href="#"><i class="fa-solid fa-folder-open"></i> Materials</a>
+                <a href="#"><i class="fa-solid fa-chart-line"></i> Progress</a>
+            </div>
+
+            <div class="upgrade-box">
+                <h4>Pro Plan 🚀</h4>
+                <small>Get unlimited access</small>
+                <button class="upgrade-btn" onclick="alert('Redirecting to Payment Gateway...')">Upgrade Now</button>
+            </div>
+        </div>
+
+        <div class="content">
+            {% block content %}
+                <h1>Welcome Back!</h1>
+                <p style="color:#64748b; margin-top:10px;">Select a course from the menu to start learning.</p>
+            {% endblock %}
+        </div>
+
+    </div>
+
+    <script>
+        // Toggle Sidebar for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Logout Confirmation
+        function confirmLogout() {
+            return confirm("Are you sure you want to logout?");
+        }
+
+        // Highlight Active Menu (Optional: Simple JS logic to highlight current link)
+        const currentPath = window.location.pathname;
+        const menuLinks = document.querySelectorAll('.menu a');
+        
+        menuLinks.forEach(link => {
+            if(link.getAttribute('href') === currentPath) {
+                // Remove active class from others
+                document.querySelector('.menu a.active')?.classList.remove('active');
+                // Add active class to current
+                link.classList.add('active');
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    .course-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s;
+        display: flex;
+        flex-direction: column;
+    }
+    .course-card:hover { transform: translateY(-5px); }
+    
+    .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .card-body h3 { font-size: 18px; margin-bottom: 10px; color: #1e293b; }
+    .card-body p { color: #64748b; font-size: 14px; line-height: 1.5; margin-bottom: 15px; flex: 1; }
+    .trainer-badge { 
+        background: #f1f5f9; color: #475569; 
+        padding: 5px 10px; border-radius: 20px; 
+        font-size: 12px; font-weight: 600; width: fit-content;
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h2>📚 My Courses</h2>
+        <p>Select a course to start learning.</p>
+    </div>
+
+    {% if courses %}
+    <div class="course-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="card-body">
+                <div class="trainer-badge">👨‍🏫 {{ course.trainer.username }}</div>
+                <h3>{{ course.title }}</h3>
+                <p>{{ course.description|truncatewords:20 }}</p>
+                <a href="{% url 'student_course_detail' course.id %}" class="btn" style="width: 100%; text-align: center;">
+                    View Lessons <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px; background: #fff; border-radius: 10px;">
+            <p>No courses enrolled yet.</p>
+        </div>
+    {% endif %}
+
+{% endblock %}

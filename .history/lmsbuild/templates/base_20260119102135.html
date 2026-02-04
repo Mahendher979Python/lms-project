@@ -1,0 +1,312 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}LMS | Mahendher Platform{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS VARIABLES */
+        :root {
+            --primary: #2563eb;       /* Main Blue */
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;     /* Dark Navy */
+            --text-main: #334155;
+            --text-light: #64748b;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        /* ================= THEME VARIABLES ================= */
+:root{
+  --bg: #f3f6fb;
+  --text: #111827;
+  --card: #ffffff;
+  --nav: #111827;
+  --footer: #0f172a;
+  --accent: #2563eb;
+}
+
+/* ================= DARK MODE ================= */
+body.dark{
+  --bg: #0f172a;
+  --text: #e5e7eb;
+  --card: #1e293b;
+  --nav: #020617;
+  --footer: #020617;
+  --accent: #38bdf8;
+}
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: var(--white);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 10px; }
+        .logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .brand-name { font-size: 22px; font-weight: 700; color: var(--secondary); letter-spacing: -0.5px; }
+        .brand-name span { color: var(--primary); }
+
+        .nav-center { display: flex; gap: 30px; }
+        .nav-link { font-weight: 500; color: var(--text-main); font-size: 15px; position: relative; }
+        .nav-link:hover { color: var(--primary); }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -5px; left: 0; background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        
+        /* Icons */
+        .icon-btn { font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; }
+        .icon-btn:hover { color: var(--primary); }
+        .badge-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 8px; height: 8px; background: var(--danger);
+            border-radius: 50%; border: 2px solid var(--white);
+        }
+
+        /* Buttons */
+        .btn-nav {
+            padding: 8px 20px; border-radius: 50px; font-weight: 600; font-size: 14px;
+        }
+        .btn-outline { border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--white); }
+        .btn-fill { background: var(--primary); color: var(--white); border: 1px solid var(--primary); }
+        .btn-fill:hover { background: var(--primary-dark); }
+
+        /* Mobile Menu Icon */
+        .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--secondary); }
+
+        /* ================= ALERTS (MESSAGES) ================= */
+        .alert-container {
+            width: 100%; max-width: 600px; margin: 20px auto 0; padding: 0 20px;
+        }
+        .alert {
+            padding: 15px; border-radius: 8px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 14px; box-shadow: var(--shadow);
+            animation: slideDown 0.5s ease-out;
+        }
+        .alert-success { background: #dcfce7; color: #166534; border-left: 5px solid #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; border-left: 5px solid #991b1b; }
+        .close-alert { cursor: pointer; font-weight: bold; font-size: 18px; }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        main { flex: 1; min-height: 80vh; }
+
+        /* ================= FOOTER ================= */
+        footer {
+            background: var(--secondary);
+            color: #cbd5e1;
+            padding: 50px 5% 20px;
+            margin-top: auto;
+        }
+        .footer-content {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px; margin-bottom: 40px; border-bottom: 1px solid #334155; padding-bottom: 30px;
+        }
+        .footer-col h4 { color: var(--white); margin-bottom: 20px; font-size: 18px; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a:hover { color: var(--primary); padding-left: 5px; }
+        
+        .social-icons a {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 35px; height: 35px; background: rgba(255,255,255,0.1);
+            border-radius: 50%; margin-right: 10px; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--primary); color: white; transform: translateY(-3px); }
+
+        .copyright { text-align: center; font-size: 13px; }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .nav-center {
+                position: fixed; top: 70px; left: -100%;
+                width: 100%; height: calc(100vh - 70px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center; justify-content: center;
+                transition: 0.4s; z-index: 999;
+            }
+            .nav-center.active { left: 0; }
+            .nav-right { display: none; } /* Hide login buttons on mobile for simplicity or move to menu */
+            .hamburger { display: block; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <img src="{% static 'images/Speshwaylogo.jpg' %}" onerror="this.src='https://via.placeholder.com/40'" class="logo-img" alt="Logo">
+            <a href="/" class="brand-name">LMS<span>Pro</span></a>
+        </div>
+
+        <nav class="nav-center" id="nav-menu">
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="#" class="nav-link">Courses</a>
+            <a href="#" class="nav-link">Instructors</a>
+            <a href="#" class="nav-link">About</a>
+            <a href="#" class="nav-link">Contact</a>
+            
+            <a href="{% url 'login' %}" class="nav-link mobile-only" style="display:none;">Login</a>
+        </nav>
+
+      
+            <div class="icon-btn" title="Search"><i class="fas fa-search"></i></div>
+            <div class="icon-btn" title="Notifications">
+                <i class="far fa-bell"></i>
+                <span class="badge-dot"></span>
+            </div>
+            <div class="nav-right">
+            <button id="themeToggle" class="theme-btn" aria-label="Toggle Dark Mode">
+              🌙
+            </button>
+            {% if user.is_authenticated %}
+                <a href="#" class="btn-nav btn-fill">Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-nav btn-outline">Log In</a>
+                <a href="#" class="btn-nav btn-fill">Sign Up</a>
+            {% endif %}
+        </div>
+
+        <div class="hamburger" id="hamburger-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                <span>{{ message }}</span>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>LMS Pro</h4>
+                <p>Empowering students worldwide with quality education and expert guidance.</p>
+                <div class="social-icons" style="margin-top: 15px;">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">All Courses</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Student Support</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Hyderabad, India</li>
+                    <li><i class="fas fa-envelope"></i> support@lms.com</li>
+                    <li><i class="fas fa-phone"></i> +91 98765 43210</li>
+                </ul>
+            </div>
+        </div>
+        <p class="copyright">© 2026 LMS Platform | Designed by <b>Banavath Mahendher</b></p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger-btn');
+        const navMenu = document.getElementById('nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            // Change icon from bars to times (X)
+            const icon = hamburger.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close Alert Auto (Optional)
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            });
+        }, 5000); // Disappears after 5 seconds
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

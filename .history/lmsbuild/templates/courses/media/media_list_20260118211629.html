@@ -1,0 +1,30 @@
+<h2>My Session Videos</h2>
+
+<a href="{% url 'trainer_add_video' %}">+ Add Video</a>
+
+<table>
+  <tr>
+    <th>S.No</th>
+    <th>Title</th>
+    <th>Status</th>
+    <th>Preview</th>
+    <th>Action</th>
+  </tr>
+
+  {% for video in videos %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ video.title }}</td>
+    <td>{% if video.is_active %}Active{% else %}Inactive{% endif %}</td>
+    <td>
+      <video width="120" controls>
+        <source src="{{ video.video.url }}">
+      </video>
+    </td>
+    <td>
+      <a href="#">Edit</a>
+      <a href="#">Delete</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>

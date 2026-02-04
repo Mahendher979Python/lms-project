@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <style>
+        body{font-family:Arial;background:#f5f6fa;padding:20px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,280px);gap:20px}
+        .card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 4px 8px #ccc}
+        video,img{width:100%;border-radius:8px}
+    </style>
+</head>
+<body>
+
+<h2>🎓 Student Dashboard</h2>
+
+<h3>📘 My Courses</h3>
+<div class="grid">
+{% for c in courses %}
+  <div class="card">
+    <h4>{{ c.title }}</h4>
+    <p>{{ c.description }}</p>
+    <a href="{% url 'student_course_detail' c.id %}">View Course</a>
+  </div>
+{% empty %}
+<p>You are not enrolled in any courses</p>
+{% endfor %}
+</div>
+
+<hr>
+
+<h3>🎥 Session Videos</h3>
+<div class="grid">
+{% for v in session_videos %}
+  <div class="card">
+    <video controls>
+        <source src="{{ v.video.url }}">
+    </video>
+    <h4>{{ v.title }}</h4>
+    <p>{{ v.description }}</p>
+  </div>
+{% empty %}
+<p>No session videos</p>
+{% endfor %}
+</div>
+
+<hr>
+
+<h3>📢 Advertisements</h3>
+<div class="grid">
+{% for ad in ads %}
+  <div class="card">
+    <img src="{{ ad.image.url }}">
+    <h4>{{ ad.title }}</h4>
+  </div>
+{% endfor %}
+</div>
+
+</body>
+</html>

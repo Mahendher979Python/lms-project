@@ -1,0 +1,40 @@
+
+{% extends "admin_base.html" %}
+{% block content %}
+   <h2>📘 Lessons – {{ course.title }}</h2>
+
+<table border="1" cellpadding="10" width="800">
+<tr>
+    <th>Order</th>
+    <th>Lesson</th>
+    <th>Description</th>
+    <th>Duration</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for lesson in lessons %}
+<tr>
+    <td>{{ lesson.order }}</td>
+    <td>{{ lesson.title }}</td>
+    <td>{{ lesson.description }}</td>
+    <td>{{ lesson.duration }}</td>
+    <td>
+        {% if lesson.id in watched_lessons %}
+            ✅ Watched
+        {% else %}
+            ❌ Not Watched
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'student_lesson_video' lesson.id %}">
+            ▶ Watch
+        </a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+<a href="{% url 'student_course_list' %}">⬅ Back</a>
+
+{% endblock %}

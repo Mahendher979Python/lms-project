@@ -1,0 +1,33 @@
+<h3>{{ submission.student.username }} - Submission Review</h3>
+
+<p>
+  Score: <strong>{{ submission.score }}</strong><br>
+  Attempt: {{ submission.attempt_number }}
+</p>
+
+<table class="lms-table">
+  <thead>
+    <tr>
+      <th>Question</th>
+      <th>Selected</th>
+      <th>Correct</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in answers %}
+    <tr>
+      <td>{{ a.question.text }}</td>
+      <td>{{ a.selected_option }}</td>
+      <td>{{ a.question.correct_option }}</td>
+      <td>
+        {% if a.is_correct %}
+          ✅ Correct
+        {% else %}
+          ❌ Wrong
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

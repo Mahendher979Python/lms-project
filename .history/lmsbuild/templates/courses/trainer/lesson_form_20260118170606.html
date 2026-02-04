@@ -1,0 +1,19 @@
+<h2>➕ Lesson – {{ course.title }}</h2>
+
+<form method="POST"
+      enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <p>{{ form.title.label }}<br>{{ form.title }}</p>
+    <p>{{ form.description.label }}<br>{{ form.description }}</p>
+    <p>{{ form.order.label }}<br>{{ form.order }}</p>
+    <p>{{ form.video.label }}<br>{{ form.video }}</p>
+
+    <button type="submit">💾 Save Lesson</button>
+</form>
+
+<br>
+<a href="{% url 'trainer_lesson_list' course.id %}">
+    ⬅ Back to Lessons
+</a>

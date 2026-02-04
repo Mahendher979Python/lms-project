@@ -1,0 +1,28 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Trainer Management</h2>
+
+<a href="{% url 'trainer_create' %}">➕ Add Trainer</a>
+
+<table border="1" width="100%" cellpadding="10">
+<tr>
+<th>Name</th><th>Subject</th><th>Status</th><th>Action</th>
+</tr>
+
+{% for t in trainers %}
+<tr>
+<td>{{t.user.username}}</td>
+<td>{{t.subject}}</td>
+
+<td>{% if t.user.is_active %}Active{% else %}Inactive{% endif %}</td>
+
+<td>
+<a href="{% url 'trainer_edit' t.user.id %}">Edit</a>
+<a href="{% url 'trainer_delete' t.user.id %}">Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

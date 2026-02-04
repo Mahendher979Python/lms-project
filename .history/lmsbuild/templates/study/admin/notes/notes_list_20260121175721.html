@@ -1,0 +1,42 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{padding:10px;border-bottom:1px solid #ddd}
+th{background:#f3f4f6}
+a.btn{padding:4px 10px;border-radius:6px}
+.edit{background:#22c55e;color:#fff}
+.del{background:#ef4444;color:#fff}
+</style>
+
+<h2>📘 Manage Notes</h2>
+<a href="{% url 'admin_notes_add' %}" class="btn edit">➕ Add Note</a>
+
+<table>
+<tr>
+  <th>Title</th>
+  <th>Visibility</th>
+  <th>Assigned</th>
+  <th>Created</th>
+  <th>Actions</th>
+</tr>
+
+{% for note in notes %}
+<tr>
+  <td>{{ note.title }}</td>
+  <td>{{ note.visibility|title }}</td>
+  <td>{{ note.assigned_to.count }}</td>
+  <td>{{ note.created_at|date:"d M Y" }}</td>
+  <td>
+    <a href="{% url 'admin_notes_edit' note.id %}" class="btn edit">Edit</a>
+    <a href="{% url 'admin_notes_delete' note.id %}" class="btn del"
+       onclick="return confirm('Delete?')">Delete</a>
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No notes found</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}

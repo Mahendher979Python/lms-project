@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<h1>➕ Create Trainer</h1>
+
+<form method="post" style="max-width:600px;">
+  {% csrf_token %}
+
+  <div style="margin-bottom:16px;">
+    <label>Username</label>
+    <input type="text" name="username" required
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label>Password</label>
+    <input type="password" name="password" required
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label>Mobile</label>
+    <input type="text" name="mobile"
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label>Qualification</label>
+    <input type="text" name="qualification"
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label>Designation</label>
+    <input type="text" name="designation"
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <label>Joining Date</label>
+    <input type="date" name="joining_date"
+           style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+
+  <button type="submit"
+          style="padding:12px 20px; background:#3b82f6; color:white; border:none; border-radius:8px;">
+    Save Trainer
+  </button>
+
+  <a href="{% url 'trainer_list' %}"
+     style="margin-left:10px; color:#475569; text-decoration:none;">
+    Cancel
+  </a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,5 @@
+{% if passed %}
+  <a href="{% url 'assignments:download_certificate' submission.id %}">
+    🎓 Download Certificate
+  </a>
+{% endif %}

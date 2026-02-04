@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS | Banavath Mahendher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-left">
+    <a href="/" class="brand-wrap">
+      <img src="{% static 'images/Speshwaylogo.jpg' %}" class="logo">
+      <span class="brand">LMS</span>
+    </a>
+  </div>
+
+  <nav class="nav-center">
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'student_courses' %}">Courses</a>
+      <a href="{% url 'about' %}">About</a>
+      <a href="{% url 'contact' %}">Contact</a>
+
+  </nav>
+
+  <div class="nav-right">
+    <div class="notification">
+      <img src="{% static 'images/notification.png' %}">
+      <span class="badge">3</span>
+    </div>
+    <a href="{% url 'login' %}" class="btn primary">Login</a>
+  </div>
+</header>
+
+<main>{% block content %}{% endblock %}</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <p>
+    © 2026 LMS Platform | Designed by <b>Banavath Mahendher</b>
+  </p>
+
+  <div class="social-links">
+    <a href="https://www.facebook.com/banavath.mahendhar" aria-label="Facebook"><img src="{% static 'images/social/facebook.png' %}" alt="Facebook"></a>
+    <a href="https://www.instagram.com/iam_the_creator__/" aria-label="Instagram"><img src="{% static 'images/social/instagram.png' %}" alt="Instagram"></a>
+    <a href="https://www.linkedin.com/in/b-mahendher-bb2965298/" aria-label="LinkedIn"><img src="{% static 'images/social/linkedin.png' %}" alt="LinkedIn"></a>
+    <a href="https://x.com/mahibanavath979" aria-label="Twitter"><img src="{% static 'images/social/twitter.png' %}" alt="Twitter"></a>
+  </div>
+</footer>
+
+<script src="{% static 'js/base.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+

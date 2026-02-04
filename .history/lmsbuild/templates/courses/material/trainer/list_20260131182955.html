@@ -1,0 +1,68 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.material-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px
+}
+.card{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,.08)
+}
+.btn{
+    padding:6px 12px;
+    border-radius:6px;
+    background:#16a34a;
+    color:white;
+    text-decoration:none;
+    margin-right:8px
+}
+.btn-danger{background:#dc2626}
+video{border-radius:8px}
+</style>
+
+<div class="material-header">
+<h2>{{course.title}} - Materials</h2>
+
+<a class="btn" href="{% url 'trainer_material_upload' course.id %}">
++ Upload Material
+</a>
+</div>
+
+{% if materials %}
+
+{% for m in materials %}
+<div class="card">
+
+<h4>{{m.title}}</h4>
+
+{% if m.file %}
+<video width="280" controls>
+    <source src="{{ m.file.url }}">
+</video>
+{% endif %}
+
+<br><br>
+
+<a class="btn" href="{% url 'trainer_material_edit' m.id %}">Edit</a>
+
+<a class="btn btn-danger"
+   href="{% url 'trainer_material_delete' m.id %}"
+   onclick="return confirm('Are you sure to delete?')">
+Delete
+</a>
+
+</div>
+{% endfor %}
+
+{% else %}
+<p>No materials uploaded yet.</p>
+{% endif %}
+
+{% endblock %}

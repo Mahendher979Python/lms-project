@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trainer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
+        .container {
+            width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        a {
+            display: inline-block;
+            margin: 8px 0;
+            text-decoration: none;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border-radius: 4px;
+            width: 250px;
+            text-align: center;
+        }
+        a:hover {
+            background: #0056b3;
+        }
+        .logout {
+            background: #dc3545;
+        }
+        .logout:hover {
+            background: #b52a37;
+        }
+        hr {
+            margin: 20px 0;
+        }
+        .welcome {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>👋 Trainer Dashboard</h1>
+
+    <p class="welcome">
+        Welcome <strong>{{ request.user.username }}</strong>
+    </p>
+
+    <hr>
+
+    <!-- COURSES -->
+    <a href="{% url 'trainer_course_list' %}">📚 My Courses</a><br>
+
+    <!-- ADD COURSE -->
+    <a href="{% url 'trainer_course_create' %}">➕ Add New Course</a><br>
+
+    <hr>
+
+    <!-- LESSONS -->
+    <a href="{% url 'trainer_course_list' %}">
+        📖 Manage Lessons
+    </a><br>
+
+    <hr>
+
+    <!-- VIDEOS -->
+    <a href="{% url 'trainer_video_list' %}">🎥 My Videos</a><br>
+    <a href="{% url 'trainer_video_add' %}">➕ Upload Video</a><br>
+
+    <hr>
+
+    <!-- IMAGES / ADS -->
+    <a href="{% url 'trainer_ad_list' %}">🖼️ My Images</a><br>
+    <a href="{% url 'trainer_ad_add' %}">➕ Upload Image</a><br>
+
+    <hr>
+
+    <!-- PUBLIC MEDIA PREVIEW -->
+    <a href="{% url 'public_media_view' %}">
+        🌐 View Public Media
+    </a><br>
+
+    <hr>
+
+    <!-- LOGOUT -->
+    <a href="{% url 'logout' %}" class="logout">🚪 Logout</a>
+
+</div>
+
+</body>
+</html>

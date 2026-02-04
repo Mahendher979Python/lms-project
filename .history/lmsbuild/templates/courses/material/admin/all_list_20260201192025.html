@@ -1,0 +1,235 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root {
+        --glass: rgba(255, 255, 255, 0.95);
+        --accent: #4facfe;
+        --dark-bg: #f8fafc;
+    }
+
+    body { background-color: var(--dark-bg); font-family: 'Inter', sans-serif; }
+
+    .main-container { padding: 30px; }
+
+    /* Stats Cards & Charts */
+    .stats-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .chart-container { height: 250px; position: relative; }
+
+    /* Table Styling */
+    .glass-card {
+        background: var(--glass);
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .table thead th { border: none; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+
+    .table tbody tr { transition: 0.3s; }
+    .table tbody tr:hover { background-color: rgba(79, 172, 254, 0.05); transform: scale(1.002); }
+
+    /* Custom Badges */
+    .file-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .badge-pdf { background: #fee2e2; color: #dc2626; }
+    .badge-video { background: #dcfce7; color: #16a34a; }
+    .badge-image { background: #fef9c3; color: #ca8a04; }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 0 2px;
+        transition: 0.2s;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+</style>
+
+<div class="main-container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Media Hub Dashboard</h2>
+            <p class="text-muted">Manage all your course materials and assets</p>
+        </div>
+        <a href="{% url 'admin_material_upload' course_id=1 %}" class="btn upload-btn">
+            <i class="fa-solid fa-plus me-2"></i> Upload New Material
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="stats-card">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-line me-2"></i> Upload Trends</h6>
+                <div class="chart-container">
+                    <canvas id="uploadChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-pie-chart me-2"></i> Content Type</h6>
+                <div class="chart-container">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card mt-2">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+            <h5 class="mb-0 fw-bold">Recent Uploads</h5>
+            <input type="text" id="tableSearch" class="form-control form-control-sm w-25" placeholder="Search materials...">
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="materialTable">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Title & Details</th>
+                        <th>Course</th>
+                        <th>Format</th>
+                        <th>Uploaded By</th>
+                        <th>Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in materials %}
+                    <tr>
+                        <td class="ps-4 text-muted">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ m.title }}</div>
+                            <small class="text-muted">ID: #MAT-0{{ m.id }}</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ m.course.title }}</span></td>
+                        <td>
+                            {% if ".pdf" in m.file.url %}
+                                <span class="file-badge badge-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</span>
+                            {% elif ".mp4" in m.file.url or ".webm" in m.file.url %}
+                                <span class="file-badge badge-video"><i class="fa-solid fa-circle-play"></i> Video</span>
+                            {% else %}
+                                <span class="file-badge badge-image"><i class="fa-solid fa-image"></i> Media</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 12px;">
+                                    {{ m.uploaded_by.username|slice:":1"|upper }}
+                                </div>
+                                {{ m.uploaded_by.username }}
+                            </div>
+                        </td>
+                        <td>{{ m.created_at|date:"d M, Y" }}</td>
+                        <td class="text-center">
+                            <a href="{{ m.file.url }}" target="_blank" class="btn-action btn-outline-primary" title="View File">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="{% url 'admin_material_edit' m.id %}" class="btn-action btn-warning text-white" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="{% url 'admin_material_delete' m.id %}" class="btn-action btn-danger" onclick="return confirm('Are you sure?');" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-folder-open fa-3x mb-3 d-block"></i>
+                            No materials have been uploaded yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search Functionality
+    document.getElementById('tableSearch').addEventListener('keyup', function() {
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#materialTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(value) ? '' : 'none';
+        });
+    });
+
+    // --- DATA VISUALIZATION (CHARTS) ---
+
+    // 1. Line Chart: Upload Trends (Static Demo Data)
+    const ctx1 = document.getElementById('uploadChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Uploads',
+                data: [2, 5, 3, 8, 4, 1, 6],
+                borderColor: '#4facfe',
+                tension: 0.4,
+                fill: true,
+                backgroundColor: 'rgba(79, 172, 254, 0.1)'
+            }]
+        },
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    // 2. Pie Chart: Material Types (Static Demo Data)
+    const ctx2 = document.getElementById('typeChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['PDF', 'Video', 'Images'],
+            datasets: [{
+                data: [12, 19, 7],
+                backgroundColor: ['#dc2626', '#16a34a', '#ca8a04'],
+                borderWidth: 0
+            }]
+        },
+        options: { maintainAspectRatio: false, cutout: '70%' }
+    });
+</script>
+
+{% endblock %}

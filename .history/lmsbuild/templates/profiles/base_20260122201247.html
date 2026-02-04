@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Dashboard</title>
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 4D / NEUMORPHIC DESIGN SYSTEM 
+    Author: B. Mahi (Trainer)
+*/
+
+:root {
+    --bg-color: #e0e5ec;
+    --text-main: #4a4a4a;
+    --text-light: #8d97ad;
+    --brand-color: #2563eb;
+    --brand-hover: #1d4ed8;
+    
+    /* The "4D" Shadows - Light & Dark */
+    --shadow-light: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+    --shadow-inset: inset 6px 6px 10px 0 rgba(163,177,198, 0.7), inset -6px -6px 10px 0 rgba(255,255,255, 0.8);
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h2, h3 {
+    color: #333;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+/* --- 4D CARD CONTAINER --- */
+.card-3d {
+    background: var(--bg-color);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+    transform: translateY(-5px); /* Floating effect */
+}
+
+/* --- 4D BUTTONS --- */
+.btn-3d {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 50px; /* Pill shape */
+    background: var(--bg-color);
+    box-shadow: var(--shadow-light);
+    color: var(--brand-color);
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-3d:hover {
+    box-shadow: var(--shadow-inset); /* Pressed effect */
+    color: var(--brand-hover);
+    transform: scale(0.98);
+}
+
+.btn-success { color: #10b981; }
+.btn-secondary { color: #6b7280; }
+
+/* --- 4D FORM INPUTS --- */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+textarea, 
+select {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--bg-color);
+    box-shadow: var(--shadow-inset); /* Inset shadow looks like a cavity */
+    color: var(--text-main);
+    outline: none;
+    box-sizing: border-box; /* Fixes padding issues */
+    margin-bottom: 15px;
+}
+
+input:focus {
+    box-shadow: inset 4px 4px 8px 0 rgba(163,177,198, 0.7), inset -4px -4px 8px 0 rgba(255,255,255, 0.8), 0 0 5px var(--brand-color);
+}
+
+/* --- AVATARS --- */
+.avatar-lg {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: var(--shadow-light);
+    border: 3px solid var(--bg-color);
+}
+
+.avatar-sm {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 3px 3px 6px rgba(163,177,198,0.6), -3px -3px 6px rgba(255,255,255, 0.5);
+}
+
+/* --- TABLES --- */
+.table-container {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px; /* Spacing between rows */
+}
+
+.table-row-3d {
+    background: var(--bg-color);
+    box-shadow: 6px 6px 10px rgba(163,177,198,0.5), -6px -6px 10px rgba(255,255,255, 0.6);
+    border-radius: 15px;
+    transition: transform 0.2s;
+}
+
+.table-row-3d td {
+    padding: 15px;
+}
+
+.table-row-3d td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
+.table-row-3d td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
+
+.table-row-3d:hover {
+    transform: scale(1.01);
+}
+
+/* --- BADGES --- */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    box-shadow: var(--shadow-inset);
+}
+.yes { color: #10b981; background: #ecfdf5; }
+.no { color: #ef4444; background: #fef2f2; }
+
+/* --- DATA ROWS (Profile Detail) --- */
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.data-row span:first-child { font-weight: 600; color: var(--text-light); }
+.data-row span:last-child { font-weight: 500; color: var(--text-main); }
+        /* Override font family globally */
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body>
+
+    <nav style="margin-bottom: 40px; display:flex; justify-content:space-between; align-items:center;">
+        <h1 style="color:var(--brand-color);">LMS Portal</h1>
+        <div>
+            <a href="#" class="btn-3d">Dashboard</a>
+            <a href="#" class="btn-3d btn-secondary">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="card-3d" style="background:#d1fae5; color:#065f46; padding:15px; text-align:center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>
+        /* INTERACTIVE UI SCRIPTS
+*/
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // 1. Image Preview Animation for Profile Edit
+    const imageInput = document.querySelector('input[type="file"]');
+    if(imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.querySelector('img'); // Finds the first img tag
+                if(output) {
+                    output.src = reader.result;
+                    output.style.transform = "scale(1.1)";
+                    setTimeout(() => output.style.transform = "scale(1)", 300); // Bounce effect
+                }
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
+    }
+
+    // 2. Table Row Hover Animation (Optional JS enhancement)
+    const rows = document.querySelectorAll('.table-row-3d');
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            row.style.background = "#eef2f7"; // Slightly lighter on hover
+        });
+        row.addEventListener('mouseleave', () => {
+            row.style.background = "var(--bg-color)";
+        });
+    });
+
+    // 3. Confirm Delete (if you add delete buttons later)
+    const deleteBtns = document.querySelectorAll('.btn-delete');
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if(!confirm("Are you sure you want to delete this?")) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+    </script>
+</body>
+</html>

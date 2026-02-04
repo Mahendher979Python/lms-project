@@ -1,0 +1,110 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+ --bg:#020617;
+ --card:#0f172a;
+ --border:#1e293b;
+ --text:#f8fafc;
+ --muted:#94a3b8;
+ --accent:#6366f1;
+}
+
+body{
+ background:
+ linear-gradient(rgba(2,6,23,.9),rgba(2,6,23,.9)),
+ url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97");
+ background-size:cover;
+ color:var(--text);
+}
+
+.card{
+ background:linear-gradient(145deg,#0f172a,#020617);
+ border:1px solid var(--border);
+ border-radius:16px;
+ padding:25px;
+ box-shadow:0 20px 50px rgba(0,0,0,.7);
+ transform:perspective(900px) rotateX(4deg);
+ transition:.4s;
+}
+.card:hover{transform:perspective(900px) rotateX(0) scale(1.02);}
+
+.btn{
+ background:linear-gradient(135deg,#6366f1,#4f46e5);
+ padding:12px 20px;
+ border-radius:8px;
+ color:white;
+ font-weight:600;
+ text-decoration:none;
+ box-shadow:0 10px 25px rgba(99,102,241,.6);
+ transition:.3s;
+}
+.btn:hover{
+ box-shadow:0 0 30px #6366f1;
+ transform:translateY(-2px);
+}
+table{width:100%;margin-top:20px;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid var(--border)}
+th{color:var(--muted)}
+</style>
+
+<div class="card">
+<h2>📘 Notes Analytics</h2>
+<canvas id="notesChart" height="100"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById('notesChart'),{
+ type:'bar',
+ data:{
+  labels:['Total','Public','Private','Courses','Users'],
+  datasets:[{
+   label:'Notes Data',
+   data:[
+    {{total_notes}},
+    {{public_notes}},
+    {{private_notes}},
+    {{courses_count}},
+    {{assigned_users}}
+   ],
+   backgroundColor:[
+    '#6366f1','#22c55e','#f97316','#0ea5e9','#e879f9'
+   ],
+   borderRadius:8
+  }]
+ },
+ options:{
+  plugins:{legend:{labels:{color:'white'}}},
+  scales:{
+   x:{ticks:{color:'#cbd5f5'}},
+   y:{ticks:{color:'#cbd5f5'}}
+  }
+ }
+});
+</script>
+
+<br>
+<a href="{% url 'admin_notes_add' %}" class="btn">➕ Add Note</a>
+
+<table>
+<tr>
+<th>Title</th><th>Course</th><th>Visibility</th><th>Users</th><th>Actions</th>
+</tr>
+{% for n in notes %}
+<tr>
+<td>{{n.title}}</td>
+<td>{{n.course|default:"--"}}</td>
+<td>{{n.visibility}}</td>
+<td>{{n.assigned_to.count}}</td>
+<td>
+<a href="{% url 'admin_notes_edit' n.id %}">✏</a> |
+<a href="{% url 'admin_notes_delete' n.id %}">🗑</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

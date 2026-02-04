@@ -1,0 +1,83 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <span>🏠 Dashboard</span> / <span>My Courses</span>
+    </div>
+
+    <div class="page-header">
+        <div>
+            <h2>📚 Course Manager</h2>
+            <p style="color: #64748b;">Manage your curriculum and content</p>
+        </div>
+        <a href="{% url 'trainer_course_create' %}" class="btn btn-primary">
+            <span>➕ Create New Course</span>
+        </a>
+    </div>
+
+    <div class="lms-card" style="padding: 15px; display: flex; gap: 10px;">
+        <input type="text" placeholder="🔍 Search courses..." style="padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; flex-grow: 1;">
+        <select style="padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <option>All Status</option>
+            <option>Published</option>
+            <option>Draft</option>
+        </select>
+    </div>
+
+    <div class="lms-card">
+        <table class="lms-table">
+            <thead>
+                <tr>
+                    <th width="5%">ID</th>
+                    <th width="30%">Course Title</th>
+                    <th width="15%">Level</th>
+                    <th width="15%">Status</th>
+                    <th width="15%">Students</th> <th width="20%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>#{{ course.id }}</td>
+                    <td>
+                        <strong>{{ course.title }}</strong>
+                    </td>
+                    <td>{{ course.level }}</td>
+                    <td>
+                        {% if course.is_published %}
+                            <span class="badge badge-published">● Published</span>
+                        {% else %}
+                            <span class="badge badge-draft">○ Draft</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="color: #64748b;">👥 0 Enrolled</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{% url 'trainer_lesson_list' course.id %}" class="btn btn-secondary btn-sm" title="Manage Lessons">
+                                📘 Content
+                            </a>
+                            <a href="{% url 'trainer_course_edit' course.id %}" class="btn btn-secondary btn-sm" title="Edit Settings">
+                                ⚙️
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 30px;">
+                        <div style="font-size: 2rem;">📭</div>
+                        <p>No courses created yet. Start by adding one!</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'trainer_dashboard' %}" class="btn btn-secondary">⬅ Back to Dashboard</a>
+    </div>
+{% endblock %}

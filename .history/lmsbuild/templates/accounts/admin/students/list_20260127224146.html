@@ -1,0 +1,85 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.dashboard-container{padding:30px;background:#f0f2f5;min-height:100vh}
+.header-section{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.btn-add{background:#4361ee;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none}
+.table-container{background:#fff;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+thead{background:#4361ee;color:#fff}
+.status-active{color:green;font-weight:bold}
+.status-inactive{color:red;font-weight:bold}
+.actions a{margin-right:10px;text-decoration:none;font-weight:600}
+</style>
+
+<div class="dashboard-container">
+
+<div class="header-section">
+<h2>👨‍🎓 Student Management</h2>
+<a href="{% url 'admin_add_student' %}" class="btn-add">➕ Add Student</a>
+</div>
+
+<div class="table-container">
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Username</th>
+<th>Trainer</th>
+<th>Batch</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for s in students %}
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ s.user.username }}</td>
+
+<td>
+{% if s.trainer %}
+{{ s.trainer.user.username }}
+{% else %}-{% endif %}
+</td>
+
+<td>
+{% if s.batch %}
+{{ s.batch.name }}
+{% else %}-{% endif %}
+</td>
+
+<td>
+{% if s.user.is_active %}
+<span class="status-active">Active</span>
+{% else %}
+<span class="status-inactive">Inactive</span>
+{% endif %}
+</td>
+
+<td class="actions">
+<a href="{% url 'admin_edit_student' s.id %}">✏ Edit</a>
+<a href="{% url 'admin_delete_student' s.id %}"
+onclick="return confirm('Deactivate student?')">🗑 Delete</a>
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="6" style="text-align:center;">No students found</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+{% endblock %}

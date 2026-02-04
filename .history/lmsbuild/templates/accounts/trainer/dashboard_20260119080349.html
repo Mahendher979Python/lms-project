@@ -1,0 +1,38 @@
+{% extends 'base_trainer.html' %}
+
+{% block title %}Dashboard | Trainer{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h1>Welcome, {{ request.user.username }}</h1>
+        <p>Manage your courses, lessons, videos and images from here.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>📚 Courses</h3>
+            <p>Create and manage your courses</p>
+            <a href="{% url 'trainer_course_list' %}">View Courses</a>
+        </div>
+
+        <div class="card">
+            <h3>🎥 Videos</h3>
+            <p>Upload and manage session videos</p>
+            <a href="{% url 'trainer_video_list' %}">Manage Videos</a>
+        </div>
+
+        <div class="card">
+            <h3>🖼 Images</h3>
+            <p>Upload posters & advertisements</p>
+            <a href="{% url 'trainer_ad_list' %}">Manage Images</a>
+        </div>
+
+        <div class="card">
+            <h3>📖 Lessons</h3>
+            <p>Add lessons inside your courses</p>
+            <a href="{% url 'trainer_course_list' %}">Manage Lessons</a>
+        </div>
+
+    </div>
+{% endblock %}

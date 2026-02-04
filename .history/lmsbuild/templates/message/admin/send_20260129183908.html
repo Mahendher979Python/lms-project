@@ -1,0 +1,137 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--cyan:#00f3ff;
+--lime:#ccff00;
+--glass:rgba(255,255,255,.07);
+--border:rgba(255,255,255,.15);
+}
+
+body{background:#020617;font-family:Inter;color:#e5e7eb}
+
+.wrap{padding:40px;display:flex;justify-content:center}
+
+.card{
+width:520px;
+background:var(--glass);
+border:1px solid var(--border);
+border-radius:25px;
+padding:35px;
+box-shadow:0 20px 40px rgba(0,0,0,.6);
+backdrop-filter:blur(15px);
+}
+
+h2{
+text-align:center;
+margin-bottom:10px;
+background:linear-gradient(90deg,var(--cyan),var(--lime));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.field{margin-top:18px}
+
+label{font-size:.8rem;color:#94a3b8}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,.2);
+background:#020617;
+color:white
+}
+
+textarea{resize:none;height:110px}
+
+.btn{
+margin-top:25px;
+width:100%;
+padding:14px;
+border-radius:30px;
+border:none;
+font-weight:700;
+background:linear-gradient(135deg,var(--lime),#9acd00);
+cursor:pointer
+}
+
+.hidden{display:none}
+</style>
+
+<div class="wrap">
+
+<div class="card">
+
+<h2><i class="fa-solid fa-paper-plane"></i> Send Message</h2>
+<p style="text-align:center;opacity:.6">Send to Trainer or Student Batch</p>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="field">
+<label>Select Role</label>
+<select name="role" onchange="toggleRole(this.value)" required>
+<option value="">-- Choose --</option>
+<option value="trainer">Trainer</option>
+<option value="student">Student Batch</option>
+</select>
+</div>
+
+<div class="field hidden" id="trainerBox">
+<label>Select Trainer</label>
+<select name="trainer">
+{% for t in trainers %}
+<option value="{{t.id}}">{{t.user.username}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="field hidden" id="batchBox">
+<label>Select Batch</label>
+<select name="batch">
+{% for b in batches %}
+<option value="{{b.id}}">{{b.name}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="field">
+<label>Subject</label>
+<input type="text" name="subject" required placeholder="Enter subject">
+</div>
+
+<div class="field">
+<label>Message</label>
+<textarea name="body" required placeholder="Type message..."></textarea>
+</div>
+
+<button class="btn">Send Message</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+function toggleRole(val){
+document.getElementById("trainerBox").classList.add("hidden");
+document.getElementById("batchBox").classList.add("hidden");
+
+if(val==="trainer"){
+document.getElementById("trainerBox").classList.remove("hidden");
+}
+
+if(val==="student"){
+document.getElementById("batchBox").classList.remove("hidden");
+}
+}
+</script>
+
+{% endblock %}

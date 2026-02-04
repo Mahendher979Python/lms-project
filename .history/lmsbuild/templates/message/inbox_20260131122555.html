@@ -1,0 +1,76 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.inbox-wrapper {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+}
+
+.inbox-wrapper h2 {
+    text-align: center;
+    padding: 15px;
+}
+
+.inbox-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inbox-table th {
+    background: #f4f4f4;
+    padding: 12px;
+}
+
+.inbox-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.unread {
+    font-weight: bold;
+    background: #f4f8ff;
+}
+
+.empty-msg {
+    text-align: center;
+    padding: 40px;
+    color: gray;
+}
+</style>
+
+<div class="inbox-wrapper">
+<h2>Your Inbox</h2>
+
+<table class="inbox-table">
+<thead>
+<tr>
+<th>From</th>
+<th>Subject</th>
+<th>Message</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+{% for msg in messages %}
+<tr class="{% if not msg.is_read %}unread{% endif %}">
+<td>{{ msg.sender.username }}</td>
+<td>{{ msg.subject }}</td>
+<td>{{ msg.body|truncatechars:40 }}</td>
+<td>{{ msg.created_at|date:"M d Y" }}</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="4" class="empty-msg">No messages yet.</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+{% endblock %}

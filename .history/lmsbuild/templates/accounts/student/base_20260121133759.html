@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}Student Dashboard{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --bg-dark: #0f172a;
+    --bg-panel: #1e293b;
+    --bg-light: #f1f5f9;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --danger: #ef4444;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    background:var(--bg-light);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+    height:60px;
+    background:var(--bg-panel);
+    color:var(--text-main);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 20px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.toggle-btn{
+    background:none;
+    border:none;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+    display:none;
+}
+
+.logout-btn{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(239,68,68,.15);
+    color:var(--danger);
+    transition:.3s;
+}
+.logout-btn:hover{
+    background:var(--danger);
+    color:#fff;
+    transform:scale(1.1);
+}
+
+/* ---------- LAYOUT ---------- */
+.layout{
+    display:flex;
+    flex:1;
+    overflow:hidden;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+    width:250px;
+    background:var(--bg-dark);
+    color:#fff;
+    padding:20px 15px;
+    display:flex;
+    flex-direction:column;
+    transition:.3s;
+}
+
+.sidebar-header{
+    text-align:center;
+    color:var(--accent);
+    font-weight:bold;
+    letter-spacing:1px;
+    margin-bottom:25px;
+}
+
+.menu{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.menu a{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 15px;
+    color:var(--text-muted);
+    text-decoration:none;
+    border-radius:8px;
+    transition:.25s;
+    overflow:hidden;
+}
+
+/* LEFT HOVER LINE */
+.menu a::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:4px;
+    height:100%;
+    background:var(--accent);
+    transform:scaleY(0);
+    transition:.25s;
+}
+
+.menu a:hover::before,
+.menu a.active::before{
+    transform:scaleY(1);
+}
+
+.menu a:hover,
+.menu a.active{
+    background:rgba(56,189,248,.15);
+    color:var(--accent);
+    transform:translateX(8px);
+}
+
+.menu a i{ width:20px }
+
+/* ---------- UPGRADE ---------- */
+.upgrade-box{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    padding:18px;
+    border-radius:15px;
+    color:#fff;
+    text-align:center;
+}
+
+.upgrade-btn{
+    margin-top:10px;
+    width:100%;
+    border:none;
+    padding:8px;
+    border-radius:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ---------- CONTENT ---------- */
+.content{
+    flex:1;
+    padding:30px;
+    overflow-y:auto;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:768px){
+    .toggle-btn{ display:block }
+    .sidebar{
+        position:absolute;
+        left:-250px;
+        top:60px;
+        height:calc(100vh - 60px);
+        z-index:999;
+    }
+    .sidebar.active{ left:0 }
+}
+</style>
+
+{% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="brand">
+        <button class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <h3><i class="fa-solid fa-graduation-cap" style="color:var(--accent)"></i> Student Dashboard</h3>
+    </div>
+
+    <div>
+        Hello, <b>{{ request.user.username }}</b>
+        <a href="{% url 'logout' %}" class="logout-btn" onclick="return confirm('Logout?')">
+            <i class="fa-solid fa-power-off"></i>
+        </a>
+    </div>
+</div>
+
+<div class="layout">
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">MAIN MENU</div>
+
+        <div class="menu">
+            <a href="{% url 'student_dashboard' %}" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="{% url 'student_course_list' %}"><i class="fa-solid fa-book"></i> My Courses</a>
+            <a href="{% url 'student_todo_list' %}">📝 My Todos</a>
+            <a href="#"><i class="fa-solid fa-file"></i> Assignments</a>
+            <a href="#"><i class="fa-solid fa-chart-line"></i> Progress</a>
+        </div>
+
+        <div class="upgrade-box">
+            <h4>Pro Plan 🚀</h4>
+            <small>Unlimited access</small>
+            <button class="upgrade-btn">Upgrade</button>
+        </div>
+    </div>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+</div>
+
+<script>
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("active");
+}
+</script>
+
+</body>
+</html>

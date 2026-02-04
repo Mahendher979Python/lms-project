@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    :root { --cyan: #00f3ff; --lime: #ccff00; --glass: rgba(255,255,255,.07); --border: rgba(255,255,255,.15); }
+    body { background: #020617; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+    .wrap { padding: 30px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .header h2 { background: linear-gradient(90deg, var(--cyan), var(--lime)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; }
+    .btn-add { background: linear-gradient(135deg, var(--lime), #9acd00); padding: 12px 24px; border-radius: 40px; color: #000; font-weight: 700; text-decoration: none; transition: .3s; box-shadow: 0 10px 20px rgba(204,255,0,.2); }
+    .btn-add:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(204,255,0,0.3); }
+    .card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; backdrop-filter: blur(15px); padding: 20px; }
+    .table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    .table th { color: #94a3b8; font-size: .8rem; text-transform: uppercase; padding: 10px; text-align: left; }
+    .table td { background: rgba(255,255,255,.05); padding: 15px; }
+    .table td:first-child { border-radius: 12px 0 0 12px; }
+    .table td:last-child { border-radius: 0 12px 12px 0; text-align: right; }
+    .file-box { display: flex; align-items: center; gap: 15px; }
+    .icon-circle { width: 40px; height: 40px; background: #0f172a; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--cyan); }
+    .action-link { margin-left: 15px; font-size: 1.1rem; transition: 0.2s; }
+    .edit-link { color: var(--cyan); }
+    .view-link { color: var(--lime); }
+</style>
+
+<div class="wrap">
+    <div class="header">
+        <div>
+            <h2>📁 Course Materials</h2>
+            <div style="opacity: .6;">Course: {{ course.title }}</div>
+        </div>
+        <a href="{% url 'trainer_material_upload' course.id %}" class="btn-add">
+            <i class="fa-solid fa-plus"></i> Add Material
+        </a>
+    </div>
+
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Uploaded Date</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materials %}
+                <tr>
+                    <td>
+                        <div class="file-box">
+                            <div class="icon-circle"><i class="fa-solid fa-file"></i></div>
+                            <div>
+                                <div style="font-weight: 600;" class="file-title">{{ m.title }}</div>
+                                <div style="font-size: 0.75rem; color: #94a3b8;">Ref #{{ m.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color: #94a3b8;">{{ m.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'trainer_material_edit' m.id %}" class="action-link edit-link" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a href="{{ m.file.url }}" target="_blank" class="action-link view-link" title="Download">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" style="text-align:center; padding: 50px; color: #64748b;">No materials found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".file-title").forEach(t => {
+        let i = t.closest("tr").querySelector(".icon-circle i");
+        let n = t.innerText.toLowerCase();
+        if(n.endsWith(".pdf")) i.className = "fa-solid fa-file-pdf";
+        else if(n.match(/jpg|png|jpeg/)) i.className = "fa-solid fa-file-image";
+        else if(n.match(/mp4|mov/)) i.className = "fa-solid fa-file-video";
+    });
+</script>
+{% endblock %}

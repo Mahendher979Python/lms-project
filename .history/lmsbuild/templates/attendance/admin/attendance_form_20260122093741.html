@@ -1,0 +1,32 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+<h2>{% if attendance %}Edit{% else %}Add{% endif %} Attendance</h2>
+
+<form method="post">{% csrf_token %}
+{% if not attendance %}
+<label>User ID</label><input name="user" required><br><br>
+<label>Role</label>
+<select name="role">
+<option>student</option><option>trainer</option><option>admin</option>
+</select><br><br>
+<label>Date</label><input type="date" name="date" required><br><br>
+{% endif %}
+
+<label>Login</label>
+<input type="datetime-local" name="login_time"
+value="{{attendance.login_time|date:'Y-m-d\\TH:i'}}"><br><br>
+
+<label>Logout</label>
+<input type="datetime-local" name="logout_time"
+value="{{attendance.logout_time|date:'Y-m-d\\TH:i'}}"><br><br>
+
+<label>Status</label>
+<select name="status">
+<option value="present">Present</option>
+<option value="absent">Absent</option>
+<option value="half_day">Half Day</option>
+</select><br><br>
+
+<button type="submit">Save</button>
+</form>
+{% endblock %}

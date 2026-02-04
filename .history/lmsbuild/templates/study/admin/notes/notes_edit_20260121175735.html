@@ -1,0 +1,49 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<div class="form-box">
+<h2>✏ Edit Note</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label>
+<input type="text" name="title" value="{{ note.title }}" required>
+
+<label>Description</label>
+<textarea name="description">{{ note.description }}</textarea>
+
+<label>Replace File</label>
+<input type="file" name="file">
+
+<label>Visibility</label>
+<select name="visibility">
+  <option value="private" {% if note.visibility == "private" %}selected{% endif %}>Private</option>
+  <option value="public" {% if note.visibility == "public" %}selected{% endif %}>Public</option>
+</select>
+
+<h4>Assign To</h4>
+{% for u in trainers %}
+<label>
+<input type="checkbox" name="assigned_to" value="{{ u.id }}"
+{% if u in note.assigned_to.all %}checked{% endif %}>
+{{ u.username }} (Trainer)
+</label><br>
+{% endfor %}
+
+{% for u in students %}
+<label>
+<input type="checkbox" name="assigned_to" value="{{ u.id }}"
+{% if u in note.assigned_to.all %}checked{% endif %}>
+{{ u.username }} (Student)
+</label><br>
+{% endfor %}
+
+<br>
+<button class="btn btn-save">Update</button>
+<a href="{% url 'admin_notes_list' %}">Back</a>
+
+</form>
+</div>
+
+{% endblock %}

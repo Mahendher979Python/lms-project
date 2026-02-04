@@ -1,0 +1,68 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+<style>
+    .upload-card {
+        background: white;
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f1f5f9;
+        transform: perspective(1000px) rotateY(-2deg);
+    }
+    .drop-zone-3d {
+        border: 3px dashed #e2e8f0;
+        padding: 50px;
+        border-radius: 20px;
+        transition: 0.4s;
+        background: #fbfcfe;
+    }
+    .drop-zone-3d:hover {
+        border-color: #6366f1;
+        background: #f5f7ff;
+        transform: scale(1.01);
+    }
+    .pulse-icon { animation: pulse 2s infinite; }
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.7; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="upload-card">
+                <h2 class="fw-800 mb-4">🚀 Upload Center</h2>
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Material Title</label>
+                        <input type="text" name="title" class="form-control form-control-lg border-0 bg-light" placeholder="Give it a name..." required>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="drop-zone-3d w-100 text-center cursor-pointer">
+                            <input type="file" name="file" hidden id="fileInput" onchange="showSuccess()">
+                            <i class="fa-solid fa-cloud-arrow-up fa-4x text-primary pulse-icon mb-3"></i>
+                            <h5 class="fw-bold" id="fileMsg">Drag & Drop Files Here</h5>
+                            <p class="text-muted small">Max file size: 50MB (PDF, MP4, PNG)</p>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow" id="submitBtn" style="border-radius: 15px;">
+                        LAUNCH UPLOAD
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showSuccess() {
+        const file = document.getElementById('fileInput').files[0];
+        document.getElementById('fileMsg').innerHTML = `<span class="text-success">✅ ${file.name}</span>`;
+    }
+</script>
+{% endblock %}

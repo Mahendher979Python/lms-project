@@ -1,0 +1,140 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>Edit Material</h3>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input class="form-control mb-2" name="title" value="{{ material.title }}">
+
+<select name="material_type" class="form-control mb-2">
+{% for key,val in material.MATERIAL_TYPES %}
+<option value="{{ key }}" {% if material.material_type == key %}selected{% endif %}>
+{{ val }}
+</option>
+{% endfor %}
+</select>
+
+<input type="file" name="file" class="form-control mb-2">
+
+<button class="btn btn-success">Update</button>
+
+</form>
+
+{% endblock %}{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    /* Glassmorphism Effect */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 
+                    inset 0 0 10px rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        padding: 12px;
+        transition: 0.3s;
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: #0dcaf0 !important;
+        box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);
+    }
+
+    .btn-3d {
+        background: linear-gradient(145deg, #198754, #146c43);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px #0e4b2e;
+        transition: 0.2s;
+    }
+
+    .btn-3d:active {
+        box-shadow: 0 0 #0e4b2e;
+        transform: translateY(4px);
+    }
+
+    .label-text {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold text-white mb-1">Edit Material</h3>
+                    <p class="text-info small">Updating: {{ material.title }}</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="editForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="label-text">MATERIAL TITLE</label>
+                        <input class="form-control glass-input" 
+                               name="title" 
+                               value="{{ material.title }}" 
+                               placeholder="Enter title...">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="label-text">CONTENT TYPE</label>
+                        <select name="material_type" class="form-select glass-input">
+                            {% for key,val in material.MATERIAL_TYPES %}
+                            <option value="{{ key }}" {% if material.material_type == key %}selected{% endif %} class="bg-dark">
+                                {{ val }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="label-text">REPLACE FILE (Optional)</label>
+                        <input type="file" name="file" class="form-control glass-input">
+                        {% if material.file %}
+                        <div class="mt-2 small text-muted text-truncate">
+                            Current: <span class="text-info">{{ material.file.name }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-success btn-3d py-2 fw-bold" id="updateBtn">
+                            UPDATE CHANGES
+                        </button>
+                        <a href="javascript:history.back()" class="btn btn-link text-white-50 text-decoration-none py-2">
+                            Cancel & Go Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('editForm').onsubmit = function() {
+        const btn = document.getElementById('updateBtn');
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Syncing...`;
+        btn.style.opacity = '0.7';
+    };
+</script>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "accounts/student/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.course-header{
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  color:#fff;
+  padding:30px;
+  border-radius:16px;
+  margin-bottom:30px;
+}
+
+.course-header h2{
+  margin:0;
+  font-size:28px;
+}
+
+.course-header p{
+  margin-top:8px;
+  opacity:.9;
+}
+
+/* Lessons List */
+.lesson-box{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 6px 15px rgba(0,0,0,.08);
+  transition:.3s;
+}
+
+.lesson-box:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 25px rgba(0,0,0,.12);
+}
+
+.lesson-left{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.lesson-icon{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#e0e7ff;
+  color:#2563eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+}
+
+.lesson-title{
+  font-size:16px;
+  font-weight:600;
+  color:#0f172a;
+}
+
+.lesson-meta{
+  font-size:13px;
+  color:#64748b;
+}
+
+.btn-watch{
+  padding:8px 14px;
+  background:#2563eb;
+  color:#fff;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.btn-watch:hover{
+  background:#1e40af;
+}
+</style>
+
+<!-- COURSE HEADER -->
+<div class="course-header">
+  <h2>📘 {{ course.title }}</h2>
+  <p>{{ course.description }}</p>
+  <p>👨‍🏫 Trainer: {{ course.trainer.username }}</p>
+</div>
+
+<!-- LESSONS -->
+<h3>📂 Course Topics</h3>
+
+{% for lesson in lessons %}
+  <div class="lesson-box">
+    <div class="lesson-left">
+      <div class="lesson-icon">
+        {{ forloop.counter }}
+      </div>
+      <div>
+        <div class="lesson-title">{{ lesson.title }}</div>
+        <div class="lesson-meta">
+          {{ lesson.description|truncatewords:15 }}
+        </div>
+      </div>
+    </div>
+
+    <a href="{% url 'student_lesson_detail' lesson.id %}" class="btn-watch">
+      ▶ View
+    </a>
+  </div>
+{% empty %}
+  <p>No topics added yet.</p>
+{% endfor %}
+
+{% endblock %}

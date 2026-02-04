@@ -1,0 +1,171 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+/* ===== PAGE SETUP ===== */
+.page-wrap {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  perspective: 1000px;
+}
+
+/* ===== HEADER ===== */
+.header-3d {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 2px dashed #cbd5e1;
+  padding-bottom: 20px;
+}
+
+.header-3d h2 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin: 0;
+  text-shadow: 3px 3px 0 #e2e8f0; /* 3D Text Shadow */
+  font-weight: 800;
+}
+
+/* ===== GRID ===== */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* ===== 3D CARD ===== */
+.course-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  position: relative;
+  border: 1px solid #e2e8f0;
+  
+  /* 3D Thickness & Shadow */
+  border-bottom: 8px solid #cbd5e1; 
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  
+  transform: translateY(0);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.course-card:hover {
+  transform: translateY(-10px); /* Lift up */
+  border-bottom: 12px solid #cbd5e1; /* Shadow gets "longer" */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Card Content */
+.course-card h3 {
+  margin: 0 0 10px 0;
+  color: #0f172a;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.desc {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  height: 45px; /* Fixed height for uniformity */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Trainer Badge (Inset Look) */
+.trainer-badge {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); /* Carved in effect */
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ===== 3D BUTTON ===== */
+.btn-3d {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: #2563eb;
+  color: white;
+  padding: 14px 0;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  /* The Button "Lip" */
+  box-shadow: 0 6px 0 #1e40af; 
+  transition: all 0.1s;
+}
+
+.btn-3d:hover {
+  background: #1d4ed8;
+  box-shadow: 0 8px 0 #1e40af;
+  transform: translateY(-2px);
+}
+
+.btn-3d:active {
+  background: #1e40af;
+  box-shadow: none; /* Shadow disappears on press */
+  transform: translateY(6px); /* Physically moves down */
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px;
+  background: #f8fafc;
+  border: 3px dashed #cbd5e1;
+  border-radius: 20px;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+</style>
+
+<div class="page-wrap">
+
+  <div class="header-3d">
+    <h2>📚 My Learning Journey</h2>
+    </div>
+
+  <div class="course-grid">
+    {% for course in courses %}
+      <div class="course-card">
+        
+        <h3>{{ course.title }}</h3>
+        
+        <div class="trainer-badge">
+          <span>👨‍🏫 Trainer: {{ course.trainer.username }}</span>
+        </div>
+
+        <p class="desc">{{ course.description|truncatechars:80 }}</p>
+
+        <a href="{% url 'student_course_detail' course.id %}" class="btn-3d">
+          Start Learning 🚀
+        </a>
+
+      </div>
+    {% empty %}
+      <div class="empty-state">
+        <p>📭 You are not enrolled in any courses yet.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

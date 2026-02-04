@@ -1,0 +1,98 @@
+{% extends "profiles/base.html" %}
+
+{% block content %}
+
+<h2>Admin Profile</h2>
+
+<div style="
+    background:#ffffff;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    max-width:700px;
+">
+
+    <h3 style="margin-bottom:20px;">Account Information</h3>
+
+    <p><b>Username:</b> {{ profile.user.username }}</p>
+    <p><b>Email:</b> {{ profile.user.email }}</p>
+    <p><b>Mobile:</b> {{ profile.user.mobile }}</p>
+    <p><b>Role:</b> {{ profile.user.role|title }}</p>
+
+    <hr style="margin:25px 0;">
+
+    <h3 style="margin-bottom:20px;">Admin Details</h3>
+
+    <p>
+        <b>Department:</b>
+        {% if profile.department %}
+            {{ profile.department }}
+        {% else %}
+            <span style="color:#94a3b8;">Not updated</span>
+        {% endif %}
+    </p>
+
+    <p>
+        <b>Designation:</b>
+        {% if profile.designation %}
+            {{ profile.designation }}
+        {% else %}
+            <span style="color:#94a3b8;">Admin</span>
+        {% endif %}
+    </p>
+
+    <p>
+        <b>Manage Users:</b>
+        {% if profile.can_manage_users %}
+            ✅ Yes
+        {% else %}
+            ❌ No
+        {% endif %}
+    </p>
+
+    <p>
+        <b>Manage Courses:</b>
+        {% if profile.can_manage_courses %}
+            ✅ Yes
+        {% else %}
+            ❌ No
+        {% endif %}
+    </p>
+
+    <p>
+        <b>View Reports:</b>
+        {% if profile.can_view_reports %}
+            ✅ Yes
+        {% else %}
+            ❌ No
+        {% endif %}
+    </p>
+
+    <div style="margin-top:30px;">
+        <a href="{% url 'profile_edit' %}"
+           style="
+           background:#2563eb;
+           color:white;
+           padding:10px 16px;
+           border-radius:6px;
+           text-decoration:none;
+           margin-right:10px;
+           ">
+           ✏️ Edit Profile
+        </a>
+
+        <a href="{% url 'admin_student_list' %}"
+           style="
+           background:#16a34a;
+           color:white;
+           padding:10px 16px;
+           border-radius:6px;
+           text-decoration:none;
+           ">
+           👨‍🎓 View Students
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

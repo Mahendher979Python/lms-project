@@ -1,0 +1,24 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Add Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" placeholder="Username" required>
+<input name="email" type="email" placeholder="Email" required>
+
+<input name="employee_id" placeholder="Employee ID" required>
+<input name="first_name" placeholder="First Name">
+<input name="surname" placeholder="Surname">
+<input name="qualification" placeholder="Qualification">
+<input name="designation" placeholder="Designation">
+<input name="phone" placeholder="Phone">
+<textarea name="address" placeholder="Address"></textarea>
+<input type="date" name="joining_date">
+
+<button class="btn btn-primary">Create Trainer</button>
+</form>
+
+{% endblock %}

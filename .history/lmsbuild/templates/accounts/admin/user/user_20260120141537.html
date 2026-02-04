@@ -1,0 +1,117 @@
+{% extends 'accounts/admin/base.html' %}
+
+{% block content %}
+<style>
+    .dashboard-title {
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .dashboard-subtitle {
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+        border-radius: 16px;
+        border: none;
+        padding: 30px 25px;
+        height: 100%;
+        text-decoration: none;
+        display: block;
+        transition: all 0.3s ease;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+    }
+
+    .card-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .trainer-icon {
+        background: rgba(78, 115, 223, 0.15);
+        color: #4e73df;
+    }
+
+    .student-icon {
+        background: rgba(28, 200, 138, 0.15);
+        color: #1cc88a;
+    }
+
+    .dashboard-card h4 {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-card p {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card .action-btn {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 50px;
+    }
+</style>
+
+<div class="container-fluid px-4">
+
+    <div class="mb-4">
+        <h2 class="dashboard-title">Admin Dashboard</h2>
+        <p class="dashboard-subtitle">
+            Manage users, trainers, students and system data from one place
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- TRAINERS CARD -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'trainer_list' %}" class="dashboard-card">
+                <div class="card-icon trainer-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h4>Trainers</h4>
+                <p>
+                    Create trainer accounts, manage profiles, classes and login credentials.
+                </p>
+                <span class="btn btn-outline-primary action-btn">
+                    Manage Trainers →
+                </span>
+            </a>
+        </div>
+
+        <!-- STUDENTS CARD -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'admin_students' %}" class="dashboard-card">
+                <div class="card-icon student-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h4>Students</h4>
+                <p>
+                    Handle admissions, roll numbers, status and student login access.
+                </p>
+                <span class="btn btn-outline-success action-btn">
+                    Manage Students →
+                </span>
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

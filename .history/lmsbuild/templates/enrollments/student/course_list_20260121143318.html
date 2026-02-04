@@ -1,0 +1,271 @@
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<style>
+  /* --- Grid & Layout --- */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    padding: 20px;
+    perspective: 1000px;
+  }
+
+  /* --- 3D Folder Container --- */
+  .folder-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    height: 220px;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 1;
+  }
+
+  .folder-container:hover {
+    transform: translateY(-5px);
+  }
+
+  /* --- Folder Parts --- */
+  /* Back Cover */
+  .folder-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #eab308;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+  
+  /* Tab at top */
+  .folder-back::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 40%;
+    height: 20px;
+    background: #eab308;
+    border-radius: 10px 10px 0 0;
+  }
+
+  /* Front Cover */
+  .folder-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+    border-radius: 12px;
+    z-index: 3;
+    transform-origin: bottom;
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -5px 10px rgba(0,0,0,0.1);
+  }
+
+  /* Paper Preview (Small inside folder) */
+  .paper-preview {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    right: 15px;
+    height: 80%;
+    background: #fff;
+    border-radius: 8px;
+    z-index: 2;
+    transition: transform 0.4s;
+  }
+
+  /* --- Animation States (Controlled by JS) --- */
+  /* When class 'open' is added */
+  .folder-container.open .folder-front {
+    transform: rotateX(-180deg); /* Flap opens completely */
+    z-index: 0; /* Goes behind */
+  }
+  
+  .folder-container.open .paper-preview {
+    transform: translateY(-30px);
+  }
+
+  /* --- Typography --- */
+  .course-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+
+  /* --- MODAL (POPUP) STYLES --- */
+  /* Hidden by default */
+  .course-modal {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); /* Dim background */
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+  }
+
+  /* Modal Content (The big paper) */
+  .modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    animation: slideUp 0.4s ease-out;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Topics List */
+  .topics-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: left;
+  }
+  .topics-list li {
+    padding: 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    display: flex;
+    align-items: center;
+  }
+  .topics-list li::before {
+    content: '📄';
+    margin-right: 10px;
+  }
+
+  /* Buttons */
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+    font-weight: bold;
+  }
+  .close-btn:hover { color: #ef4444; }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-download {
+    flex: 1;
+    background: #10b981;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .btn-view {
+    flex: 1;
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500;
+  }
+</style>
+
+<h2>📚 My Courses</h2>
+
+<div class="course-grid">
+{% for course in courses %}
+  
+  <div class="folder-container" onclick="openCourseModal('modal-{{ course.id }}', this)">
+    <div class="folder-back"></div>
+    
+    <div class="paper-preview"></div>
+
+    <div class="folder-front">
+      <h3 class="course-title">{{ course.title }}</h3>
+    </div>
+  </div>
+
+  <div id="modal-{{ course.id }}" class="course-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeCourseModal('modal-{{ course.id }}', event)">&times;</span>
+      
+      <h2 style="margin-top:0; color:#1e293b;">{{ course.title }}</h2>
+      <p style="color:#64748b;">👨‍🏫 {{ course.trainer.username }}</p>
+      
+      <h4>📂 Course Topics:</h4>
+      <ul class="topics-list">
+        {% for lesson in course.lessons.all|slice:":5" %} 
+          <li>{{ lesson.title }}</li>
+        {% empty %}
+          <li>Start Introduction</li>
+          <li>Setup Environment</li>
+          <li>Basic Syntax</li>
+          <li style="color:#94a3b8; font-style:italic;">(More lessons inside)</li>
+        {% endfor %}
+      </ul>
+
+      <div class="action-buttons">
+        <a href="#" class="btn-download">⬇ Download</a>
+        
+        <a href="{% url 'student_course_detail' course.id %}" class="btn-view">Go to Class ➡</a>
+      </div>
+
+    </div>
+  </div>
+
+{% empty %}
+  <p>No courses available</p>
+{% endfor %}
+</div>
+
+<script>
+  function openCourseModal(modalId, folderElement) {
+    // 1. Animate the folder opening
+    folderElement.classList.add('open');
+    
+    // 2. Wait a small moment, then show the detailed modal
+    setTimeout(() => {
+      document.getElementById(modalId).style.display = 'flex';
+    }, 300); // 300ms delay matches animation
+  }
+
+  function closeCourseModal(modalId, event) {
+    // Stop the click from bubbling up
+    event.stopPropagation();
+    
+    // 1. Hide the modal
+    document.getElementById(modalId).style.display = 'none';
+
+    // 2. Close the folder animation (remove 'open' class)
+    // We need to find the folder that was opened. 
+    // Since we are inside the modal, we just reset all folders for simplicity.
+    document.querySelectorAll('.folder-container').forEach(folder => {
+      folder.classList.remove('open');
+    });
+  }
+</script>
+
+{% endblock %}

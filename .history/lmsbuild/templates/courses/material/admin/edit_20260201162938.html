@@ -1,0 +1,25 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>Edit Material</h3>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input class="form-control mb-2" name="title" value="{{ material.title }}">
+
+<select name="material_type" class="form-control mb-2">
+{% for key,val in material.MATERIAL_TYPES %}
+<option value="{{ key }}" {% if material.material_type == key %}selected{% endif %}>
+{{ val }}
+</option>
+{% endfor %}
+</select>
+
+<input type="file" name="file" class="form-control mb-2">
+
+<button class="btn btn-success">Update</button>
+
+</form>
+
+{% endblock %}

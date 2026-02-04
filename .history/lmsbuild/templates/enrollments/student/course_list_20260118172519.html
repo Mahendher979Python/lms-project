@@ -1,0 +1,29 @@
+<h2>📚 Available Courses</h2>
+<p>Select a course to view lessons</p>
+
+<table border="1" cellpadding="10" cellspacing="0" width="600">
+<tr>
+    <th>Course</th>
+    <th>Level</th>
+    <th>Action</th>
+</tr>
+
+{% for course in courses %}
+<tr>
+    <td>{{ course.title }}</td>
+    <td>{{ course.level|title }}</td>
+    <td>
+        <a href="{% url 'student_lesson_list' course.id %}">
+            📘 View Lessons
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3">No courses available</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'student_dashboard' %}">⬅ Back to Dashboard</a>

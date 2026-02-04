@@ -1,0 +1,194 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+<style>
+:root{
+ --bg-img:url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070');
+ --glass:rgba(30,41,59,.75);
+ --border:rgba(255,255,255,.08);
+ --neon:#6366f1;
+}
+
+body{
+ background:var(--bg-img) no-repeat center/cover fixed;
+ color:#f8fafc;
+ font-family:Segoe UI;
+}
+body::before{
+ content:"";
+ position:fixed;
+ inset:0;
+ background:rgba(2,6,23,.9);
+ z-index:-1;
+}
+
+.container{
+ max-width:1100px;
+ margin:auto;
+ padding:20px;
+}
+
+/* Glass Card */
+.glass{
+ background:var(--glass);
+ backdrop-filter:blur(14px);
+ border-radius:16px;
+ border:1px solid var(--border);
+ box-shadow:0 25px 60px rgba(0,0,0,.6);
+ padding:20px;
+ margin-bottom:30px;
+ transition:.3s;
+}
+.glass:hover{transform:translateY(-4px)}
+
+h2{
+ margin:0 0 15px;
+ letter-spacing:.5px;
+}
+
+/* Button */
+.btn{
+ background:linear-gradient(135deg,#6366f1,#4f46e5);
+ padding:12px 22px;
+ border-radius:10px;
+ text-decoration:none;
+ color:white;
+ font-weight:600;
+ box-shadow:0 0 20px rgba(99,102,241,.5);
+ transition:.3s;
+}
+.btn:hover{
+ box-shadow:0 0 35px rgba(99,102,241,.9);
+ transform:translateY(-2px);
+}
+
+/* Table */
+table{
+ width:100%;
+ border-collapse:separate;
+ border-spacing:0 10px;
+}
+th{
+ color:#94a3b8;
+ text-align:left;
+ font-size:.85rem;
+ padding:10px 15px;
+}
+td{
+ background:rgba(2,6,23,.6);
+ padding:14px;
+}
+td:first-child{border-radius:10px 0 0 10px}
+td:last-child{border-radius:0 10px 10px 0}
+tr:hover td{background:rgba(99,102,241,.15)}
+
+.badge{
+ padding:4px 12px;
+ border-radius:20px;
+ font-size:.75rem;
+ font-weight:700;
+}
+.public{color:#22c55e;border:1px solid #16a34a}
+.private{color:#f87171;border:1px solid #b91c1c}
+</style>
+
+<div class="container">
+
+<!-- ANALYTICS -->
+<div class="glass">
+<h2>📊 Notes Analytics</h2>
+<div id="notesChart" style="width:100%;height:260px;"></div>
+</div>
+
+<!-- HEADER -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<h2>📘 Notes</h2>
+<a href="{% url 'admin_notes_add' %}" class="btn">➕ Add Note</a>
+</div>
+
+<!-- TABLE -->
+<div class="glass">
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Course</th>
+<th>Visibility</th>
+<th>Users</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for n in notes %}
+<tr>
+<td style="font-weight:600">{{n.title}}</td>
+<td>{{n.course.title|default:"--"}}</td>
+<td>
+<span class="badge {% if n.visibility == 'public' %}public{% else %}private{% endif %}">
+{{n.visibility|title}}
+</span>
+</td>
+<td>👥 {{n.assigned_to.count}}</td>
+<td>
+<a href="{% url 'admin_notes_edit' n.id %}">✏️</a>
+&nbsp;
+<a href="{% url 'admin_notes_delete' n.id %}" style="color:#f87171">🗑️</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+const chart = echarts.init(document.getElementById('notesChart'),'dark');
+
+chart.setOption({
+ backgroundColor:'transparent',
+ grid:{top:30,bottom:30,left:40,right:20},
+ xAxis:{
+  type:'category',
+  data:['Total','Public','Private','Courses','Users'],
+  axisLabel:{color:'#cbd5e1'}
+ },
+ yAxis:{
+  axisLabel:{color:'#cbd5e1'},
+  splitLine:{lineStyle:{color:'rgba(255,255,255,.05)'}}
+ },
+ series:[{
+  type:'bar',
+  data:[
+   {{total_notes}},
+   {{public_notes}},
+   {{private_notes}},
+   {{courses_count}},
+   {{assigned_users}}
+  ],
+  barWidth:38,
+  label:{
+   show:true,
+   position:'top',
+   color:'#fff',
+   fontWeight:'bold'
+  },
+  itemStyle:{
+   borderRadius:[6,6,0,0],
+   shadowBlur:12,
+   shadowColor:'#6366f1',
+   color:new echarts.graphic.LinearGradient(0,0,0,1,[
+    {offset:0,color:'#818cf8'},
+    {offset:.6,color:'#6366f1'},
+    {offset:1,color:'#4338ca'}
+   ])
+  }
+ }]
+});
+
+window.addEventListener('resize',()=>chart.resize());
+</script>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<h2>{{ course.title }} Materials</h2>
+
+<a href="{% url 'trainer_material_upload' course.id %}">➕ Upload</a>
+
+<ul>
+{% for m in materials %}
+<li>
+{{ m.title }} —
+<a href="{{ m.file.url }}">Download</a>
+</li>
+{% empty %}
+No materials
+{% endfor %}
+</ul>
+
+{% endblock %}

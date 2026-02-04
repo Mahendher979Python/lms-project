@@ -1,0 +1,49 @@
+{% extends "courses/media/admin_base.html" %}
+
+{% block title %}Media List{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-collection-play me-2"></i> Course Materials</h2>
+    <a href="{% url 'admin_media_upload' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Upload New
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Course</th>
+                        <th>File Type</th>
+                        <th>Uploaded Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for material in materials %}
+                    <tr>
+                        <td class="fw-bold">{{ material.title }}</td>
+                        <td><span class="badge bg-info text-dark">{{ material.course.title }}</span></td>
+                        <td>{{ material.file.name|slice:"-4:" }}</td>
+                        <td>{{ material.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{{ material.file.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No materials found. Start uploading!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

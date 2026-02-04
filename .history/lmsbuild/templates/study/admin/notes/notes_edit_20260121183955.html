@@ -1,0 +1,200 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --bg-img: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2070');
+    --accent: #6366f1;
+}
+body {
+    background: var(--bg-img) no-repeat center center fixed;
+    background-size: cover;
+    color: #f8fafc;
+}
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(2,6,23,.92);
+    z-index: -1;
+}
+
+/* 3D Glass Card */
+.form-box {
+    max-width: 850px;
+    margin: 40px auto;
+    background: rgba(30,41,59,.65);
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 30px 70px rgba(0,0,0,.75);
+    position: relative;
+}
+
+/* Neon Line */
+.form-box::after{
+    content:'';
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:4px;
+    background:linear-gradient(90deg,#6366f1,#22d3ee,#ec4899);
+    box-shadow:0 0 15px #6366f1;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:.9rem;
+    color:#94a3b8;
+    font-weight:600;
+}
+
+input, select, textarea{
+    width:100%;
+    background:rgba(2,6,23,.7);
+    border:1px solid #334155;
+    color:white;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:18px;
+    transition:.3s;
+}
+input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 12px rgba(99,102,241,.45);
+}
+
+.grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+/* Assign Section */
+.assign-section{
+    background:rgba(0,0,0,.35);
+    padding:16px;
+    border-radius:10px;
+    border:1px solid #334155;
+}
+
+.filters{
+    display:flex;
+    gap:18px;
+    padding-bottom:10px;
+    border-bottom:1px solid #334155;
+    margin-bottom:12px;
+}
+
+.chk-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:.9rem;
+    color:#cbd5e1;
+    cursor:pointer;
+}
+
+.users-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:10px;
+    max-height:220px;
+    overflow:auto;
+}
+
+/* Action Button */
+.btn-glow{
+    width:100%;
+    padding:15px;
+    background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    border:none;
+    color:white;
+    font-size:1.1rem;
+    font-weight:700;
+    border-radius:10px;
+    cursor:pointer;
+    letter-spacing:1px;
+    transition:.3s;
+}
+.btn-glow:hover{
+    box-shadow:0 0 30px rgba(139,92,246,.7);
+    transform:translateY(-2px);
+}
+</style>
+
+<div class="form-box">
+<h2 style="text-align:center;margin-bottom:30px;">✏️ Edit Note</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Note Title</label>
+<input type="text" name="title" value="{{note.title}}" required>
+
+<div class="grid-2">
+    <div>
+        <label>Related Course</label>
+        <select name="course">
+            <option value="">-- General / Optional --</option>
+            {% for c in courses %}
+            <option value="{{c.id}}" {% if note.course_id == c.id %}selected{% endif %}>
+                {{c.title}}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label>Visibility</label>
+        <select name="visibility">
+            <option value="private" {% if note.visibility == "private" %}selected{% endif %}>🔒 Private</option>
+            <option value="public" {% if note.visibility == "public" %}selected{% endif %}>🌍 Public</option>
+        </select>
+    </div>
+</div>
+
+<label>Description / Content</label>
+<textarea name="description" rows="4">{{note.description}}</textarea>
+
+<label>Replace File (optional)</label>
+<input type="file" name="file">
+
+<div class="assign-section">
+<div class="filters">
+    <span style="color:var(--accent);font-weight:bold;">Assign To:</span>
+    <label class="chk-label"><input type="checkbox" id="all"> All</label>
+    <label class="chk-label"><input type="checkbox" id="trainers"> Trainers</label>
+    <label class="chk-label"><input type="checkbox" id="students"> Students</label>
+</div>
+
+<div class="users-grid">
+{% for u in all_users %}
+<label class="chk-label">
+<input type="checkbox" class="chk {{u.role}}" name="assigned_to" value="{{u.id}}"
+{% if u in note.assigned_to.all %}checked{% endif %}>
+{{u.username}} ({{u.role}})
+</label>
+{% endfor %}
+</div>
+</div>
+
+<br>
+<button class="btn-glow">💾 Update Note</button>
+</form>
+</div>
+
+<script>
+const all=document.getElementById("all");
+const t=document.getElementById("trainers");
+const s=document.getElementById("students");
+const chk=document.querySelectorAll(".chk");
+
+all.onchange=()=>chk.forEach(c=>c.checked=all.checked);
+t.onchange=()=>document.querySelectorAll(".trainer").forEach(c=>c.checked=t.checked);
+s.onchange=()=>document.querySelectorAll(".student").forEach(c=>c.checked=s.checked);
+</script>
+
+{% endblock %}

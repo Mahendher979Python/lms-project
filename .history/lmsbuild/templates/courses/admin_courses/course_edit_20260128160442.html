@@ -1,0 +1,27 @@
+<h2>Edit Course</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="title" value="{{ course.title }}"><br>
+
+<textarea name="description">{{ course.description }}</textarea><br>
+
+<select name="level">
+<option value="beginner" {% if course.level == "beginner" %}selected{% endif %}>Beginner</option>
+<option value="intermediate" {% if course.level == "intermediate" %}selected{% endif %}>Intermediate</option>
+<option value="advanced" {% if course.level == "advanced" %}selected{% endif %}>Advanced</option>
+</select><br>
+
+<input name="duration" value="{{ course.duration }}"><br>
+
+<select name="trainer">
+{% for t in trainers %}
+<option value="{{ t.id }}" {% if course.trainer.id == t.id %}selected{% endif %}>
+{{ t.user.username }}
+</option>
+{% endfor %}
+</select><br>
+
+<button type="submit">Update</button>
+</form>

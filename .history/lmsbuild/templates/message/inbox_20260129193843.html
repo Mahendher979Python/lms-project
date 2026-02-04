@@ -1,0 +1,121 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .inbox-wrapper {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .inbox-wrapper h2 {
+        text-align: center;
+        padding: 20px;
+        margin: 0;
+        background: white;
+        color: #333;
+        border-bottom: 2px solid #f4f4f4;
+    }
+
+    .inbox-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .inbox-table th {
+        background: #f8f9fa;
+        color: #666;
+        text-align: left;
+        padding: 15px;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .inbox-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        font-size: 15px;
+    }
+
+    .msg-row {
+        transition: background 0.2s ease;
+        cursor: pointer;
+    }
+
+    .msg-row:hover {
+        background-color: #fcfcfc;
+    }
+
+    .unread {
+        background-color: #f4f8ff;
+        font-weight: 600;
+    }
+
+    .unread td:first-child::before {
+        content: "•";
+        color: #0d6efd;
+        margin-right: 8px;
+        font-size: 20px;
+        vertical-align: middle;
+    }
+
+    .date-col {
+        color: #888;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .empty-msg {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+    }
+
+    .selected-row {
+        background-color: #e7f1ff !important;
+    }
+</style>
+
+<div class="inbox-wrapper">
+    <h2>Your Inbox</h2>
+    <table class="inbox-table">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>Subject</th>
+                <th>Message Snippet</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for msg in messages %}
+            <tr class="msg-row {% if not msg.is_read %}unread{% endif %}">
+                <td>{{ msg.sender.username }}</td>
+                <td>{{ msg.subject }}</td>
+                <td>{{ msg.body|truncatechars:40 }}</td>
+                <td class="date-col">{{ msg.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="empty-msg">No messages yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.msg-row').forEach(row => {
+        row.addEventListener('click', function() {
+            document.querySelectorAll('.msg-row').forEach(r => r.classList.remove('selected-row'));
+            this.classList.add('selected-row');
+            console.log("Selected Subject: " + this.cells[1].innerText);
+        });
+    });
+</script>
+{% endblock %}

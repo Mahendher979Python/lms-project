@@ -1,0 +1,28 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>{{ lesson.title }} – Materials</h3>
+
+<a href="{% url 'admin_material_upload' lesson.id %}" class="btn btn-primary mb-3">Upload</a>
+
+<table class="table">
+<tr>
+<th>Title</th>
+<th>Type</th>
+<th>Actions</th>
+</tr>
+
+{% for m in materials %}
+<tr>
+<td>{{ m.title }}</td>
+<td>{{ m.material_type }}</td>
+<td>
+<a href="{{ m.file.url }}" target="_blank">View</a> |
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}">Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

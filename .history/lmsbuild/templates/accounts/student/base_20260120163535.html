@@ -1,0 +1,325 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student | LMS 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --bg-dark: #0f172a;       /* Deep Blue Background */
+  --bg-panel: #1e293b;      /* Slightly lighter panel */
+  --accent: #38bdf8;        /* Cyan Blue */
+  --accent-dark: #0284c7;   /* Darker Cyan for 3D depth */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --danger: #ef4444;
+  --danger-dark: #b91c1c;
+  --success: #22c55e;
+  --success-dark: #15803d;
+  
+  /* 3D Shadows */
+  --shadow-3d: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+
+body { background: var(--bg-dark); color: var(--text-main); }
+
+/* --- Layout --- */
+.topbar {
+  height: 70px;
+  background: rgba(30, 41, 59, 0.8); /* Glass effect */
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.layout { display: flex; min-height: calc(100vh - 70px); }
+
+/* --- 3D Sidebar --- */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+  padding: 30px 20px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar h3 {
+  text-align: center;
+  margin-bottom: 35px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0px 0px 10px rgba(56, 189, 248, 0.5); /* Neon Glow */
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.menu a:hover, .menu a.active {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transform: translateX(5px); /* Slide effect */
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+.content { flex: 1; padding: 40px; overflow-y: auto; }
+
+/* --- 3D Cards --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.card-3d {
+  background: var(--bg-panel);
+  padding: 25px;
+  border-radius: 20px;
+  position: relative;
+  /* The 3D Lift Look */
+  box-shadow: 
+    10px 10px 20px #0a0f1c, 
+    -5px -5px 15px rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+}
+
+.card-title { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.card-value { font-size: 2.5rem; font-weight: bold; margin: 10px 0; background: linear-gradient(45deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+.card-icon { position: absolute; top: 25px; right: 25px; font-size: 2rem; color: rgba(255,255,255,0.05); }
+
+/* --- 3D Buttons (Pressable) --- */
+.btn-3d {
+  display: inline-block;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.1s;
+  position: relative;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  box-shadow: 0px 5px 0px 0px var(--accent-dark), 0px 10px 10px rgba(0,0,0,0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(5px);
+  box-shadow: 0px 0px 0px 0px var(--accent-dark), inset 0px 2px 5px rgba(0,0,0,0.5);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  box-shadow: 0px 5px 0px 0px var(--danger-dark), 0px 10px 10px rgba(0,0,0,0.3);
+}
+
+.btn-danger:active {
+  transform: translateY(5px);
+  box-shadow: 0px 0px 0px 0px var(--danger-dark);
+}
+
+/* --- Charts Section --- */
+.charts-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Main chart wider */
+  gap: 25px;
+}
+
+.chart-box {
+  background: var(--bg-panel);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-inner);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+h4 { margin-bottom: 20px; font-weight: 600; color: var(--text-main); }
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <i class="fa-solid fa-cube fa-xl" style="color:var(--accent);"></i>
+    <h2>LMS<span style="font-weight:300; opacity:0.7;">Platform</span></h2>
+  </div>
+  <div>
+    <span style="margin-right:15px; color:var(--text-muted);">Welcome, <b style="color:var(--text-main);">{{ request.user.username }}</b></span>
+    <a href="{% url 'logout' %}" class="btn-3d btn-danger" style="padding: 8px 15px; font-size: 0.8rem;">Logout</a>
+  </div>
+</div>
+
+<div class="layout">
+
+  <div class="sidebar">
+    <h3><i class="fa-solid fa-graduation-cap"></i> Student</h3>
+    <div class="menu">
+      <a href="{% url 'student_dashboard' %}" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'student_course_list' %}"><i class="fa-solid fa-layer-group"></i> My Courses</a>
+      <a href="#"><i class="fa-solid fa-pen-ruler"></i> Assignments</a>
+      <a href="#"><i class="fa-solid fa-clipboard-user"></i> Attendance</a>
+      <a href="#"><i class="fa-solid fa-folder-tree"></i> Materials</a>
+    </div>
+    
+    <div style="margin-top: 50px; background: linear-gradient(135deg, #38bdf8, #818cf8); padding: 20px; border-radius: 15px; color: #fff; text-align: center; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);">
+      <i class="fa-solid fa-rocket fa-2x" style="margin-bottom:10px;"></i>
+      <p style="font-size:0.9rem; font-weight:bold;">Pro Access</p>
+      <p style="font-size:0.8rem; opacity:0.9; margin-bottom:15px;">Unlock advanced stats</p>
+      <button style="background:rgba(255,255,255,0.2); border:1px solid #fff; padding:5px 15px; border-radius:20px; color:#fff; cursor:pointer;">Upgrade</button>
+    </div>
+  </div>
+
+  <div class="content">
+    
+    {% block content %}
+    
+    <div class="stats-grid">
+      <div class="card-3d">
+        <div class="card-title">Enrolled Courses</div>
+        <div class="card-value">12</div>
+        <i class="fa-solid fa-book-open card-icon"></i>
+      </div>
+      <div class="card-3d">
+        <div class="card-title">Pending Tasks</div>
+        <div class="card-value" style="color:#fbbf24;">05</div>
+        <i class="fa-solid fa-clock card-icon"></i>
+      </div>
+      <div class="card-3d">
+        <div class="card-title">Avg. Attendance</div>
+        <div class="card-value" style="color:#34d399;">94%</div>
+        <i class="fa-solid fa-chart-line card-icon"></i>
+      </div>
+      <div class="card-3d" style="border-color: var(--accent);">
+        <div class="card-title">Next Class</div>
+        <div class="card-value" style="font-size:1.5rem;">Physics II</div>
+        <div style="color:var(--accent); font-size:0.9rem; margin-top:5px;">In 30 mins</div>
+        <i class="fa-solid fa-video card-icon"></i>
+      </div>
+    </div>
+
+    <div class="charts-container">
+      
+      <div class="chart-box">
+        <h4><i class="fa-solid fa-chart-simple" style="color:var(--accent); margin-right:10px;"></i>Yearly Performance</h4>
+        <canvas id="performanceChart"></canvas>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:25px;">
+        
+        <div class="chart-box" style="flex:1;">
+          <h4>Topic Mastery</h4>
+          <div style="position:relative; height:200px;">
+            <canvas id="masteryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <h4>Quick Actions</h4>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="#" class="btn-3d btn-primary">Join Class</a>
+            <a href="#" class="btn-3d" style="background:#64748b; box-shadow:0 5px 0 #475569;">Syllabus</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% endblock %}
+    
+  </div>
+
+</div>
+
+<script>
+  // Configuration for 3D-ish looking charts
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+
+  // 1. Bar Chart (Performance)
+  const ctx1 = document.getElementById('performanceChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Grades (%)',
+        data: [75, 82, 78, 88, 95, 90],
+        backgroundColor: '#38bdf8',
+        borderRadius: 5, // Makes bars rounded (3D feel)
+        hoverBackgroundColor: '#0ea5e9'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // 2. Doughnut Chart (Mastery)
+  const ctx2 = document.getElementById('masteryChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Completed', 'Pending', 'Failed'],
+      datasets: [{
+        data: [70, 25, 5],
+        backgroundColor: [
+          '#22c55e', // Green
+          '#f59e0b', // Orange
+          '#ef4444'  // Red
+        ],
+        borderWidth: 0,
+        hoverOffset: 15 // Pops out on hover (3D effect)
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

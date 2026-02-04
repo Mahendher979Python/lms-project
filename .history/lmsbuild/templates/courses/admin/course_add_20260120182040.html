@@ -1,0 +1,144 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+/* ===== ADMIN ADD COURSE UI ===== */
+
+.add-course-wrapper {
+  max-width: 800px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.add-course-wrapper h2 {
+  margin-bottom: 25px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.add-course-wrapper input,
+.add-course-wrapper textarea,
+.add-course-wrapper select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.add-course-wrapper textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.add-course-wrapper input:focus,
+.add-course-wrapper textarea:focus,
+.add-course-wrapper select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+  outline: none;
+}
+
+.file-input label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.status-group {
+  display: flex;
+  gap: 25px;
+  margin: 15px 0 25px;
+}
+
+.status-group label {
+  font-size: 14px;
+  cursor: pointer;
+  color: #374151;
+}
+
+.status-group input {
+  margin-right: 6px;
+}
+
+.add-course-wrapper button {
+  background: #4f46e5;
+  color: #ffffff;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.add-course-wrapper button:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .add-course-wrapper {
+    padding: 20px;
+  }
+}
+</style>
+
+<div class="add-course-wrapper">
+
+  <h2>➕ Add New Course</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input name="title" placeholder="Course Title" required>
+
+    <textarea name="description" placeholder="Course Description"></textarea>
+
+    <select name="level">
+      <option value="beginner">Beginner</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="advanced">Advanced</option>
+    </select>
+
+    <input name="duration" placeholder="Duration (e.g. 3 Months)">
+
+    <select name="trainer" required>
+      <option value="">Select Trainer</option>
+      {% for t in trainers %}
+        <option value="{{ t.id }}">{{ t.username }}</option>
+      {% endfor %}
+    </select>
+
+    <div class="file-input">
+      <label>Thumbnail</label>
+      <input type="file" name="thumbnail" required>
+
+      <label>Intro Video</label>
+      <input type="file" name="video">
+
+      <label>Course PDF</label>
+      <input type="file" name="pdf">
+    </div>
+
+    <div class="status-group">
+      <label><input type="radio" name="status" value="published" checked> Publish</label>
+      <label><input type="radio" name="status" value="draft"> Draft</label>
+    </div>
+
+    <button type="submit">Save Course</button>
+
+  </form>
+
+</div>
+
+{% endblock %}

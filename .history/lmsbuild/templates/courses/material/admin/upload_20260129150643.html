@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Admin Upload – {{ course.title }}</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label><br>
+<input type="text" name="title" required><br><br>
+
+<label>File</label><br>
+<input type="file" name="file" required><br><br>
+
+<button type="submit">Upload</button>
+
+</form>
+
+<br>
+
+<a href="{% url 'admin_material_list' course.id %}">Back</a>
+
+{% endblock %}

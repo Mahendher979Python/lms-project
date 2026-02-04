@@ -1,0 +1,260 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --glass: rgba(255, 255, 255, 0.7);
+        --text: #1e293b;
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #f8fafc, #e2e8f0);
+        font-family: 'Outfit', sans-serif;
+        color: var(--text);
+    }
+
+    .container-3d {
+        padding: 40px;
+        perspective: 1500px; /* Essential for 3D effects */
+    }
+
+    /* Top Bar Styling */
+    .topbar-3d {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--glass);
+        backdrop-filter: blur(15px);
+        padding: 25px 40px;
+        border-radius: 30px;
+        box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+        margin-bottom: 40px;
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .topbar-3d h2 { font-weight: 800; margin: 0; background: linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* Stats Grid with 3D Depth */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .stat-box-3d {
+        background: #f8fafc;
+        border-radius: 35px;
+        padding: 30px;
+        position: relative;
+        box-shadow: 15px 15px 30px #d1d5db, -15px -15px 30px #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .stat-box-3d:hover {
+        transform: translateZ(30px) rotateX(5deg);
+    }
+
+    /* Chart Container Customization */
+    .chart-wrapper {
+        position: relative;
+        width: 150px;
+        filter: drop-shadow(0 15px 15px rgba(99, 102, 241, 0.3));
+    }
+
+    /* 3D Grid & Cards */
+    .material-grid-3d {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 35px;
+    }
+
+    .card-3d {
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 30px;
+        border: 1px solid rgba(255,255,255,0.6);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        transform-style: preserve-3d;
+        cursor: pointer;
+    }
+
+    .card-3d:hover {
+        transform: translateY(-15px) rotateY(10deg);
+        box-shadow: -20px 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .card-3d .content-z {
+        transform: translateZ(50px); /* Makes text pop out */
+    }
+
+    /* Action Buttons UI */
+    .btn-3d-action {
+        padding: 12px 20px;
+        border-radius: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s;
+        border: none;
+        margin-top: 15px;
+        box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+    }
+
+    .btn-view { background: var(--primary); color: white; }
+    .btn-delete { background: #fee2e2; color: #ef4444; margin-left: 10px; }
+    .btn-view:hover { background: #4f46e5; transform: translateY(2px); box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+
+    /* Search Input Styling */
+    .search-input-3d {
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        background: #f1f5f9;
+        box-shadow: inset 8px 8px 16px #d1d5db, inset -8px -8px 16px #ffffff;
+        width: 300px;
+        transition: 0.4s;
+    }
+
+    .search-input-3d:focus { outline: none; width: 350px; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); }
+
+</style>
+
+<div class="container-3d">
+    <div class="topbar-3d">
+        <div>
+            <h2>{{ course.title }}</h2>
+            <small class="text-muted">ID: {{ course.id }} | Master Dashboard</small>
+        </div>
+        <div class="d-flex align-items-center">
+            <input type="text" id="search" class="search-input-3d" placeholder="🔍 Search resources...">
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-box-3d">
+            <h1 style="font-size: 4rem; font-weight: 900; color: var(--primary);" id="total-count">{{ materials|length }}</h1>
+            <p class="fw-bold text-uppercase letter-spacing-1">Materials Stored</p>
+        </div>
+
+        <div class="stat-box-3d">
+            <div class="chart-wrapper">
+                <canvas id="chart-3d"></canvas>
+            </div>
+            <p class="mt-3 fw-bold">Live Utilization</p>
+        </div>
+
+        <div class="stat-box-3d justify-content-center">
+            <a href="{% url 'trainer_material_upload' course.id %}" class="btn btn-primary px-5 py-3 shadow-lg" style="border-radius: 20px; font-weight: 800;">
+                <i class="fa-solid fa-plus me-2"></i> NEW UPLOAD
+            </a>
+        </div>
+    </div>
+
+    <div class="material-grid-3d" id="material-grid">
+        {% for m in materials %}
+        <div class="card-3d" data-title="{{ m.title }}">
+            <div class="content-z">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="badge bg-soft-primary text-primary" style="background: rgba(99, 102, 241, 0.1);">ID: {{ m.id }}</span>
+                    <i class="fa-solid fa-file-invoice fa-xl text-muted"></i>
+                </div>
+                <h4 class="fw-bold text-dark">{{ m.title }}</h4>
+                <p class="text-muted small"><i class="fa-regular fa-calendar-check me-2"></i>{{ m.created_at|date:"d M Y" }}</p>
+                
+                <hr>
+                
+                <div class="d-flex mt-4">
+                    <a href="{{ m.file.url }}" target="_blank" class="btn-3d-action btn-view w-100 text-center">
+                        <i class="fa-solid fa-eye me-2"></i> View
+                    </a>
+                    <a href="{% url 'trainer_material_delete' m.id %}" class="btn-3d-action btn-delete" onclick="return confirm('Archive this file?')">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-muted">The vault is currently empty.</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // 3D Chart Logic
+    const ctx = document.getElementById('chart-3d').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Used', 'Free'],
+            datasets: [{
+                data: [{{ materials|length }}, 100 - {{ materials|length }}],
+                backgroundColor: ['#6366f1', '#e2e8f0'],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            cutout: '70%',
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Advanced Search Logic with Counter Update
+    const searchInput = document.getElementById('search');
+    const cards = [...document.querySelectorAll('.card-3d')];
+    const totalDisplay = document.getElementById('total-count');
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const isVisible = card.dataset.title.toLowerCase().includes(query);
+            card.style.display = isVisible ? '' : 'none';
+            if(isVisible) visibleCount++;
+        });
+
+        // Update 3D count dynamically
+        totalDisplay.innerText = visibleCount;
+        
+        // Update Chart dynamically
+        myChart.data.datasets[0].data[0] = visibleCount;
+        myChart.update();
+    });
+
+    // Optional: Add a Mouse Parallax effect to cards
+    document.querySelectorAll('.card-3d').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            let rect = card.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            let xc = rect.width / 2;
+            let yc = rect.height / 2;
+            let dx = x - xc;
+            let dy = y - yc;
+            card.style.transform = `rotateY(${dx / 10}deg) rotateX(${-dy / 10}deg) translateY(-10px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg) translateY(0)`;
+        });
+    });
+</script>
+
+{% endblock %}

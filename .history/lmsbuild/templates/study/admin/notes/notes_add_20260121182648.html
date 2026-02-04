@@ -1,0 +1,98 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+:root{
+ --bg:#0f172a; --card:#1e293b; --border:#334155;
+ --text:#f8fafc; --muted:#94a3b8; --accent:#6366f1;
+}
+body{background:var(--bg);color:var(--text);font-family:Segoe UI;}
+.box{max-width:800px;margin:40px auto;background:var(--card);
+padding:30px;border-radius:12px;border:1px solid var(--border);}
+label{color:var(--muted);font-size:.9rem;font-weight:600}
+input,select,textarea{
+ width:100%;padding:10px;margin:6px 0 15px;
+ background:#020617;color:white;border:1px solid var(--border);
+ border-radius:6px;
+}
+.assign-head{display:flex;justify-content:space-between;align-items:center}
+.assign-box{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:10px;max-height:180px;overflow:auto;
+ background:#020617;padding:10px;border-radius:6px;border:1px solid var(--border)
+}
+.btn{background:var(--accent);color:white;border:none;padding:12px;
+border-radius:6px;width:100%;font-weight:600;cursor:pointer}
+.btn:hover{background:#4f46e5}
+</style>
+
+<div class="box">
+<h2>➕ Add Note</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label>
+<input name="title" required>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+<div>
+<label>Course</label>
+<select name="course">
+<option value="">-- Optional --</option>
+{% for c in courses %}<option value="{{c.id}}">{{c.title}}</option>{% endfor %}
+</select>
+</div>
+<div>
+<label>Visibility</label>
+<select name="visibility">
+<option value="private">Private</option>
+<option value="public">Public</option>
+</select>
+</div>
+</div>
+
+<label>Description</label>
+<textarea name="description"></textarea>
+
+<label>File</label>
+<input type="file" name="file">
+
+<div class="assign-head">
+<label>Assign Users</label>
+<div>
+<label><input type="checkbox" id="all"> All</label>
+<label><input type="checkbox" id="trainers"> Trainers</label>
+<label><input type="checkbox" id="students"> Students</label>
+</div>
+</div>
+
+<div class="assign-box">
+{% for u in admins %}
+<label><input type="checkbox" class="chk admin" name="assigned_to" value="{{u.id}}"> {{u.username}} (Admin)</label>
+{% endfor %}
+{% for u in trainers %}
+<label><input type="checkbox" class="chk trainer" name="assigned_to" value="{{u.id}}"> {{u.username}} (Trainer)</label>
+{% endfor %}
+{% for u in students %}
+<label><input type="checkbox" class="chk student" name="assigned_to" value="{{u.id}}"> {{u.username}} (Student)</label>
+{% endfor %}
+</div>
+
+<br>
+<button class="btn">Create Note</button>
+</form>
+</div>
+
+<script>
+const all=document.getElementById("all");
+const t=document.getElementById("trainers");
+const s=document.getElementById("students");
+const chk=document.querySelectorAll(".chk");
+
+all.onchange=()=>chk.forEach(c=>c.checked=all.checked);
+t.onchange=()=>document.querySelectorAll(".trainer").forEach(c=>c.checked=t.checked);
+s.onchange=()=>document.querySelectorAll(".student").forEach(c=>c.checked=s.checked);
+</script>
+
+{% endblock %}

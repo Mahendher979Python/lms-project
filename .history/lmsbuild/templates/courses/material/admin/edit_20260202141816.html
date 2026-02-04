@@ -1,0 +1,190 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+--neon:#00f3ff;
+--bg:#020617;
+--glass:rgba(255,255,255,.05);
+}
+
+.edit-wrap{
+min-height:90vh;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:Poppins;
+background:radial-gradient(circle at top right,#020617,#000);
+}
+
+.edit-card{
+width:480px;
+padding:40px;
+border-radius:30px;
+background:var(--glass);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.1);
+box-shadow:0 40px 80px rgba(0,0,0,.7);
+text-align:center;
+transform-style:preserve-3d;
+transition:.4s;
+}
+
+.edit-card:hover{
+transform:rotateX(5deg) rotateY(-5deg) scale(1.02);
+box-shadow:0 0 50px var(--neon);
+}
+
+.title{
+font-size:1.8rem;
+font-weight:700;
+background:linear-gradient(90deg,#00f3ff,#ccff00);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:30px;
+}
+
+.input{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border-radius:12px;
+background:rgba(0,0,0,.4);
+border:1px solid rgba(255,255,255,.1);
+color:white;
+outline:none;
+transition:.3s;
+}
+
+.input:focus{
+border-color:var(--neon);
+box-shadow:0 0 15px rgba(0,243,255,.3);
+}
+
+.file-box{
+border:2px dashed rgba(255,255,255,.2);
+padding:30px;
+border-radius:20px;
+color:#aaa;
+cursor:pointer;
+transition:.3s;
+margin-bottom:20px;
+}
+
+.file-box:hover{
+border-color:var(--neon);
+color:var(--neon);
+}
+
+.btn-row{
+display:flex;
+gap:15px;
+margin-top:15px;
+}
+
+.btn-save{
+flex:1;
+padding:15px;
+border:none;
+border-radius:16px;
+background:linear-gradient(135deg,#00f3ff,#0099ff);
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+.btn-save:hover{
+transform:scale(1.05);
+box-shadow:0 0 30px var(--neon);
+}
+
+.btn-cancel{
+flex:1;
+padding:15px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,.2);
+background:transparent;
+color:#aaa;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+text-decoration:none;
+line-height:45px;
+}
+
+.btn-cancel:hover{
+color:#ff4d4d;
+border-color:#ff4d4d;
+box-shadow:0 0 20px rgba(255,77,77,.4);
+}
+
+.filename{
+margin-top:10px;
+font-size:.8rem;
+color:#aaa;
+}
+</style>
+
+<div class="edit-wrap">
+
+<div class="edit-card" id="card">
+
+<h2 class="title">Edit Material</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input class="input" name="title" value="{{ material.title }}">
+
+<select name="material_type" class="input">
+{% for key,val in material.MATERIAL_TYPES %}
+<option value="{{ key }}" {% if material.material_type == key %}selected{% endif %}>{{ val }}</option>
+{% endfor %}
+</select>
+
+<label class="file-box">
+<i class="fa-solid fa-cloud-arrow-up fa-2x"></i><br><br>
+Replace File (optional)
+<input hidden type="file" name="file" id="fileInput">
+<div class="filename" id="fileName"></div>
+</label>
+
+<div class="btn-row">
+
+<button class="btn-save">
+<i class="fa-solid fa-floppy-disk"></i> Update
+</button>
+
+<a href="{% url 'admin_material_all_list' %}" class="btn-cancel">
+<i class="fa-solid fa-arrow-left"></i> Cancel
+</a>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+<script>
+const card=document.getElementById("card");
+
+document.addEventListener("mousemove",e=>{
+let x=(window.innerWidth/2-e.pageX)/40;
+let y=(window.innerHeight/2-e.pageY)/40;
+card.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
+});
+
+document.addEventListener("mouseleave",()=>{
+card.style.transform="rotateX(0) rotateY(0)";
+});
+
+document.getElementById("fileInput").addEventListener("change",function(){
+document.getElementById("fileName").innerText=this.files[0]?.name || "";
+});
+</script>
+
+{% endblock %}

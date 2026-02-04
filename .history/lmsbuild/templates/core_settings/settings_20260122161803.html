@@ -1,0 +1,143 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.settings-card{
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+.section{
+  border-bottom:1px solid #e5e7eb;
+  padding-bottom:25px;
+  margin-bottom:25px;
+}
+.section h3{
+  margin-bottom:15px;
+  color:#1e293b;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+label{font-weight:600}
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
+}
+.toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+button{
+  background:#2563eb;
+  color:#fff;
+  padding:12px 25px;
+  border-radius:10px;
+  border:none;
+  font-weight:700;
+}
+</style>
+
+<div class="settings-card">
+  <h2>⚙ LMS Admin Settings</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- ================= GENERAL ================= -->
+    <div class="section">
+      <h3>🌐 General Settings</h3>
+      <div class="grid">
+        <div>
+          <label>Site Name</label>
+          <input type="text" name="site_name" value="{{ settings.site_name }}">
+        </div>
+
+        <div class="toggle">
+          <input type="checkbox" name="maintenance_mode" {% if settings.maintenance_mode %}checked{% endif %}>
+          <label>Maintenance Mode</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= USER ================= -->
+    <div class="section">
+      <h3>👤 User Settings</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="allow_self_registration"
+          {% if settings.allow_self_registration %}checked{% endif %}>
+          <label>Allow Self Registration</label>
+        </div>
+
+        <div>
+          <label>Default User Role</label>
+          <select name="default_user_role">
+            <option value="student" {% if settings.default_user_role == "student" %}selected{% endif %}>Student</option>
+            <option value="trainer" {% if settings.default_user_role == "trainer" %}selected{% endif %}>Trainer</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ATTENDANCE ================= -->
+    <div class="section">
+      <h3>⏱ Attendance Settings</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="attendance_enabled" {% if settings.attendance_enabled %}checked{% endif %}>
+          <label>Enable Attendance</label>
+        </div>
+
+        <div class="toggle">
+          <input type="checkbox" name="gps_required" {% if settings.gps_required %}checked{% endif %}>
+          <label>GPS Required</label>
+        </div>
+
+        <div>
+          <label>GPS Radius (meters)</label>
+          <input type="number" name="gps_radius_meters" value="{{ settings.gps_radius_meters }}">
+        </div>
+
+        <div>
+          <label>Half Day Hours</label>
+          <input type="number" step="0.5" name="half_day_hours" value="{{ settings.half_day_hours }}">
+        </div>
+
+        <div class="toggle">
+          <input type="checkbox" name="attendance_approval_required"
+          {% if settings.attendance_approval_required %}checked{% endif %}>
+          <label>Attendance Approval Required</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= REPORTS ================= -->
+    <div class="section">
+      <h3>📊 Reports Settings</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="reports_enabled"
+          {% if settings.reports_enabled %}checked{% endif %}>
+          <label>Enable Reports</label>
+        </div>
+
+        <div class="toggle">
+          <input type="checkbox" name="allow_excel_export"
+          {% if settings.allow_excel_export %}checked{% endif %}>
+          <label>Allow Excel Export</label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit">💾 Save Settings</button>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.card{background:#fff;padding:30px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.section{margin-bottom:30px;border-bottom:1px solid #e5e7eb;padding-bottom:20px}
+.section h3{margin-bottom:15px;color:#1e293b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+label{font-weight:600}
+input,select{width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1}
+.toggle{display:flex;gap:10px;align-items:center}
+button{background:#2563eb;color:#fff;padding:12px 30px;border:none;border-radius:10px;font-weight:700}
+</style>
+
+<div class="card">
+  <h2>👨‍🏫 Trainer Global Settings</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- PROFILE -->
+    <div class="section">
+      <h3>Profile</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="approval_required" {% if settings.approval_required %}checked{% endif %}>
+          <label>Approval Required</label>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" name="profile_editable" {% if settings.profile_editable %}checked{% endif %}>
+          <label>Profile Editable</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSE -->
+    <div class="section">
+      <h3>Course Permissions</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="can_create_courses" {% if settings.can_create_courses %}checked{% endif %}>
+          <label>Can Create Courses</label>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" name="course_approval_required" {% if settings.course_approval_required %}checked{% endif %}>
+          <label>Course Approval Required</label>
+        </div>
+        <div>
+          <label>Max Courses</label>
+          <input type="number" name="max_courses" value="{{ settings.max_courses }}">
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="section">
+      <h3>Attendance</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="attendance_mandatory" {% if settings.attendance_mandatory %}checked{% endif %}>
+          <label>Attendance Mandatory</label>
+        </div>
+        <div>
+          <label>Daily Work Hours</label>
+          <input type="number" step="0.5" name="daily_work_hours" value="{{ settings.daily_work_hours }}">
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="section">
+      <h3>Payment</h3>
+      <div class="grid">
+        <div class="toggle">
+          <input type="checkbox" name="payment_enabled" {% if settings.payment_enabled %}checked{% endif %}>
+          <label>Payment Enabled</label>
+        </div>
+        <div>
+          <label>Payment Type</label>
+          <select name="payment_type">
+            <option value="hourly" {% if settings.payment_type == "hourly" %}selected{% endif %}>Hourly</option>
+            <option value="monthly" {% if settings.payment_type == "monthly" %}selected{% endif %}>Monthly</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit">💾 Save Trainer Settings</button>
+  </form>
+</div>
+
+{% endblock %}

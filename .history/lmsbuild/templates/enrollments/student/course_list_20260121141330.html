@@ -1,0 +1,158 @@
+{% extends "accounts/student/base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+
+<style>
+.course-wrapper{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* HEADER */
+.course-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+.course-header h2{
+    font-size:26px;
+    font-weight:800;
+    color:#0f172a;
+}
+.btn-back{
+    background:#f1f5f9;
+    padding:10px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#334155;
+    font-weight:600;
+}
+.btn-back:hover{
+    background:#e2e8f0;
+}
+
+/* CONTENT */
+.course-layout{
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:24px;
+}
+
+/* LEFT – TOPICS */
+.topic-panel{
+    background:#ffffff;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    max-height:520px;
+    overflow-y:auto;
+}
+.topic-panel h4{
+    padding:16px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:16px;
+    font-weight:700;
+}
+.topic{
+    padding:14px 16px;
+    border-bottom:1px solid #f1f5f9;
+}
+.topic-title{
+    font-weight:600;
+    color:#1e293b;
+    font-size:14px;
+}
+.topic small{
+    color:#64748b;
+}
+
+/* RIGHT – DETAILS */
+.content-panel{
+    background:#ffffff;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    padding:22px;
+}
+.content-panel h3{
+    font-size:20px;
+    margin-bottom:10px;
+}
+.content-panel p{
+    color:#475569;
+    line-height:1.7;
+}
+
+/* DOWNLOAD */
+.download-box{
+    margin-top:20px;
+    padding:16px;
+    border-radius:12px;
+    background:#f8fafc;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.btn-download{
+    background:#10b981;
+    color:white;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+}
+.btn-download:hover{
+    opacity:0.9;
+}
+</style>
+
+<div class="course-wrapper">
+
+    <!-- HEADER -->
+    <div class="course-header">
+        <h2>{{ course.title }}</h2>
+        <a href="{% url 'student_courses' %}" class="btn-back">
+            ✖ Close Folder
+        </a>
+    </div>
+
+    <div class="course-layout">
+
+        <!-- LEFT: TOPICS (SCROLL) -->
+        <div class="topic-panel">
+            <h4>📂 Course Topics</h4>
+
+            {% for lesson in lessons %}
+                <div class="topic">
+                    <div class="topic-title">
+                        {{ lesson.title }}
+                    </div>
+                    <small>{{ lesson.duration }} mins</small>
+                </div>
+            {% empty %}
+                <div style="padding:16px;color:#94a3b8">
+                    No topics added
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- RIGHT: DETAILS -->
+        <div class="content-panel">
+            <h3>Course Description</h3>
+            <p>{{ course.description }}</p>
+
+            <!-- DOWNLOAD -->
+            {% if course.material %}
+            <div class="download-box">
+                <span>📁 Course Materials</span>
+                <a href="{{ course.material.url }}" download class="btn-download">
+                    Download
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

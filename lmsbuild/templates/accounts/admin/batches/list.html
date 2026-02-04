@@ -1,0 +1,203 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<style>
+:root {
+    --gold:#ffd700;
+    --blue:#00f3ff;
+}
+
+body{
+    background:radial-gradient(circle at 10% 20%,rgb(15,15,30) 0%,rgb(5,5,15) 90%);
+    font-family:Poppins,sans-serif;
+    color:white;
+}
+
+.dashboard-container{padding:30px}
+
+.top-section{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    margin-bottom:25px
+}
+
+.glass{
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:25px;
+    border:1px solid rgba(255,255,255,.1)
+}
+
+.page-title{
+    font-size:2rem;
+    background:linear-gradient(90deg,var(--gold),#ff8c00);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.controls{
+    display:flex;
+    gap:15px;
+    margin-top:20px
+}
+
+.controls input{
+    padding:10px 15px 10px 35px;
+    border-radius:30px;
+    border:1px solid rgba(255,255,255,.2);
+    background:rgba(0,0,0,.3);
+    color:white
+}
+
+.add-btn{
+    background:linear-gradient(135deg,var(--gold),#ff8c00);
+    padding:10px 25px;
+    border-radius:30px;
+    color:black;
+    font-weight:700;
+    text-decoration:none
+}
+
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 12px
+}
+
+thead th{opacity:.6;text-align:left}
+
+tbody tr{
+    background:rgba(255,255,255,.05);
+    transition:.3s
+}
+
+tbody tr:hover{
+    transform:translateY(-3px);
+    background:rgba(255,255,255,.1)
+}
+
+td{padding:15px}
+
+.badge{
+    border:1px solid rgba(0,243,255,.4);
+    padding:5px 10px;
+    border-radius:8px;
+    color:var(--blue)
+}
+
+.action{margin-right:10px;color:white;opacity:.7}
+.action:hover{opacity:1;color:var(--gold)}
+
+.locked{opacity:.4}
+
+.chart{height:200px}
+</style>
+
+<div class="dashboard-container">
+
+<div class="top-section">
+
+<div class="glass">
+<h2 class="page-title"><i class="fas fa-layer-group"></i> Batch Management</h2>
+
+<div class="controls">
+<input id="search" placeholder="Search batch..." onkeyup="filterTable()">
+<a href="{% url 'admin_batch_create' %}" class="add-btn">
+<i class="fas fa-plus"></i> Create Batch
+</a>
+</div>
+</div>
+
+<div class="glass">
+<h4 style="text-align:center;color:var(--gold)">Batches per Trainer</h4>
+<div id="chart" class="chart"></div>
+</div>
+
+</div>
+
+<div class="glass">
+
+<table id="table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Trainer</th>
+<th>Students</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for b in batches %}
+<tr>
+
+<td>{{ b.name }}</td>
+
+<td class="trainer">
+{% if b.trainer %}
+<span class="badge">{{ b.trainer.user.username }}</span>
+{% endif %}
+</td>
+
+<td>{{ b.student_set.count }}</td>
+
+<td>
+<a href="{% url 'admin_batch_edit' b.id %}" class="action"><i class="fas fa-pen"></i></a>
+
+{% if b.student_set.count == 0 %}
+<a href="{% url 'admin_batch_delete' b.id %}" onclick="return confirm('Delete batch?')" class="action">
+<i class="fas fa-trash"></i>
+</a>
+{% else %}
+<span class="locked">Locked</span>
+{% endif %}
+</td>
+
+</tr>
+{% empty %}
+<tr><td colspan="4" style="text-align:center">No batches</td></tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+<script>
+function filterTable(){
+let f=document.getElementById("search").value.toUpperCase();
+document.querySelectorAll("#table tbody tr").forEach(r=>{
+let t=r.cells[0].innerText.toUpperCase();
+r.style.display=t.includes(f)?"":"none";
+});
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+let data={};
+
+document.querySelectorAll(".trainer").forEach(t=>{
+let n=t.innerText.trim();
+if(n)data[n]=(data[n]||0)+1;
+});
+
+let chartData=Object.keys(data).map(k=>({name:k,value:data[k]}));
+
+if(chartData.length){
+let c=echarts.init(document.getElementById("chart"));
+c.setOption({
+series:[{type:"pie",radius:["40%","70%"],data:chartData}]
+});
+}
+
+});
+</script>
+
+{% endblock %}

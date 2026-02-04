@@ -1,0 +1,242 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+    --primary:#4f46e5;
+    --success:#10b981;
+    --warning:#f59e0b;
+    --bg:#f1f5f9;
+    --text:#0f172a;
+    --muted:#64748b;
+}
+
+/* ===== PAGE ===== */
+.dashboard{
+    max-width:1200px;
+    margin:auto;
+    animation:fadeUp .5s ease;
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:none;}
+}
+
+/* ===== WELCOME ===== */
+.welcome{
+    background:linear-gradient(135deg,var(--primary),#4338ca);
+    color:#fff;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,.15);
+    margin-bottom:35px;
+}
+
+.welcome h2{margin:0;font-size:2rem;}
+.welcome p{opacity:.9;margin-top:6px}
+
+/* ===== 3D CARD ===== */
+.card3d{
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.08),
+        inset 0 1px 0 rgba(255,255,255,.6);
+    transform-style:preserve-3d;
+    transition:.3s ease;
+}
+
+.card3d:hover{
+    transform:translateY(-6px) rotateX(4deg) rotateY(-4deg);
+    box-shadow:0 20px 40px rgba(0,0,0,.12);
+}
+
+/* ===== STATS ===== */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    margin-bottom:40px;
+}
+
+.stat h3{
+    font-size:42px;
+    margin:0;
+    color:var(--text);
+}
+
+.stat p{
+    text-transform:uppercase;
+    font-size:.9rem;
+    letter-spacing:.5px;
+    color:var(--muted);
+}
+
+/* ===== PROGRESS RING ===== */
+.progress-box{
+    display:flex;
+    gap:30px;
+    align-items:center;
+}
+
+.ring{
+    --value:{{ course_progress|default:"0" }};
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:
+        conic-gradient(var(--primary) calc(var(--value)*1%), #e5e7eb 0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.ring span{
+    width:90px;
+    height:90px;
+    background:#fff;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+/* ===== SECTIONS ===== */
+.section{
+    margin-top:40px;
+}
+
+.section h3{
+    margin-bottom:15px;
+    color:var(--text);
+}
+
+/* ===== ACTIVITY ===== */
+.activity{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:18px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.activity:last-child{border:none}
+
+.icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- WELCOME -->
+    <div class="welcome">
+        <h2 id="greet">Welcome, {{ request.user.username }} 👋</h2>
+        <p>You have <b>2 pending assignments</b> this week</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="card3d stat">
+            <h3 class="counter" data-target="{{ courses_count|default:'0' }}">0</h3>
+            <p>Enrolled Courses</p>
+        </div>
+
+        <div class="card3d stat">
+            <h3 class="counter" data-target="{{ lessons_completed|default:'0' }}">0</h3>
+            <p>Lessons Completed</p>
+        </div>
+
+        <div class="card3d stat">
+            <h3>{{ average_score|default:'0' }}%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="section">
+        <h3>Overall Progress</h3>
+        <div class="card3d progress-box">
+            <div class="ring">
+                <span>{{ course_progress|default:'0' }}%</span>
+            </div>
+            <div>
+                <h4>Course Completion</h4>
+                <p style="color:var(--muted)">Based on enrolled courses</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <div class="section">
+        <h3>Recent Activity</h3>
+        <div class="card3d">
+            <div class="activity">
+                <div class="icon" style="background:#e0e7ff">📘</div>
+                <div>
+                    <b>Python Basics</b><br>
+                    <small style="color:var(--muted)">2 hours ago</small>
+                </div>
+            </div>
+            <div class="activity">
+                <div class="icon" style="background:#dcfce7">✅</div>
+                <div>
+                    <b>Quiz Completed</b><br>
+                    <small style="color:var(--muted)">Yesterday</small>
+                </div>
+            </div>
+            <div class="activity">
+                <div class="icon" style="background:#fff7ed">⚠️</div>
+                <div>
+                    <b>Assignment Due</b><br>
+                    <small style="color:var(--muted)">Tomorrow</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+/* Greeting */
+const h=new Date().getHours();
+const g=document.getElementById("greet");
+let t="Welcome";
+if(h<12)t="Good Morning";
+else if(h<18)t="Good Afternoon";
+else t="Good Evening";
+g.innerText=`${t}, {{ request.user.username }} 👋`;
+
+/* Counter animation */
+document.querySelectorAll('.counter').forEach(c=>{
+    let target=+c.dataset.target;
+    let count=0;
+    let step=target/60;
+    function run(){
+        count+=step;
+        if(count<target){
+            c.innerText=Math.ceil(count);
+            requestAnimationFrame(run);
+        }else{
+            c.innerText=target;
+        }
+    }
+    run();
+});
+</script>
+{% endblock %}

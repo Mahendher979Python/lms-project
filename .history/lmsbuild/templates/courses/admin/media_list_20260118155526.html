@@ -1,0 +1,119 @@
+<h2>Admin – Media Management</h2>
+
+<!-- 🔍 SEARCH & FILTER FORM -->
+<form method="get" style="margin-bottom:20px;">
+    <input type="text"
+           name="search"
+           placeholder="Search title / description / user"
+           value="{{ search }}"
+           style="padding:6px; width:260px;">
+
+    <select name="status" style="padding:6px;">
+        <option value="">-- All Status --</option>
+        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" style="padding:6px 12px;">🔍 Search</button>
+    <a href="{% url 'admin_media_list' %}" style="margin-left:10px;">🔄 Reset</a>
+</form>
+
+<!-- ================= SESSION VIDEOS ================= -->
+<h3>📹 Session Videos</h3>
+<a href="/admin/courses/sessionvideo/add/">➕ Add Video</a>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+<tr style="background:#f0f0f0">
+    <th>S.No</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Created By</th>
+    <th>Status</th>
+    <th>Preview</th>
+    <th>Download</th>
+    <th>Action</th>
+</tr>
+
+{% for video in videos %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ video.title }}</td>
+    <td>{{ video.description|truncatechars:50 }}</td>
+    <td>{{ video.created_by.username }}</td>
+    <td>{% if video.is_active %}✅ Active{% else %}❌ Inactive{% endif %}</td>
+
+    <td>
+        {% if video.video %}
+            <video width="160" controls muted preload="metadata">
+                <source src="{{ video.video.url }}">
+            </video>
+        {% elif video.video_url %}
+            <a href="{{ video.video_url }}" target="_blank">▶ Watch</a>
+        {% else %}-{% endif %}
+    </td>
+
+    <td>
+        {% if video.video %}
+            <a href="{{ video.video.url }}" download>⬇ Download</a>
+        {% else %}-{% endif %}
+    </td>
+
+    <td>
+        <a href="/admin/courses/sessionvideo/{{ video.id }}/change/">✏️ Edit</a> |
+        <a href="/admin/courses/sessionvideo/{{ video.id }}/delete/"
+           onclick="return confirm('Are you sure?')">🗑 Delete</a>
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="8">No session videos found</td></tr>
+{% endfor %}
+</table>
+
+<hr>
+
+<!-- ================= ADVERTISEMENTS ================= -->
+<h3>🖼️ Advertisements / Pamphlets</h3>
+<a href="/admin/courses/advertisement/add/">➕ Add Advertisement</a>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+<tr style="background:#f0f0f0">
+    <th>S.No</th>
+    <th>Title</th>
+    <th>Image</th>
+    <th>Description</th>
+    <th>Status</th>
+    <th>Created</th>
+    <th>Download</th>
+    <th>Action</th>
+</tr>
+
+{% for ad in ads %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ ad.title }}</td>
+
+    <td>
+        <img src="{{ ad.image.url }}" width="120">
+    </td>
+
+    <td>{{ ad.description|truncatechars:40 }}</td>
+    <td>{% if ad.is_active %}✅ Active{% else %}❌ Inactive{% endif %}</td>
+    <td>{{ ad.created_at|date:"d M Y" }}</td>
+
+    <td>
+        <a href="{{ ad.image.url }}" download>⬇ Download</a>
+    </td>
+
+    <td>
+        <a href="/admin/courses/advertisement/{{ ad.id }}/change/">✏️ Edit</a> |
+        <a href="/admin/courses/advertisement/{{ ad.id }}/delete/"
+           onclick="return confirm('Are you sure?')">🗑 Delete</a>
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="8">No advertisements found</td></tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'admin_dashboard' %}">⬅ Back to Dashboard</a>

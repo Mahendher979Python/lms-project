@@ -1,0 +1,22 @@
+<h2>Courses</h2>
+
+<a href="{% url 'admin_course_create' %}">Add Course</a>
+
+<table border="1">
+<tr>
+<th>Title</th>
+<th>Trainer</th>
+<th>Actions</th>
+</tr>
+
+{% for c in courses %}
+<tr>
+<td>{{ c.title }}</td>
+<td>{{ c.trainer.user.username }}</td>
+<td>
+<a href="{% url 'admin_course_edit' c.id %}">Edit</a>
+<a href="{% url 'admin_course_delete' c.id %}">Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>

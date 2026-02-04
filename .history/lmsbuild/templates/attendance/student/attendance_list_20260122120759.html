@@ -1,0 +1,108 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+:root{
+  --bg:#f8fafc; --card:#ffffff; --border:#e5e7eb;
+  --primary:#3b82f6; --success:#22c55e; --danger:#ef4444;
+  --text:#1e293b; --muted:#64748b;
+}
+body{background:var(--bg)}
+.att-card{
+  background:var(--card); border-radius:16px; padding:25px;
+  margin-bottom:25px; box-shadow:0 15px 40px rgba(0,0,0,.08);
+  border:1px solid var(--border); transform-style:preserve-3d;
+}
+.att-title{
+  font-size:22px;font-weight:800;color:var(--text);
+  display:flex;align-items:center;gap:10px;margin-bottom:20px
+}
+.tracker-actions{display:flex;gap:15px;margin-bottom:20px}
+.btn{
+  padding:12px 22px;border-radius:10px;border:none;
+  font-weight:700;cursor:pointer;color:#fff;
+  transition:.3s;box-shadow:0 10px 25px rgba(0,0,0,.15)
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-login{background:var(--success)}
+.btn-logout{background:var(--danger)}
+.time-row{display:flex;gap:30px;color:var(--muted);margin-bottom:15px}
+.history-item{
+  background:#fff;border-radius:14px;padding:20px;margin-bottom:20px;
+  border:1px solid var(--border)
+}
+.history-header{display:flex;justify-content:space-between;margin-bottom:10px}
+.date-badge{background:#e0f2fe;color:#0284c7;padding:6px 12px;border-radius:8px;font-weight:700}
+.location-box{
+  background:#f1f5f9;border-radius:12px;padding:15px;border:1px dashed #cbd5e1
+}
+.map{height:240px;border-radius:12px;overflow:hidden;border:1px solid #ddd}
+iframe{width:100%;height:100%;border:0}
+</style>
+
+<div class="att-card">
+  <div class="att-title">📍 Attendance Tracker</div>
+
+  <div class="tracker-actions">
+    <button class="btn btn-login" onclick="markLogin()">Login</button>
+    <button class="btn btn-logout" onclick="markLogout()">Logout</button>
+  </div>
+
+  {% if attendance_today %}
+  <div class="time-row">
+    <span><b>In:</b> {{attendance_today.login_time|default:"-"}}</span>
+    <span><b>Out:</b> {{attendance_today.logout_time|default:"-"}}</span>
+  </div>
+  {% endif %}
+</div>
+
+<div class="att-card">
+  <div class="att-title">📅 Attendance History</div>
+
+  {% for a in attendance_list %}
+  <div class="history-item">
+    <div class="history-header">
+      <span class="date-badge">{{a.date}}</span>
+      <b>{{a.total_work_hours|default:"00:00"}}</b>
+    </div>
+
+    <div class="time-row">
+      <div>Login: <b>{{a.login_time|default:"-"}}</b></div>
+      <div>Logout: <b>{{a.logout_time|default:"-"}}</b></div>
+    </div>
+
+    {% if a.latitude %}
+    <div class="location-box">
+      📍 {{a.latitude}}, {{a.longitude}}
+      <div class="map">
+        <iframe src="https://maps.google.com/maps?q={{a.latitude}},{{a.longitude}}&z=15&output=embed"></iframe>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p>No attendance found</p>
+  {% endfor %}
+</div>
+
+<form hidden>{% csrf_token %}</form>
+
+<script>
+function csrf(){return document.querySelector('[name=csrfmiddlewaretoken]').value}
+function markLogin(){
+ navigator.geolocation.getCurrentPosition(pos=>{
+  fetch("{% url 'attendance_login' %}",{
+   method:"POST",
+   headers:{'X-CSRFToken':csrf(),'Content-Type':'application/json'},
+   body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude})
+  }).then(()=>location.reload())
+ })
+}
+function markLogout(){
+ fetch("{% url 'attendance_logout' %}",{
+  method:"POST",headers:{'X-CSRFToken':csrf()}
+ }).then(()=>location.reload())
+}
+</script>
+
+{% endblock %}

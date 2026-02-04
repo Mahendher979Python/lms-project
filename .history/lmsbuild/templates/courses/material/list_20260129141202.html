@@ -1,0 +1,57 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.material-card{
+    background:#0f172a;
+    padding:25px;
+    border-radius:20px;
+}
+
+.material-row{
+    background:#020617;
+    padding:15px 20px;
+    border-radius:12px;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.download-btn{
+    background:#38f9d7;
+    padding:6px 15px;
+    border-radius:20px;
+    color:black;
+    text-decoration:none;
+    font-weight:700;
+}
+</style>
+
+<div class="material-card">
+
+<h2 style="color:#38f9d7">📁 {{ course.title }} – Materials</h2>
+
+<a href="{% url 'trainer_material_upload' course.id %}"
+   style="background:#4facfe;padding:8px 20px;border-radius:25px;color:black;font-weight:700;text-decoration:none">
++ Upload Material
+</a>
+
+<hr>
+
+{% for m in materials %}
+<div class="material-row">
+    <div>
+        <b>{{ m.title }}</b><br>
+        <small>{{ m.created_at|date:"d M Y" }}</small>
+    </div>
+
+    <a href="{{ m.file.url }}" target="_blank" class="download-btn">Download</a>
+</div>
+{% empty %}
+<p style="opacity:.6">No materials uploaded</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

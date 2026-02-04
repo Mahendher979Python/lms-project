@@ -1,0 +1,47 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+<style>
+    :root { --cyan: #00f3ff; --lime: #ccff00; --glass: rgba(255,255,255,.07); --border: rgba(255,255,255,.15); }
+    .form-card { max-width: 500px; margin: 50px auto; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); }
+    .header-text { text-align: center; margin-bottom: 30px; }
+    .header-text h2 { color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; color: #94a3b8; margin-bottom: 8px; font-size: 0.9rem; }
+    input[type="text"], input[type="file"] { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white; box-sizing: border-box; }
+    .btn-update { width: 100%; background: linear-gradient(135deg, var(--cyan), #0088ff); border: none; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; color: white; transition: .3s; }
+    .btn-update:hover { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+    .current-file { font-size: 0.8rem; color: var(--lime); margin-bottom: 10px; display: block; }
+</style>
+
+<div class="form-card">
+    <div class="header-text">
+        <h2>Edit Material</h2>
+        <p style="color: #94a3b8;">Update details for your material</p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" id="editForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Material Title</label>
+            <input type="text" name="title" value="{{ material.title }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Replace File (Optional)</label>
+            <span class="current-file"><i class="fa-solid fa-link"></i> Current: {{ material.file.name|truncatechars:30 }}</span>
+            <input type="file" name="file">
+        </div>
+
+        <button type="submit" class="btn-update" id="updateBtn">Update Material</button>
+        <a href="{% url 'trainer_material_list' material.course.id %}" style="display:block; text-align:center; margin-top:15px; color:#94a3b8; text-decoration:none;">Discard Changes</a>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').onsubmit = function() {
+        const btn = document.getElementById('updateBtn');
+        btn.innerHTML = "Saving Changes...";
+        btn.style.opacity = "0.7";
+    };
+</script>
+{% endblock %}

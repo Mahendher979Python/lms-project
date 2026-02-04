@@ -1,0 +1,211 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+    .dashboard-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #e2e8f0;
+        padding: 20px;
+        background-color: #0f172a; /* Slate 900 background */
+        min-height: 100vh;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #f8fafc;
+    }
+
+    /* Top Bar & Search */
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+        background: #1e293b; /* Slate 800 */
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .form-input {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #475569;
+        background: #020617;
+        color: #e5e7eb;
+        outline: none;
+    }
+
+    .form-input:focus {
+        border-color: #3b82f6;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .btn-search {
+        background: #334155;
+        color: #e5e7eb;
+    }
+    .btn-search:hover { background: #475569; }
+
+    .btn-add {
+        background: #22c55e;
+        color: #020617;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-add:hover { background: #16a34a; }
+
+    /* Table Styles */
+    .table-responsive {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid #334155;
+    }
+
+    .trainer-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        background: #1e293b;
+    }
+
+    .trainer-table th {
+        background: #020617;
+        color: #94a3b8;
+        padding: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #334155;
+    }
+
+    .trainer-table td {
+        padding: 14px;
+        border-bottom: 1px solid #334155;
+        color: #f1f5f9;
+    }
+
+    .trainer-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .trainer-table tr:hover {
+        background: #334155;
+    }
+
+    /* Status Indicators */
+    .status-active { color: #22c55e; font-weight: 600; }
+    .status-inactive { color: #ef4444; font-weight: 600; }
+
+    /* Action Links */
+    .action-link { margin-right: 10px; font-weight: 500; text-decoration: none; }
+    .link-edit { color: #60a5fa; }
+    .link-edit:hover { text-decoration: underline; }
+    .link-delete { color: #f87171; }
+    .link-delete:hover { text-decoration: underline; }
+
+    .empty-state {
+        text-align: center;
+        padding: 30px;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="dashboard-container">
+    
+    <h1 class="page-title">🧑‍🏫 Trainers</h1>
+
+    <div class="action-bar">
+        <form method="get" class="search-form">
+            <input type="text" name="q" class="form-input" 
+                   placeholder="Search trainer name..." 
+                   value="{{ request.GET.q }}">
+            
+            <input type="number" name="experience" class="form-input" 
+                   placeholder="Min Experience (Yrs)" 
+                   style="width: 150px;"
+                   value="{{ request.GET.experience }}">
+
+            <button type="submit" class="btn btn-search">🔍 Search</button>
+            
+            {% if request.GET.q or request.GET.experience %}
+                <a href="." style="color: #94a3b8; text-decoration: none; font-size: 0.9rem;">Clear</a>
+            {% endif %}
+        </form>
+
+        {% if request.user.is_superuser or request.user.role == 'admin' %}
+        <a href="{% url 'trainer_create' %}" class="btn btn-add">
+            ➕ Add Trainer
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="table-responsive">
+        <table class="trainer-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Mobile</th>
+                    <th>Experience</th> <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trainer in trainers %}
+                <tr>
+                    <td>{{ trainer.username }}</td>
+                    <td>{{ trainer.mobile }}</td>
+                    <td>{{ trainer.experience|default:"-" }} Years</td>
+                    <td>
+                        {% if trainer.is_active %}
+                            <span class="status-active">● Active</span>
+                        {% else %}
+                            <span class="status-inactive">● Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'trainer_edit' trainer.id %}" class="action-link link-edit">Edit</a>
+
+                        {% if request.user.is_superuser %}
+                        <a href="{% url 'trainer_delete' trainer.id %}" 
+                           onclick="return confirm('Are you sure you want to delete {{ trainer.username }}?');"
+                           class="action-link link-delete">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        No trainers found matching your search.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

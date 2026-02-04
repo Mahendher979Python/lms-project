@@ -1,0 +1,340 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<style>
+:root {
+    --neon-cyan: #00f3ff;
+    --neon-magenta: #ff00ff;
+    --neon-yellow: #ccff00;
+    --dark-void: #0a0b10;
+    --glass-panel: rgba(16, 18, 27, 0.8);
+    --border-glow: rgba(0, 243, 255, 0.2);
+}
+
+.main-wrapper {
+    padding: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    background-color: var(--dark-void);
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+/* 3D Banner Design */
+.files-banner {
+    position: relative;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid var(--border-glow);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0, 243, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.files-banner::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 243, 255, 0.03) 1px, rgba(0, 243, 255, 0.03) 2px);
+    pointer-events: none;
+}
+
+.banner-text h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    margin: 0;
+    background: linear-gradient(90deg, var(--neon-cyan), #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* 3D Glass Cards */
+.cyber-card {
+    background: var(--glass-panel);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glow);
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+}
+
+.cyber-card:hover {
+    transform: translateY(-5px) rotateX(2deg);
+    box-shadow: 0 15px 35px rgba(0, 243, 255, 0.15);
+    border-color: var(--neon-cyan);
+}
+
+/* Futuristic Table Styling */
+.material-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+.material-table th {
+    font-family: 'Orbitron';
+    font-size: 0.7rem;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    padding: 10px 20px;
+    letter-spacing: 2px;
+}
+
+.material-table td {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: 0.3s;
+}
+
+.material-table tr:hover td {
+    background: rgba(0, 243, 255, 0.07);
+    color: #fff;
+}
+
+.material-table td:first-child { border-radius: 8px 0 0 8px; border-left: 2px solid var(--neon-cyan); }
+.material-table td:last-child { border-radius: 0 8px 8px 0; border-right: 1px solid rgba(255, 255, 255, 0.05); }
+
+/* File Logos & Icons */
+.file-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-icon-hex {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 243, 255, 0.1);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--neon-cyan);
+    font-size: 1.2rem;
+    border: 1px solid var(--neon-cyan);
+}
+
+/* 3D Action Buttons */
+.btn-cyber-upload {
+    background: var(--neon-cyan);
+    color: #000 !important;
+    padding: 12px 25px;
+    font-family: 'Orbitron';
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0px var(--neon-magenta);
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-cyber-upload:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--neon-magenta);
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.download-trigger {
+    color: var(--neon-yellow);
+    border: 1px solid var(--neon-yellow);
+    margin-right: 10px;
+}
+
+.download-trigger:hover {
+    background: var(--neon-yellow);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-yellow);
+}
+
+.delete-trigger {
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+}
+
+.delete-trigger:hover {
+    background: #ff4d4d;
+    color: #fff;
+    box-shadow: 0 0 15px #ff4d4d;
+    transform: rotate(90deg);
+}
+
+#statsChart { height: 220px; width: 100%; }
+
+.badge-user {
+    background: rgba(157, 0, 255, 0.2);
+    border: 1px solid var(--neon-magenta);
+    color: #fff;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    font-family: 'Orbitron';
+}
+</style>
+
+<div class="main-wrapper">
+    <div class="files-banner">
+        <div class="banner-text">
+            <h1><i class="fas fa-microchip"></i> Materials Node</h1>
+            <p style="opacity: 0.7; margin: 8px 0 0 0; font-size: 1.1rem;">
+                <span style="color:var(--neon-cyan)">ACTIVE_COURSE:</span> {{ course.title }}
+            </p>
+        </div>
+        <a href="{% url 'admin_material_upload' course.id %}" class="btn-cyber-upload">
+            <i class="fas fa-plus-circle"></i> ADD_ASSET
+        </a>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 2.5fr 1fr; gap:30px;">
+        
+        <div class="cyber-card">
+            <h4 style="font-family:'Orbitron'; margin-bottom: 20px; color: var(--neon-cyan);">
+                <i class="fas fa-list"></i> ENCRYPTED_FILES.IDX
+            </h4>
+            
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Uploader</th>
+                        <th style="text-align:right;">Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for m in materials %}
+                    <tr>
+                        <td>
+                            <div class="file-wrapper">
+                                <div class="file-icon-hex">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight:700; color:#fff;">{{ m.title }}</div>
+                                    <div style="font-size:0.7rem; opacity:0.5;">ID: #00{{ m.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-user">
+                                <i class="fas fa-user-shield"></i> {{ m.uploaded_by.username }}
+                            </span>
+                        </td>
+                        <td style="text-align:right;">
+                            <a href="{{ m.file.url }}" target="_blank" class="action-btn download-trigger" title="Download">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <a href="{% url 'admin_material_delete' m.id %}" 
+                               class="action-btn delete-trigger" 
+                               onclick="return confirm('Wipe file from mainframe?')"
+                               title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:50px; opacity:0.3;">
+                            <i class="fas fa-ghost" style="font-size:3rem; display:block; margin-bottom:15px;"></i>
+                            NO DATA DETECTED IN THIS SECTOR
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cyber-card">
+            <h4 style="font-family:'Orbitron'; color:var(--neon-magenta); margin-bottom:25px;">
+                <i class="fas fa-chart-pie"></i> SECTOR_USAGE
+            </h4>
+            
+            <div id="statsChart"></div>
+
+            <div style="margin-top:25px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span style="opacity:0.6;">Total Asset Count:</span>
+                    <span style="color:var(--neon-cyan); font-weight:bold;">{{ materials.count }}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span style="opacity:0.6;">Node Status:</span>
+                    <span style="color:var(--neon-yellow);">ONLINE</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Logic to initialize the futuristic chart
+var chartDom = document.getElementById('statsChart');
+var myChart = echarts.init(chartDom);
+var option = {
+    tooltip: { trigger: 'item' },
+    series: [{
+        type: 'pie',
+        radius: ['60%', '85%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+            borderRadius: 6,
+            borderColor: '#0a0b10',
+            borderWidth: 3
+        },
+        label: { show: false },
+        data: [
+            { 
+                value: {{ materials.count }}, 
+                name: 'Occupied', 
+                itemStyle: { color: '#00f3ff', shadowBlur: 15, shadowColor: '#00f3ff' } 
+            },
+            { 
+                value: 5, 
+                name: 'System', 
+                itemStyle: { color: '#ff00ff' } 
+            },
+            { 
+                value: 3, 
+                name: 'Reserved', 
+                itemStyle: { color: 'rgba(255,255,255,0.05)' } 
+            }
+        ]
+    }]
+};
+myChart.setOption(option);
+
+// Auto-adjust icon based on file name extension (Visual polish)
+document.querySelectorAll('.file-wrapper').forEach(item => {
+    const fileName = item.querySelector('div > div').innerText.toLowerCase();
+    const icon = item.querySelector('i');
+    if(fileName.endsWith('.pdf')) icon.className = 'fas fa-file-pdf';
+    else if(fileName.endsWith('.zip') || fileName.endsWith('.rar')) icon.className = 'fas fa-file-archive';
+    else if(fileName.match(/\.(jpg|jpeg|png|gif)$/)) icon.className = 'fas fa-file-image';
+});
+
+window.addEventListener('resize', () => myChart.resize());
+</script>
+
+{% endblock %}

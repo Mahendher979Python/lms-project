@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #e5e7eb;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= TOPBAR ================= */
+    header.topbar {
+      height: 60px;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #1e293b;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+    }
+
+    .brand h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .user-info a {
+      color: #f87171;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    /* ================= LAYOUT ================= */
+    .container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: #cbd5e1;
+      border-right: 1px solid #1e293b;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: 0.2s ease;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+    }
+
+    .sidebar a.active {
+      background: rgba(59,130,246,0.15);
+      color: #fff;
+      border-left-color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .sidebar a.disabled {
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .sidebar .section {
+      margin: 18px 0 6px;
+      padding: 0 24px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    /* scrollbar */
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 10px;
+    }
+
+    /* ================= CONTENT ================= */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      background: #ffffff;
+    }
+
+    /* ================= ALERT ================= */
+    .alert {
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      background: #dcfce7;
+      color: #166534;
+      border-left: 4px solid #22c55e;
+      font-size: 14px;
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="brand">
+    <img src="{% static 'images/Speshwaylogo.jpg' %}" alt="Logo">
+    <h2>LMS Admin</h2>
+  </div>
+
+  <div class="user-info">
+    {{ request.user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+
+    <a href="{% url 'admin_dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+      📊 Dashboard
+    </a>
+
+    <div class="section">Study</div>
+
+    <a href="{% url 'admin_todo_list' %}"
+       class="{% if request.resolver_match.url_name == 'admin_todo_list' or request.resolver_match.url_name == 'admin_todo_add' %}active{% endif %}">
+      📝 Todo
+    </a>
+
+    <a href="{% url 'admin_notes_list' %}">📘 Notes</a>
+
+    <a href="#" class="disabled">📚 Books</a>
+    <a href="#" class="disabled">📦 Materials</a>
+
+    <div class="section">Users</div>
+
+    <a href="{% url 'admin_user_list' %}">👥 Users</a>
+    <a href="{% url 'trainer_list' %}">🧑‍🏫 Trainers</a>
+    <a href="{% url 'admin_students' %}">🎓 Students</a>
+    <a href="#">👨‍💼 Staff</a>
+
+    <div class="section">Courses</div>
+
+    <a href="{% url 'admin_course_list' %}">📚 Courses</a>
+
+    <div class="section">System</div>
+
+    <a href="{% url 'admin_media_list' %}">🖼 Media & Ads</a>
+    <a href="#">⚙ Settings</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+
+  </aside>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="content">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+  </main>
+
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+
+{% extends "admin_base.html" %}
+{% block content %}
+   <h2>📚 Available Courses</h2>
+
+{% for course in courses %}
+<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;">
+    <h3>{{ course.title }}</h3>
+    <p><b>Level:</b> {{ course.level|title }}</p>
+    <p><b>Description:</b><br>{{ course.description }}</p>
+
+    <a href="{% url 'student_lesson_list' course.id %}">
+        📘 View Lessons
+    </a>
+</div>
+{% empty %}
+<p>No courses available</p>
+{% endfor %}
+
+<a href="{% url 'student_dashboard' %}">⬅ Back</a>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+<h2>{{ assignment.title }}</h2>
+
+{% for q in questions %}
+<p>{{ q.text }}</p>
+{% endfor %}
+
+<a href="{% url 'assignments:admin_approve_assignment' assignment.id %}">Approve</a>
+|
+<a href="{% url 'assignments:admin_reject_assignment' assignment.id %}">Reject</a>

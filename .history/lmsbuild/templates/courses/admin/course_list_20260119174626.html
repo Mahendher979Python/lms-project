@@ -1,0 +1,43 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>📘 Course Management</h2>
+
+<a href="{% url 'admin_course_add' %}" class="btn btn-primary">+ Add Course</a>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Level</th>
+      <th>Trainer</th>
+      <th>Status</th>
+      <th>Created</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in courses %}
+    <tr>
+      <td>{{ c.title }}</td>
+      <td>{{ c.level }}</td>
+      <td>{{ c.trainer }}</td>
+      <td>
+        {% if c.is_published %}
+          <span style="color:green;">Published</span>
+        {% else %}
+          <span style="color:orange;">Draft</span>
+        {% endif %}
+      </td>
+      <td>{{ c.created_at|date:"d M Y" }}</td>
+      <td>
+        <a href="{{ c.thumbnail.url }}">Image</a> |
+        {% if c.intro_video %}<a href="{{ c.intro_video.url }}">Video</a>{% endif %} |
+        {% if c.syllabus_pdf %}<a href="{{ c.syllabus_pdf.url }}">PDF</a>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

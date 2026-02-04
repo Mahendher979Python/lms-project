@@ -1,0 +1,231 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 6D Theme Variables --- */
+    :root {
+        --neon-purple: #bc13fe;
+        --neon-green: #00ff88;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-white: #ffffff;
+    }
+
+    /* --- Background & Layout --- */
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(15, 15, 30) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-white);
+        min-height: 100vh;
+    }
+
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh; /* Centers vertically */
+        padding: 20px;
+    }
+
+    /* --- Glass Card Design --- */
+    .form-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 40px 50px;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 20px;
+        border: var(--glass-border);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Top Gradient Border (Purple for Edit Mode) */
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), #ff0055);
+    }
+
+    /* --- Typography --- */
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+        font-size: 0.95rem;
+    }
+
+    /* --- Input Styling (Matches Student UI) --- */
+    input[type="text"], 
+    input[type="password"] {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(0, 0, 0, 0.3); /* Dark translucent bg */
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        color: white;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+        margin-bottom: 22px; /* Consistent spacing */
+        box-sizing: border-box; /* Fixes padding width issues */
+    }
+
+    input:focus {
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 15px rgba(188, 19, 254, 0.25);
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Placeholder Color */
+    ::placeholder { color: rgba(255,255,255,0.3); }
+
+    /* --- Custom Toggle Switch --- */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 5px 0 30px 0;
+        background: rgba(255,255,255,0.03);
+        padding: 10px 15px;
+        border-radius: 12px;
+        width: fit-content;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #4a4a4a;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    /* Active State (Green Glow) */
+    input:checked + .slider {
+        background-color: var(--neon-green);
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    /* --- Buttons --- */
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 50px;
+        background: linear-gradient(135deg, var(--neon-purple), #764ba2);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+    }
+
+    .btn-secondary {
+        flex: 1;
+        padding: 14px;
+        border-radius: 50px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        text-decoration: none;
+        transition: background 0.3s;
+        font-size: 1rem;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+        
+        <h2><i class="fas fa-user-edit" style="color:var(--neon-purple); margin-right:10px;"></i> Edit Trainer</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label>Username</label>
+            <input type="text" name="username" value="{{ trainer.username }}" placeholder="Trainer Username">
+
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" value="{{ trainer.mobile }}" placeholder="Phone Number">
+
+            <label>New Password <span style="font-size:0.8em; opacity:0.6; font-weight:400;">(Leave blank to keep current)</span></label>
+            <input type="password" name="password" placeholder="••••••••">
+
+            <label>Subject / Domain</label>
+            <input type="text" name="subject" value="{{ profile.subject }}" placeholder="e.g. Python Full Stack">
+
+            <div class="checkbox-wrapper">
+                <label class="switch">
+                    <input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight:600; color:#fff;">Active Account</span>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'trainer_list' %}" class="btn-secondary">Back</a>
+                <button type="submit" class="btn-primary">Update Profile</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

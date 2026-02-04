@@ -1,0 +1,18 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<h2>📘 My Notes</h2>
+
+<ul>
+{% for note in notes %}
+  <li>
+    <strong>{{ note.title }}</strong> |
+    <a href="{{ note.file.url }}" target="_blank">Open</a>
+    <small>(by {{ note.created_by.username }})</small>
+  </li>
+{% empty %}
+  <li>No notes assigned</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

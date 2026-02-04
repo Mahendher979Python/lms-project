@@ -1,0 +1,86 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root { --primary: #6366f1; --bg: #f8fafc; --glass: rgba(255, 255, 255, 0.9); }
+    .dashboard-container { font-family: 'Inter', sans-serif; color: #1e293b; padding: 20px; }
+    
+    /* Header Stats */
+    .stats-overview { 
+        background: white; padding: 25px; border-radius: 16px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px;
+    }
+
+    /* Grid System */
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+    
+    /* Modern Card */
+    .course-card {
+        background: var(--glass); backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+        padding: 24px; transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .course-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    
+    .course-title { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+    .badge { background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+    
+    .btn-open {
+        margin-top: 20px; display: inline-block; text-align: center;
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+        color: white; padding: 12px; border-radius: 12px; font-weight: 600;
+        text-decoration: none; transition: opacity 0.2s;
+    }
+    .btn-open:hover { opacity: 0.9; }
+
+    canvas { max-height: 300px; }
+</style>
+
+<div class="dashboard-container">
+    <div class="stats-overview">
+        <h2 style="margin-top:0">Trainer Analytics</h2>
+        <canvas id="studentGraph"></canvas>
+    </div>
+
+    <h2 style="margin-bottom: 20px;">My Courses</h2>
+    <div class="course-grid">
+        {% for c in courses %}
+        <div class="course-card">
+            <div>
+                <span class="badge">{{c.level}}</span>
+                <h3 class="course-title">{{c.title}}</h3>
+                <p style="color: #64748b; font-size: 0.95rem;">Duration: {{c.duration}}</p>
+            </div>
+            <a class="btn-open" href="{% url 'trainer_course_preview' c.id %}">Manage Course</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+const ctx = document.getElementById('studentGraph').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for c in courses %}"{{c.title}}",{% endfor %}],
+        datasets: [{
+            label: 'Active Students',
+            data: [12, 19, 3, 5, 2, 3], // Replace with dynamic counts if available
+            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+            borderColor: '#4338ca',
+            borderWidth: 1,
+            borderRadius: 8,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, grid: { display: false } } }
+    }
+});
+</script>
+{% endblock %}

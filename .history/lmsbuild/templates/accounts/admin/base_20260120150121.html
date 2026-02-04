@@ -1,0 +1,307 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Admin Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --primary: #4f46e5; /* Indigo */
+            --primary-dark: #4338ca;
+            --sidebar-bg: #111827; /* Deep Dark */
+            --bg-light: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: #9ca3af;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .logo-box {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .logo-box i {
+            font-size: 28px;
+            color: var(--primary);
+            margin-right: 12px;
+        }
+
+        .logo-box span {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #4b5563;
+            padding: 10px 24px;
+            font-weight: 600;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link i {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+        }
+
+        .menu-link.active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Prevents overflow issues */
+        }
+
+        /* HEADER */
+        .top-header {
+            height: var(--header-height);
+            background: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .toggle-menu {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* ADMIN PROFILE SECTION */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .profile-card:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .profile-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            padding-right: 5px;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .profile-role {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        /* CONTENT AREA */
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Alert Styling */
+        .alert-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-box">
+            <i class="ri-command-fill"></i>
+            <span>LMS Admin</span>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-header">Main Menu</div>
+            
+            <a href="{% url 'admin_dashboard' %}" class="menu-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                <i class="ri-dashboard-3-line"></i> 
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'admin_students' %}" class="menu-link {% if 'student' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="ri-graduation-cap-line"></i>
+                <span>Students</span>
+            </a>
+
+            <a href="{% url 'trainer_list' %}" class="menu-link {% if 'trainer' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="ri-presentation-line"></i>
+                <span>Trainers</span>
+            </a>
+
+            <a href="#" class="menu-link">
+                <i class="ri-book-open-line"></i>
+                <span>Courses</span>
+            </a>
+
+            <div class="menu-header">System</div>
+
+            <a href="{% url 'admin_media_list' %}" class="menu-link">
+                <i class="ri-gallery-line"></i>
+                <span>Media Library</span>
+            </a>
+
+            <a href="#" class="menu-link">
+                <i class="ri-settings-4-line"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        
+        <header class="top-header">
+            <div class="toggle-menu">
+                <i class="ri-menu-fold-line"></i>
+            </div>
+
+            <div class="header-right">
+                <div style="position:relative; cursor:pointer; margin-right:10px;">
+                    <i class="ri-notification-3-line" style="font-size:22px; color:#6b7280;"></i>
+                    <span style="position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:red; border-radius:50%;"></span>
+                </div>
+
+                <a href="{% url 'logout' %}" class="profile-card" title="Click to Logout">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=4f46e5&color=fff&size=128" 
+                         alt="Profile" 
+                         class="profile-img">
+                    
+                    <div class="profile-text">
+                        <span class="profile-name">{{ request.user.username|title }}</span>
+                        <span class="profile-role">Super Admin</span>
+                    </div>
+                    
+                    <i class="ri-logout-box-r-line" style="color:#ef4444; font-size:16px;"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="content-area">
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-message {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                        <i class="ri-information-fill" style="margin-right:8px; font-size:18px;"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+    </div>
+
+</body>
+</html>

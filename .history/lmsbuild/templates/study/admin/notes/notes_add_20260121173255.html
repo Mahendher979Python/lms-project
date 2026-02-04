@@ -1,0 +1,302 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* --- Animations & Layout --- */
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-wrapper {
+        max-width: 850px;
+        margin: 3rem auto;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* Deep 3D Shadow */
+        border-top: 5px solid #667eea;
+        font-family: 'Segoe UI', sans-serif;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-header h2 {
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: #666;
+        font-size: 1rem;
+    }
+
+    /* Input Fields Styling */
+    .input-group {
+        margin-bottom: 1.8rem;
+        position: relative;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #444;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e1e1e1;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fdfdfd;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        outline: none;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    /* Custom File Upload Styling */
+    .file-upload-wrapper {
+        position: relative;
+        width: 100%;
+        height: 60px;
+        border: 2px dashed #ccc;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #fafafa;
+    }
+
+    .file-upload-wrapper:hover {
+        border-color: #764ba2;
+        background: #f4f0fa;
+    }
+
+    .file-upload-wrapper input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-upload-text {
+        color: #777;
+        font-weight: 600;
+        pointer-events: none;
+    }
+
+    /* Checkbox Grid (3D Cards) */
+    .assign-section {
+        margin-top: 2.5rem;
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid #eee;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        color: #333;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+    .user-card-checkbox {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .user-card-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: white;
+        border-radius: 10px;
+        border: 2px solid #e5e5e5;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .user-card-checkbox input:checked ~ .checkmark {
+        border-color: #764ba2;
+        background: #f0ebf8;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(118, 75, 162, 0.15);
+    }
+
+    .user-card-checkbox input:checked ~ .checkmark i {
+        color: #764ba2;
+    }
+
+    /* Buttons */
+    .btn-row {
+        margin-top: 3rem;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .btn-submit {
+        flex: 2;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background: #fff;
+        color: #555;
+        border: 2px solid #eee;
+        padding: 16px;
+        border-radius: 50px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+        border-color: #ddd;
+        background: #f9f9f9;
+        color: #333;
+    }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-header">
+        <h2><i class="fas fa-plus-circle"></i> Add New Note</h2>
+        <p>Upload materials and assign them to students or trainers.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label><i class="fas fa-heading"></i> Note Title</label>
+            <input type="text" name="title" class="form-control" placeholder="E.g., Python Basics Module 1" required>
+        </div>
+
+        <div class="input-group">
+            <label><i class="fas fa-align-left"></i> Description</label>
+            <textarea name="description" class="form-control" placeholder="Briefly describe the contents of this file..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label><i class="fas fa-cloud-upload-alt"></i> Upload File (PDF/Doc/Zip)</label>
+            <div class="file-upload-wrapper">
+                <input type="file" name="file" id="fileInput" required onchange="updateFileName()">
+                <div class="file-upload-text" id="fileLabel">
+                    <i class="fas fa-mouse"></i> Click or Drag file here
+                </div>
+            </div>
+        </div>
+
+        <div class="assign-section">
+            <div class="section-title">
+                <i class="fas fa-chalkboard-teacher" style="color: #667eea;"></i> 
+                <strong>Assign to Trainers</strong>
+            </div>
+            <div class="checkbox-grid">
+                {% for user in trainers %}
+                <label class="user-card-checkbox">
+                    <input type="checkbox" name="assigned_to" value="{{ user.id }}">
+                    <div class="checkmark">
+                        <i class="fas fa-user-tie" style="margin-right: 10px; color: #aaa;"></i>
+                        {{ user.username }}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <br> <div class="section-title">
+                <i class="fas fa-user-graduate" style="color: #48bb78;"></i> 
+                <strong>Assign to Students</strong>
+            </div>
+            <div class="checkbox-grid">
+                {% for user in students %}
+                <label class="user-card-checkbox">
+                    <input type="checkbox" name="assigned_to" value="{{ user.id }}">
+                    <div class="checkmark">
+                        <i class="fas fa-user" style="margin-right: 10px; color: #aaa;"></i>
+                        {{ user.username }}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <a href="{% url 'admin_notes_list' %}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Publish Note
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        const label = document.getElementById('fileLabel');
+        if (input.files && input.files.length > 0) {
+            label.innerHTML = `<i class="fas fa-check-circle" style="color: green;"></i> ${input.files[0].name}`;
+            label.style.color = "#333";
+        } else {
+            label.innerHTML = `<i class="fas fa-mouse"></i> Click or Drag file here`;
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 30px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        font-family: sans-serif;
+    }
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    .info-group {
+        background-color: #e9ecef;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        border-left: 4px solid #007bff;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        height: 150px; /* Taller for edit mode */
+    }
+    .btn-update {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    .btn-update:hover { background-color: #0056b3; }
+    .btn-back {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #666;
+        text-decoration: none;
+    }
+    .help-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Edit Student Details</h2>
+
+    <div class="info-group">
+        <label style="margin:0; font-size:12px; color:#666;">Student Username</label>
+        <div style="font-weight:bold; font-size:16px;">{{ student.user.username }}</div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Manage Courses</label>
+            <select name="courses" multiple>
+                {% for course in courses %}
+                    <option value="{{ course.id }}"
+                        {% if course in student.courses.all %}selected{% endif %}>
+                        {{ course.title }}
+                    </option>
+                {% endfor %}
+            </select>
+            <div class="help-text">💡 Hold 'Ctrl' to select/deselect multiple courses.</div>
+        </div>
+
+        <button type="submit" class="btn-update">Update Changes</button>
+    </form>
+
+    <a href="{% url 'student_list' %}" class="btn-back">⬅ Back to List</a>
+</div>
+
+{% endblock %}

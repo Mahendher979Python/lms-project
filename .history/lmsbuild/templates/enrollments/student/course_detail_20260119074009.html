@@ -1,0 +1,88 @@
+
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<style>
+.lesson-box{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+</style>
+
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<hr>
+
+<h3>📘 Lessons</h3>
+
+{% for lesson in lessons %}
+<div class="lesson-box">
+  <h4>{{ lesson.title }}</h4>
+  <p>{{ lesson.description }}</p>
+{% if lesson.video %}
+        <video width="100%" controls>
+            <source src="{{ lesson.video.url }}" type="video/mp4">▶ Watch Video
+        </video>
+        {% endif %}
+    
+   </div>
+    {% endfor %}
+{% else %}
+<p>No lessons added yet</p>
+{% endif %}
+{% endfor %}{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<style>
+.lesson-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.08);
+}
+</style>
+
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<hr>
+
+<h3>📘 Lessons</h3>
+
+{% if lessons %}
+  {% for lesson in lessons %}
+    <div class="lesson-box">
+      <h4>{{ lesson.title }}</h4>
+      <p>{{ lesson.description }}</p>
+      {% if lesson.video %}
+        <video width="100%" controls>
+          <source src="{{ lesson.video.url }}" type="video/mp4">
+          ▶ Watch Video
+        </video>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No lessons added yet</p>
+{% endif %}
+
+<a href="{% url 'student_course_list' %}">⬅ Back</a>
+
+{% endblock %}
+
+
+
+
+        
+ 
+
+<a href="{% url 'student_course_list' %}">⬅ Back</a>
+
+{% endblock %}

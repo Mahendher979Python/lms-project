@@ -1,0 +1,280 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    :root {
+        --bg-body: #0f172a;       /* Dark Slate */
+        --bg-card: #1e293b;       /* Lighter Slate */
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #6366f1;        /* Indigo */
+        --accent-hover: #4f46e5;
+        --border: #334155;
+    }
+
+    body {
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* 3D Chart Container */
+    #chart-container {
+        width: 100%;
+        height: 350px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: 1px solid var(--border);
+    }
+
+    /* Header & Button */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .page-header h2 {
+        font-size: 24px;
+        background: linear-gradient(90deg, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+
+    .btn-add {
+        background: var(--accent);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .btn-add:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+    /* Table Styles */
+    .table-responsive {
+        background: var(--bg-card);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; color: var(--text-muted); padding: 15px; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.85rem; }
+    td { padding: 15px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+
+    /* Action Buttons */
+    .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; margin-right: 5px; display: inline-block; }
+    .edit-btn { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+    .del-btn { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    /* MODAL STYLES (Popup) */
+    .modal {
+        display: none; 
+        position: fixed; z-index: 1000; 
+        left: 0; top: 0; width: 100%; height: 100%; 
+        background-color: rgba(0,0,0,0.8); 
+        backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        background-color: var(--bg-card);
+        margin: 5% auto; padding: 25px;
+        border: 1px solid var(--border);
+        width: 90%; max-width: 600px;
+        border-radius: 12px;
+        position: relative;
+        animation: slideDown 0.4s;
+    }
+    @keyframes slideDown { from {opacity: 0; transform: translateY(-50px);} to {opacity: 1; transform: translateY(0);} }
+    .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: var(--text-muted); }
+
+    /* Form Styles */
+    label { display: block; margin: 15px 0 5px; color: var(--text-muted); font-size: 0.9rem; }
+    input[type="text"], select, textarea, input[type="file"] {
+        width: 100%; padding: 10px;
+        background: #0f172a; border: 1px solid var(--border);
+        color: white; border-radius: 6px;
+        box-sizing: border-box;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    
+    .assign-box {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        max-height: 150px; overflow-y: auto;
+        background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid var(--border);
+    }
+    .assign-box label { margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    
+</style>
+
+<div id="chart-container"></div>
+
+<div class="page-header">
+    <div>
+        <h2>📘 Manage Notes</h2>
+        <small style="color:var(--text-muted)">Visualizing & Managing Course Material</small>
+    </div>
+    <button onclick="openModal()" class="btn-add">➕ Add New Note</button>
+</div>
+
+<div class="table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Course</th>
+                <th>Visibility</th>
+                <th>Assigned</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in notes %}
+            <tr>
+                <td><strong>{{ note.title }}</strong></td>
+                <td>
+                    {% if note.course %}
+                        <span style="color:var(--accent)">{{ note.course.title }}</span>
+                    {% else %}
+                        <span style="color:#64748b">--</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if note.visibility == 'public' %}
+                        <span style="color:#a5b4fc">Public 🌍</span>
+                    {% else %}
+                        <span style="color:#94a3b8">Private 🔒</span>
+                    {% endif %}
+                </td>
+                <td>{{ note.assigned_to.count }} users</td>
+                <td>{{ note.created_at|date:"d M, Y" }}</td>
+                <td>
+                    <a href="{% url 'admin_notes_edit' note.id %}" class="action-btn edit-btn">✎ Edit</a>
+                    <a href="{% url 'admin_notes_delete' note.id %}" class="action-btn del-btn" onclick="return confirm('Delete this note?')">🗑</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" style="text-align:center; padding:30px;">No notes found. Click "Add New Note" to start.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="addNoteModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 style="margin-top:0; color:white;">➕ Create Note</h2>
+        
+        <form method="POST" enctype="multipart/form-data" action="{% url 'admin_notes_add' %}">
+            {% csrf_token %}
+            
+            <label>Title</label>
+            <input type="text" name="title" required placeholder="Enter note title...">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Course (Optional)</label>
+                    <select name="course">
+                        <option value="">-- Select --</option>
+                        {% for c in courses %}
+                        <option value="{{ c.id }}">{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Visibility</label>
+                    <select name="visibility">
+                        <option value="private">Private</option>
+                        <option value="public">Public</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Description</label>
+            <textarea name="description" rows="3" placeholder="Brief details..."></textarea>
+
+            <label>Upload File</label>
+            <input type="file" name="file">
+
+            <label>Assign To</label>
+            <div class="assign-box">
+                {% for u in trainers %}
+                <label><input type="checkbox" name="assigned_to" value="{{ u.id }}"> {{ u.username }} <small style="color:#a5b4fc">(Trainer)</small></label>
+                {% endfor %}
+                {% for u in students %}
+                <label><input type="checkbox" name="assigned_to" value="{{ u.id }}"> {{ u.username }} <small style="color:#94a3b8">(Student)</small></label>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top:20px; text-align:right;">
+                <button type="button" onclick="closeModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; margin-right:15px;">Cancel</button>
+                <button type="submit" class="btn-add">Save Note</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+
+<script>
+    // Modal Functions
+    function openModal() { document.getElementById('addNoteModal').style.display = "block"; }
+    function closeModal() { document.getElementById('addNoteModal').style.display = "none"; }
+    window.onclick = function(e) { if(e.target == document.getElementById('addNoteModal')) closeModal(); }
+
+    // 3D Chart Configuration
+    var chartDom = document.getElementById('chart-container');
+    var myChart = echarts.init(chartDom, 'dark');
+    var option;
+
+    // Dummy Data for 3D Bar Chart
+    var hours = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    var days = ['Public', 'Private', 'Files'];
+    var data = [
+        [0,0,5],[0,1,2],[0,2,8],
+        [1,0,10],[1,1,4],[1,2,12],
+        [2,0,6],[2,1,8],[2,2,4],
+        [3,0,9],[3,1,3],[3,2,15],
+        [4,0,12],[4,1,5],[4,2,7],
+        [5,0,8],[5,1,10],[5,2,11]
+    ];
+
+    option = {
+        backgroundColor: 'transparent',
+        tooltip: {},
+        visualMap: {
+            max: 20,
+            inRange: { color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'] }
+        },
+        xAxis3D: { type: 'category', data: hours, name: 'Month' },
+        yAxis3D: { type: 'category', data: days, name: 'Type' },
+        zAxis3D: { type: 'value', name: 'Count' },
+        grid3D: {
+            boxWidth: 200, boxDepth: 80, viewControl: { projection: 'perspective', autoRotate: true, beta: 10 }
+        },
+        series: [{
+            type: 'bar3D',
+            data: data.map(function (item) { return { value: [item[0], item[1], item[2]] }; }),
+            shading: 'lambert',
+            label: { show: false },
+            itemStyle: { opacity: 0.8 }
+        }]
+    };
+    option && myChart.setOption(option);
+    window.addEventListener('resize', myChart.resize);
+</script>
+
+{% endblock %}

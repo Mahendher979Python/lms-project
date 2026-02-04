@@ -1,0 +1,171 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+--neon:#00f3ff;
+--glass:rgba(255,255,255,.05);
+--dim:#94a3b8;
+}
+
+.page-wrap{
+min-height:90vh;
+padding:30px;
+font-family:Poppins;
+background:radial-gradient(circle at top right,#020617,#000);
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+}
+
+.title{
+font-size:1.8rem;
+font-weight:700;
+background:linear-gradient(90deg,#00f3ff,#ccff00);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.btn-upload{
+padding:12px 25px;
+border-radius:14px;
+background:linear-gradient(135deg,#00f3ff,#0099ff);
+color:#000;
+text-decoration:none;
+font-weight:700;
+transition:.3s;
+}
+
+.btn-upload:hover{
+box-shadow:0 0 25px var(--neon);
+transform:scale(1.05);
+}
+
+.glass-table{
+width:100%;
+border-collapse:separate;
+border-spacing:0 12px;
+}
+
+.glass-table th{
+color:var(--dim);
+text-align:left;
+padding:10px 20px;
+}
+
+.glass-table td{
+padding:18px 20px;
+color:#e5e7eb;
+background:var(--glass);
+}
+
+.glass-table tr td:first-child{
+border-radius:14px 0 0 14px;
+}
+
+.glass-table tr td:last-child{
+border-radius:0 14px 14px 0;
+text-align:right;
+}
+
+.glass-table tbody tr{
+transition:.3s;
+}
+
+.glass-table tbody tr:hover{
+transform:translateX(5px);
+box-shadow:-5px 0 0 var(--neon);
+}
+
+.badge{
+padding:6px 12px;
+border-radius:10px;
+font-size:.75rem;
+border:1px solid rgba(255,255,255,.2);
+}
+
+.pdf{color:#f87171}
+.image{color:#4ade80}
+.video{color:#38bdf8}
+
+.action{
+color:var(--dim);
+margin-left:12px;
+font-size:1.1rem;
+transition:.3s;
+}
+
+.action:hover{color:var(--neon)}
+.del:hover{color:#ff4d4d}
+</style>
+
+<div class="page-wrap">
+
+<div class="header">
+<h2 class="title">{{ lesson.title }} – Materials</h2>
+
+<a href="{% url 'admin_material_upload' lesson.id %}" class="btn-upload">
+<i class="fa-solid fa-cloud-arrow-up"></i> Upload
+</a>
+</div>
+
+<table class="glass-table">
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Type</th>
+<th style="text-align:right">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for m in materials %}
+<tr>
+<td>{{ m.title }}</td>
+
+<td>
+<span class="badge {{ m.material_type }}">
+{{ m.material_type|upper }}
+</span>
+</td>
+
+<td>
+
+<a href="{{ m.file.url }}" target="_blank" class="action" title="View">
+<i class="fa-solid fa-eye"></i>
+</a>
+
+<a href="{% url 'admin_material_edit' m.id %}" class="action" title="Edit">
+<i class="fa-solid fa-pen-to-square"></i>
+</a>
+
+<a href="{% url 'admin_material_delete' m.id %}" class="action del"
+onclick="return confirm('Delete this material?')" title="Delete">
+<i class="fa-solid fa-trash"></i>
+</a>
+
+</td>
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="3" style="text-align:center;color:var(--dim);padding:40px">
+No materials uploaded
+</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

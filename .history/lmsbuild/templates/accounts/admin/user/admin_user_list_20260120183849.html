@@ -1,0 +1,314 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<style>
+  :root {
+    --bg-dark: #0f172a;
+    --card-dark: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #38bdf8;
+    --border: #334155;
+  }
+
+  .user-dashboard {
+    background-color: var(--bg-dark);
+    min-height: 100vh;
+    padding: 30px;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--text-primary);
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .page-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  /* 3D GRAPH CONTAINER */
+  .chart-section {
+    background: var(--card-dark);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+  }
+
+  .chart-title {
+    text-align: center;
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  #roleChart3D {
+    height: 400px;
+    width: 100%;
+  }
+
+  /* TABLE STYLES */
+  .table-card {
+    background: var(--card-dark);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-secondary);
+  }
+
+  thead {
+    background: #27354f;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  th, td {
+    padding: 18px 24px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* USER INFO & AVATAR */
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .user-info div {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .user-info small {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* BADGES */
+  .role-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .role-admin { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .role-trainer { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+  .role-student { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+  .status-dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .active { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+  .inactive { background: #94a3b8; }
+
+  .btn-view {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.2s;
+  }
+  .btn-view:hover {
+    background: var(--accent);
+    color: #000;
+  }
+
+</style>
+
+<div class="user-dashboard">
+
+  <div class="page-header">
+    <h2>👥 Users Management</h2>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">User Roles Distribution (3D Analysis)</div>
+    <div id="roleChart3D"></div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>User Profile</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="avatar-circle">
+                {{ user.username|slice:":1"|upper }}
+              </div>
+              <div class="user-info">
+                <div>{{ user.username }}</div>
+                <small>{{ user.email }}</small>
+              </div>
+            </div>
+          </td>
+          
+          <td>
+            <span class="role-badge role-{{ user.role|lower }}">
+              {{ user.role|title }}
+            </span>
+          </td>
+
+          <td>
+            {% if user.is_active %}
+              <span style="color:#f1f5f9; font-size:13px;">
+                <span class="status-dot active"></span> Active
+              </span>
+            {% else %}
+              <span style="color:#94a3b8; font-size:13px;">
+                <span class="status-dot inactive"></span> Inactive
+              </span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="{% url 'admin_user_view' user.id %}" class="btn-view">
+              View Profile
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center; padding:30px;">No users found in the database.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  // 1. Calculate Role Counts from Django Template Loop
+  // We create a JS object to store counts: e.g., { 'student': 10, 'trainer': 2 }
+  let roleData = {};
+
+  {% for user in users %}
+    // Get role from backend, default to 'Unknown' if empty
+    var r = "{{ user.role|default:'Unknown' }}";
+    
+    // Normalize string (make lowercase)
+    r = r.toLowerCase();
+
+    // Increment count
+    if (roleData[r]) {
+      roleData[r]++;
+    } else {
+      roleData[r] = 1;
+    }
+  {% endfor %}
+
+  // 2. Format Data for Highcharts 3D [ ['Role', Count], ... ]
+  let chartSeriesData = [];
+  for (let [role, count] of Object.entries(roleData)) {
+    // Capitalize first letter for display
+    let displayRole = role.charAt(0).toUpperCase() + role.slice(1);
+    chartSeriesData.push([displayRole, count]);
+  }
+
+  // 3. Render Highcharts 3D Pie Chart
+  Highcharts.chart('roleChart3D', {
+    chart: {
+      type: 'pie',
+      backgroundColor: 'transparent', // Transparent to blend with dark theme
+      options3d: {
+        enabled: true,
+        alpha: 45, // Tilt angle
+        beta: 0
+      }
+    },
+    title: { text: '' }, // Hide default title
+    tooltip: {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        depth: 45, // 3D Depth thickness
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}: {point.y}', // Show Name and Count
+          style: {
+            color: '#f1f5f9', // White text
+            fontSize: '14px',
+            textOutline: 'none'
+          }
+        },
+        // Modern Colors matching the theme
+        colors: [
+          '#6366f1', // Indigo (Student)
+          '#ec4899', // Pink (Admin)
+          '#10b981', // Emerald (Trainer)
+          '#f59e0b', // Amber (Others)
+          '#8b5cf6'  // Violet
+        ]
+      }
+    },
+    series: [{
+      type: 'pie',
+      name: 'Users',
+      data: chartSeriesData // Injecting the calculated data
+    }],
+    credits: { enabled: false } // Remove Highcharts watermark
+  });
+</script>
+
+{% endblock %}

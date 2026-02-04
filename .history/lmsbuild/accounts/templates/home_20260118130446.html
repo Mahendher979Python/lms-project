@@ -1,0 +1,721 @@
+{% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<style>
+    *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI",sans-serif;
+}
+
+body{
+  background:#f3f6fb;
+  color:#111827;
+}
+
+/* NAVBAR  ==================================================================
+--------------------------------------------------------------------------------*/
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 70px;
+  background:#111827;
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+}
+
+.logo{ width:38px; filter:drop-shadow(0 6px 12px rgba(0,0,0,.35)); }
+.brand{ font-size:22px; font-weight:700; letter-spacing:.5px; }
+
+.nav-center a{
+  color:#c7d2fe;
+  text-decoration:none;
+  margin:0 18px;
+  position:relative;
+}
+
+.nav-center a::after{
+  content:"";
+  position:absolute;
+  left:0; bottom:-6px;
+  width:0; height:2px;
+  background:#2563eb;
+  transition:width .25s ease;
+}
+
+.nav-center a:hover::after{ width:100%; }
+
+.nav-right{ display:flex; align-items:center; gap:20px; }
+
+.notification{ position:relative; }
+.notification img{ width:32px; height:32px; filter:drop-shadow(0 6px 12px rgba(0,0,0,.35)); }
+
+.badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  background:#ef4444;
+  color:#fff;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:50%;
+  box-shadow:0 6px 12px rgba(239,68,68,.45);
+}
+
+.btn-login{
+  background:#2563eb;
+  padding:8px 18px;
+  border-radius:8px;
+  color:#fff;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(37,99,235,.45);
+  transform:translateZ(0);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.btn-login:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 28px rgba(37,99,235,.55);
+}
+
+/* HERO ==================================================================
+--------------------------------------------------------------------------------*/
+.hero{
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  padding:80px 0;
+  perspective:1000px;
+}
+
+.hero-container{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:40px;
+}
+
+.hero-text{ width:45%; color:#fff; transform:translateZ(0); }
+.hero-text h1{ font-size:42px; margin-bottom:14px; text-shadow:0 6px 18px rgba(0,0,0,.35); }
+.hero-text p{ color:#cbd5f5; }
+
+.hero-btns{ margin-top:25px; display:flex; gap:12px; }
+.btn{ padding:12px 22px; border-radius:10px; text-decoration:none; display:inline-block; }
+.primary{ background:#2563eb; color:#fff; box-shadow:0 12px 26px rgba(37,99,235,.45); }
+.outline{ border:2px solid #fff; color:#fff; background:transparent; box-shadow:0 10px 22px rgba(255,255,255,.15); }
+
+.hero-img{ width:55%; transform-style:preserve-3d; }
+.hero-img img{
+  width:100%;
+  height:340px;          /* 🔥 TEMPLATE EXACT */
+  object-fit:cover;
+  border-radius:14px;
+  box-shadow:0 30px 60px rgba(0,0,0,.45);
+  transform:rotateY(-6deg) rotateX(2deg) translateZ(20px);
+  transition:transform .35s ease, box-shadow .35s ease;
+}
+.hero-img:hover img{
+  transform:rotateY(0deg) rotateX(0deg) translateZ(30px);
+  box-shadow:0 40px 80px rgba(0,0,0,.55);
+}
+
+/* COURSES  ==================================================================
+--------------------------------------------------------------------------------*/
+.courses{
+  padding:70px 0;
+  background:#f8fafc;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:40px;
+  font-size:28px;
+  color:#0f172a;
+}
+
+.course-grid{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+}
+
+.course-card{
+  background:#fff;
+  padding:16px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  transform:translateZ(0);
+  transition:transform .25s ease, box-shadow .25s ease;
+  border:1px solid #e5e7eb;
+}
+.course-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 24px 50px rgba(0,0,0,.18);
+}
+
+.course-card img{
+  width:100%;
+  height:160px;          /* 🔥 TEMPLATE EXACT */
+  object-fit:cover;
+  border-radius:10px;
+  box-shadow:0 16px 30px rgba(0,0,0,.18);
+}
+
+.course-card h3{ margin-top:12px; color:#0f172a; }
+
+.course-card p{
+  font-size:14px;
+  color:#555;
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0 14px;
+}
+
+.course-card span{ color:#2563eb; font-weight:600; }
+
+.course-card button{
+  width:100%;
+  padding:10px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  box-shadow:0 12px 26px rgba(37,99,235,.45);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.course-card button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px rgba(37,99,235,.55);
+}
+
+.courses-desc{
+  max-width:900px;margin:auto;
+  text-align:center;color:#475569;
+}
+
+/* ===== FEATURES SECTION ===== =============================================================
+==============================================================================================*/
+/* ================= FEATURES SECTION ================= */
+.features{
+  max-width:1200px;
+  margin:60px auto;
+  padding:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:28px;
+}
+
+/* ================= FEATURE CARD ================= */
+.feature{
+  background:#fff;
+  border-radius:22px;
+  text-decoration:none;
+  color:#0f172a;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  overflow:hidden;
+  transition:transform .4s ease, box-shadow .4s ease;
+  text-align:center;              /* 🔥 CENTER CONTENT */
+}
+
+/* ================= IMAGE (FULL COVER) ================= */
+.feature img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  display:block;
+}
+
+/* ================= BUTTON STYLE SPAN ================= */
+.feature span{
+  display:inline-block;
+  margin:18px auto 20px;           /* 🔥 CENTER BUTTON */
+  padding:12px 26px;
+
+  background:linear-gradient(
+    270deg,
+    #2563eb,
+    #7c3aed,
+    #06b6d4,
+    #22c55e,
+    #f59e0b,
+    #ef4444
+  );
+  background-size:400% 400%;
+
+  color:#fff;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.4px;
+
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+
+/* ================= BUTTON HOVER (2s RGB ANIMATION) ================= */
+.feature:hover span{
+  animation:rgbFlow 2s linear infinite;   /* 🔥 2 seconds */
+  transform:translateY(-2px) scale(1.06);
+  box-shadow:0 14px 34px rgba(37,99,235,.55);
+}
+
+/* ================= CARD HOVER ================= */
+.feature:hover{
+  transform:translateY(-10px);
+  box-shadow:0 35px 65px rgba(37,99,235,.25);
+}
+
+/* ================= RGB KEYFRAMES ================= */
+@keyframes rgbFlow{
+  0%   { background-position:0% 50%; }
+  50%  { background-position:100% 50%; }
+  100% { background-position:0% 50%; }
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:600px){
+  .feature img{
+    height:150px;
+  }
+  .feature span{
+    font-size:14px;
+    padding:10px 22px;
+  }
+}
+
+/* ABOUT  ==================================================================
+--------------------------------------------------------------------------------*/
+.about-section{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:60px 60px;
+  background:#f3f4f7;
+  gap:20px;
+}
+
+.about-content{ width:45%; }
+.about-content h2{ color:hsl(221, 86%, 49%); margin-bottom:6px; }
+.about-content h3{ font-size:24px; margin-bottom:14px; }
+.about-content p{ color:#555; line-height:1.6; margin-bottom:20px; }
+
+.about-btn{
+  padding:12px 26px;
+  background:#2563eb;
+  color:hsl(0, 14%, 89%);
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  box-shadow:0 12px 26px rgba(3, 14, 37, 0.45); /* 3D effect */
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.about-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px rgba(209, 69, 13, 0.55);
+}
+
+.about-image img{
+  width:420px;
+  border-radius:14px;
+  box-shadow:0 24px 48px rgba(0,0,0,.25); /* 3D depth */
+  transform:rotateY(-5deg) translateZ(18px);
+  transition:transform .35s ease, box-shadow .35s ease;
+}
+.about-image:hover img{
+  transform:rotateY(0deg) translateZ(26px);
+  box-shadow:0 36px 72px rgba(0,0,0,.35);
+}
+
+/* ================= CONTACT ================= */
+.contact-section{
+  padding:90px 0;
+  background:#eef2f9;
+  text-align:center;
+}
+
+.contact-form{
+  width:420px;
+  margin:auto;
+  background:#fff;
+  padding:15px;
+  border-radius:18px;
+  box-shadow:0 25px 50px rgba(0,0,0,.18);
+}
+
+.contact-form input,
+.contact-form textarea{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+}
+
+.contact-form button{
+  margin-top:15px;
+  padding:12px 30px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+/* Tilt utility */
+.tilt{
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+
+/* Responsive */
+@media (max-width:1024px){
+  .hero-container{ flex-direction:column; }
+  .hero-text, .hero-img{ width:100%; }
+  .course-grid{ grid-template-columns:repeat(2,1fr); }
+  .about-section{ flex-direction:column; padding:60px 24px; }
+  .about-content{ width:100%; }
+}
+
+@media (max-width:640px){
+  .navbar{ padding:12px 18px; }
+  .nav-center{ display:none; }
+  .course-grid{ grid-template-columns:1fr; }
+  .contact-form{ width:92%; }
+}
+
+
+/* ================= FOOTER ================= ===================================
+============================================== ===================================*/
+.footer{
+  background:#0f172a;
+  color:#e5e7eb;
+  padding:14px 30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  border-top:1px solid #1e293b;
+  box-shadow:0 -10px 30px rgba(0,0,0,.35);
+}
+
+/* Text */
+.footer p{
+  margin:0;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.3px;
+}
+
+/* ================= SOCIAL LINKS ================= */
+.social-links{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+/* Icons */
+.social-links img{
+  width:24px;
+  height:24px;
+  opacity:0.85;
+  filter:grayscale(100%);
+  transition:
+    transform .3s ease,
+    filter .3s ease,
+    opacity .3s ease;
+}
+
+/* Hover animation */
+.social-links a:hover img{
+  transform:translateY(-3px) scale(1.15);
+  filter:grayscale(0%);
+  opacity:1;
+}
+
+/* Individual brand hover glow */
+.social-links a[href*="facebook"]:hover img{
+  filter:drop-shadow(0 0 8px #1877f2);
+}
+.social-links a[href*="instagram"]:hover img{
+  filter:drop-shadow(0 0 8px #e1306c);
+}
+.social-links a[href*="linkedin"]:hover img{
+  filter:drop-shadow(0 0 8px #0a66c2);
+}
+.social-links a[href*="x.com"]:hover img,
+.social-links a[href*="twitter"]:hover img{
+  filter:drop-shadow(0 0 8px #1da1f2);
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:600px){
+  .footer{
+    flex-direction:column;
+    gap:8px;
+    text-align:center;
+  }
+}
+
+
+</style>
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-container">
+
+    <div class="hero-text">
+      <h1>Welcome to Our <br>Learning Management System</h1>
+      <p>Admin | Trainer | Student Platform</p>
+
+      <div class="hero-btns">
+        <a href="{% url 'login' %}" class="btn primary">Login</a>
+        <a href="#" class="btn outline">
+          Explore Courses</a>
+
+      </div>
+    </div>
+
+    <div class="hero-img">
+      <img src="{% static 'images/hero-laptop.png' %}" alt="LMS">
+    </div>
+
+  </div>
+</section>
+
+<!-- COURSES -->
+<section class="courses">
+  <h2 class="section-title">Popular Courses</h2>
+
+  <div class="course-grid">
+
+    <div class="course-card">
+      <img src="{% static 'images/webdevelopment.png' %}">
+      <h3>Web Development</h3>
+      <p>By Prof. Mahendher <span>6 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+    <div class="course-card">
+      <img src="{% static 'images/datascience.png' %}">
+      <h3>Data Science</h3>
+      <p>By Prof. John <span>8 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+    <div class="course-card">
+      <img src="{% static 'images/digitalmarket.png' %}">
+      <h3>Digital Marketing</h3>
+      <p>By Prof. Shilpa <span>10 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+  </div>
+
+<p class="courses-desc">
+  Our LMS course structure is designed to provide a clear and engaging learning path.
+  Each course includes interactive video lectures, downloadable study materials,
+  practical assignments, and progress tracking dashboards. Trainers can upload content
+  and evaluate submissions, while students benefit from quizzes, certificates, and
+  peer discussions. Administrators oversee enrollment, analytics, and performance reports,
+  ensuring a smooth and transparent learning experience across all modules.
+</p>
+
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="feature">
+    <img src="{% static 'images/online-session.png' %}">
+    <span>Online Courses</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/video-session.png' %}">
+    <span>Video Sessions</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/assignment-list.png' %}">
+    <span>Assignments</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/study-material.png' %}">
+    <span>Study Materials</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section">
+  <div class="about-content">
+    <h2>About Us</h2>
+    <p>
+      Our Learning Management System (LMS) is a simple and user-friendly online
+      platform designed to make learning easy and accessible for everyone.
+      It allows students to learn anytime, trainers to manage courses and
+      assignments, and administrators to control the system efficiently.
+      With online courses, study materials, video sessions, and assignments
+      in one place, our LMS supports smooth, flexible, and modern digital
+      learning.
+    </p>
+    <a href="#" class="about-btn">Learn More</a>
+  </div>
+
+  <div class="about-image">
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f">
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/base.js' %}"></script>
+<script>
+    /* =================================================
+   BASE JS – LMS (Mobile + Desktop)
+   Author: Banavath Mahendher
+================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ===============================
+     NOTIFICATION CLICK
+  =============================== */
+  const notification = document.querySelector(".notification");
+  const badge = document.querySelector(".badge");
+
+  if (notification) {
+    notification.addEventListener("click", () => {
+      alert("🔔 You have new notifications!");
+      if (badge) {
+        badge.style.display = "none"; // hide badge after click
+      }
+    });
+  }
+
+  /* ===============================
+     BUTTON HOVER EFFECT (DESKTOP)
+  =============================== */
+  document.querySelectorAll(".btn").forEach(btn => {
+    btn.addEventListener("mouseenter", () => {
+      btn.style.transform = "scale(1.05)";
+    });
+    btn.addEventListener("mouseleave", () => {
+      btn.style.transform = "scale(1)";
+    });
+  });
+
+  /* ===============================
+     RESPONSIVE HERO IMAGE HEIGHT
+  =============================== */
+  function adjustHeroImage() {
+    const heroImg = document.querySelector(".hero-img img");
+    if (!heroImg) return;
+
+    if (window.innerWidth <= 640) {
+      heroImg.style.height = "220px";
+    } else if (window.innerWidth <= 1024) {
+      heroImg.style.height = "280px";
+    } else {
+      heroImg.style.height = "340px";
+    }
+  }
+
+  adjustHeroImage();
+  window.addEventListener("resize", adjustHeroImage);
+
+  /* ===============================
+     3D TILT EFFECT (DESKTOP ONLY)
+  =============================== */
+  if (window.innerWidth > 768) {
+    document.querySelectorAll(".hero-img, .about-image").forEach(card => {
+
+      card.addEventListener("mousemove", e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const rotateY = (x / rect.width - 0.5) * 10;
+        const rotateX = (y / rect.height - 0.5) * -10;
+
+        card.style.transform =
+          `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = "rotateY(0deg) rotateX(0deg)";
+      });
+    });
+  }
+
+  /* ===============================
+     COURSE CARD AUTO HEIGHT
+  =============================== */
+  const courseCards = document.querySelectorAll(".course-card");
+  let maxHeight = 0;
+
+  courseCards.forEach(card => {
+    card.style.height = "auto";
+    maxHeight = Math.max(maxHeight, card.offsetHeight);
+  });
+
+  courseCards.forEach(card => {
+    card.style.height = maxHeight + "px";
+  });
+
+  /* ===============================
+     MOBILE NAVBAR TOUCH FEEDBACK
+  =============================== */
+  document.querySelectorAll(".nav-center a").forEach(link => {
+    link.addEventListener("touchstart", () => {
+      link.style.opacity = "0.6";
+    });
+    link.addEventListener("touchend", () => {
+      link.style.opacity = "1";
+    });
+  });
+
+  /* ===============================
+     SMOOTH SCROLL FOR INTERNAL LINKS
+  =============================== */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute("href"))
+        ?.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  /* ===============================
+     CONTACT FORM (FRONTEND ONLY)
+  =============================== */
+  const contactForm = document.querySelector(".contact-form");
+  if (contactForm) {
+    contactForm.addEventListener("submit", e => {
+      e.preventDefault();
+      alert("✅ Message sent successfully!");
+      contactForm.reset();
+    });
+  }
+
+  console.log("✅ LMS Base JS loaded successfully");
+});
+
+</script>
+{% endblock %}

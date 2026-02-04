@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Ad</title>
+</head>
+<body>
+
+<h2>{{ action }} Advertisement</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input type="text" name="title" placeholder="Title"
+           value="{{ ad.title|default:'' }}" required><br><br>
+
+    <textarea name="description" placeholder="Description">{{ ad.description|default:'' }}</textarea><br><br>
+
+    <input type="file" name="image"><br><br>
+
+    <button type="submit">{{ action }}</button>
+</form>
+
+</body>
+</html>

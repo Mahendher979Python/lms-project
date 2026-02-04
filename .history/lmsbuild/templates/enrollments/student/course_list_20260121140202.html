@@ -1,0 +1,194 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+
+<style>
+    /* --- PAGE HEADER --- */
+    .folder-header {
+        display: flex; align-items: center; gap: 15px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 15px;
+    }
+    .folder-header h2 {
+        font-size: 1.8rem; color: #1e293b; font-weight: 800;
+    }
+    .folder-icon { font-size: 2rem; color: #f59e0b; } /* Orange Folder Icon */
+
+    /* --- FOLDER GRID --- */
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    /* --- 3D FOLDER CARD --- */
+    .folder-card {
+        background: #ffffff;
+        border-radius: 12px;
+        position: relative;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #cbd5e1;
+        overflow: hidden;
+    }
+
+    /* The "Tab" top part of a folder */
+    .folder-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 6px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    }
+
+    .folder-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body { padding: 25px; }
+
+    .card-icon {
+        width: 50px; height: 50px;
+        background: #eff6ff; color: #3b82f6;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 15px;
+    }
+
+    .course-title { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+    .trainer-name { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: block; }
+    
+    /* Buttons */
+    .action-row { display: flex; gap: 10px; margin-top: auto; }
+
+    .btn-view {
+        flex: 1; padding: 10px;
+        background: #3b82f6; color: white;
+        text-align: center; border-radius: 8px;
+        text-decoration: none; font-weight: 600;
+        border: none; cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-view:hover { background: #2563eb; }
+
+    /* --- MODAL (POPUP) STYLES --- */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: none; /* Hidden by default */
+        justify-content: center; align-items: center;
+        z-index: 2000;
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active { display: flex; opacity: 1; }
+
+    .modal-box {
+        background: white; width: 90%; max-width: 500px;
+        border-radius: 16px; padding: 30px;
+        position: relative;
+        transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-overlay.active .modal-box { transform: scale(1); }
+
+    .close-btn {
+        position: absolute; top: 15px; right: 15px;
+        background: #f1f5f9; border: none;
+        width: 30px; height: 30px; border-radius: 50%;
+        cursor: pointer; font-size: 1rem; color: #64748b;
+        transition: 0.2s;
+    }
+    .close-btn:hover { background: #ef4444; color: white; }
+
+    .modal-title { font-size: 1.5rem; color: #1e293b; margin-bottom: 10px; font-weight: bold; }
+    .modal-desc { color: #475569; line-height: 1.6; margin-bottom: 20px; }
+    
+    .modal-actions { text-align: right; }
+</style>
+
+<div class="folder-header">
+    <i class="fa-solid fa-folder-open folder-icon"></i>
+    <h2>My Folder / Courses</h2>
+</div>
+
+<div class="course-grid">
+    {% for course in courses %}
+        <div class="folder-card">
+            <div class="card-body">
+                <div class="card-icon">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                </div>
+                <h3 class="course-title">{{ course.title }}</h3>
+                <span class="trainer-name">
+                    <i class="fa-solid fa-chalkboard-user"></i> Trainer: {{ course.trainer.username }}
+                </span>
+                
+                <div class="action-row">
+                    <button class="btn-view" onclick="openModal('{{ course.title }}', '{{ course.description|escapejs }}', '{% url 'student_course_detail' course.id %}')">
+                        <i class="fa-solid fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div style="text-align:center; padding:40px; color:#94a3b8; grid-column: 1/-1;">
+            <i class="fa-regular fa-folder-open" style="font-size:3rem; margin-bottom:10px;"></i>
+            <p>Your folder is empty. No courses assigned yet.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="modal-overlay" id="courseModal">
+    <div class="modal-box">
+        <button class="close-btn" onclick="closeModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <h3 class="modal-title" id="modalTitle">Course Title</h3>
+        <p style="color:#64748b; font-size:0.9rem; margin-bottom:15px;">
+            <i class="fa-solid fa-circle-info"></i> Course Description:
+        </p>
+        <p class="modal-desc" id="modalDesc">
+            Description goes here...
+        </p>
+
+        <div class="modal-actions">
+            <a href="#" id="modalLink" class="btn-view" style="display:inline-block; width:auto; padding:10px 20px;">
+                Open Course Folder <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('courseModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalLink = document.getElementById('modalLink');
+
+    function openModal(title, desc, url) {
+        modalTitle.textContent = title;
+        modalDesc.textContent = desc;
+        modalLink.href = url;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    // Close if clicked outside the box
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
+{% endblock %}

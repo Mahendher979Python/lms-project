@@ -1,0 +1,316 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<style>
+    /* --- 6D Theme Variables (Teal & Pink for Media) --- */
+    :root {
+        --neon-teal: #00f2ea;
+        --neon-pink: #ff0055;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-white: #ffffff;
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(15, 20, 35) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-white);
+        min-height: 100vh;
+    }
+
+    .dashboard-container { padding: 30px; }
+
+    /* --- Top Grid --- */
+    .top-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: var(--glass-border);
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: transform 0.3s;
+    }
+    .glass-card:hover { box-shadow: 0 0 20px rgba(0, 242, 234, 0.1); }
+
+    /* --- Header & Search --- */
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(90deg, var(--neon-teal), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .search-wrapper { position: relative; width: 100%; max-width: 400px; margin-top: 20px; }
+    .search-wrapper input {
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50px;
+        color: white;
+        outline: none;
+        transition: 0.3s;
+    }
+    .search-wrapper input:focus {
+        border-color: var(--neon-teal);
+        box-shadow: 0 0 15px rgba(0, 242, 234, 0.3);
+    }
+    .search-wrapper i {
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5);
+    }
+
+    /* --- Chart Box --- */
+    .chart-box { height: 200px; width: 100%; }
+
+    /* --- Glass Table --- */
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    
+    thead th {
+        padding: 15px 20px;
+        text-align: left;
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    tbody tr { background: var(--glass-bg); transition: 0.3s; }
+    tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.005);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    td { padding: 15px 20px; vertical-align: middle; }
+    td:first-child { border-radius: 10px 0 0 10px; border-left: 3px solid var(--neon-teal); }
+    td:last-child { border-radius: 0 10px 10px 0; }
+
+    /* --- File Icons --- */
+    .file-icon-box {
+        width: 40px; height: 40px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        float: left;
+        color: var(--neon-teal);
+        transition: 0.3s;
+    }
+    /* Dynamic Colors based on JS */
+    .icon-pdf { color: #ff4d4d; }
+    .icon-img { color: #bc13fe; }
+    .icon-zip { color: #ffd700; }
+    .icon-vid { color: #00f2ea; }
+
+    tr:hover .file-icon-box { background: white; color: black; box-shadow: 0 0 15px white; }
+
+    /* --- Badges --- */
+    .course-badge {
+        background: rgba(255, 0, 85, 0.15);
+        color: var(--neon-pink);
+        padding: 5px 12px; border-radius: 8px;
+        border: 1px solid rgba(255, 0, 85, 0.3);
+        font-size: 0.85rem;
+    }
+
+    .download-btn {
+        background: linear-gradient(135deg, var(--neon-teal), #0099ff);
+        color: #000;
+        padding: 8px 18px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex; align-items: center; gap: 5px;
+        transition: 0.3s;
+    }
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px var(--neon-teal);
+    }
+
+</style>
+
+<div class="dashboard-container">
+
+    <div class="top-section">
+        <div class="glass-card header-content">
+            <div>
+                <h2 class="page-title"><i class="fas fa-folder-open"></i> Media Library</h2>
+                <p style="opacity:0.7; margin-top:5px;">Manage all uploaded course materials.</p>
+            </div>
+            
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="mediaSearch" placeholder="Search files, courses..." onkeyup="filterTable()">
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h4 style="margin:0; text-align:center; color:var(--neon-teal)">File Types</h4>
+            <div id="fileChart" class="chart-box"></div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="padding:0; background:transparent; border:none; box-shadow:none;">
+        <table id="mediaTable">
+            <thead>
+                <tr>
+                    <th>File Details</th>
+                    <th>Course</th>
+                    <th>Uploaded By</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materials %}
+                <tr>
+                    <td>
+                        <div class="file-icon-box" data-url="{{ m.file.url }}">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div style="padding-top:2px;">
+                            <div style="font-weight:600; font-size:1rem;">{{ m.title }}</div>
+                            <div style="font-size:0.75rem; opacity:0.5; margin-top:3px;">
+                                File ID: #{{ m.id }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="course-badge">{{ m.course.title }}</span>
+                    </td>
+
+                    <td>
+                        <i class="fas fa-user-circle" style="margin-right:5px; color:rgba(255,255,255,0.5);"></i>
+                        {{ m.uploaded_by.username|title }}
+                    </td>
+
+                    <td style="font-family:monospace; color:var(--neon-teal);">
+                        {{ m.created_at|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        <a href="{{ m.file.url }}" target="_blank" class="download-btn">
+                            <i class="fas fa-cloud-download-alt"></i> Download
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:50px;">
+                        <i class="fas fa-ghost" style="font-size:3rem; opacity:0.2; margin-bottom:15px;"></i>
+                        <p style="opacity:0.5;">No media files found in the system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const icons = document.querySelectorAll('.file-icon-box');
+        let typeCounts = { 'PDF': 0, 'Image': 0, 'Video': 0, 'Archive': 0, 'Other': 0 };
+        
+        // 1. Auto-Detect File Icons & Count Types
+        icons.forEach(box => {
+            const url = box.getAttribute('data-url').toLowerCase();
+            const icon = box.querySelector('i');
+
+            if (url.includes('.pdf')) {
+                icon.className = 'fas fa-file-pdf';
+                box.classList.add('icon-pdf');
+                typeCounts['PDF']++;
+            } else if (url.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+                icon.className = 'fas fa-file-image';
+                box.classList.add('icon-img');
+                typeCounts['Image']++;
+            } else if (url.match(/\.(mp4|mov|avi)$/)) {
+                icon.className = 'fas fa-file-video';
+                box.classList.add('icon-vid');
+                typeCounts['Video']++;
+            } else if (url.match(/\.(zip|rar|tar)$/)) {
+                icon.className = 'fas fa-file-archive';
+                box.classList.add('icon-zip');
+                typeCounts['Archive']++;
+            } else {
+                icon.className = 'fas fa-file-alt';
+                typeCounts['Other']++;
+            }
+        });
+
+        // 2. Render 3D Chart
+        var chartDom = document.getElementById('fileChart');
+        if(chartDom) {
+            var myChart = echarts.init(chartDom);
+            var option = {
+                tooltip: { trigger: 'item' },
+                series: [{
+                    name: 'Files',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 5, borderColor: '#fff', borderWidth: 1 },
+                    label: { show: false, position: 'center' },
+                    color: ['#ff4d4d', '#bc13fe', '#00f2ea', '#ffd700', '#ffffff'],
+                    data: Object.keys(typeCounts)
+                        .filter(key => typeCounts[key] > 0)
+                        .map(key => ({ value: typeCounts[key], name: key }))
+                }]
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', function() { myChart.resize(); });
+        }
+    });
+
+    // 3. Search Filter
+    function filterTable() {
+        const input = document.getElementById("mediaSearch");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("mediaTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            let tdTitle = tr[i].getElementsByTagName("td")[0];
+            let tdCourse = tr[i].getElementsByTagName("td")[1];
+            
+            if (tdTitle || tdCourse) {
+                let txtTitle = tdTitle.textContent || tdTitle.innerText;
+                let txtCourse = tdCourse.textContent || tdCourse.innerText;
+                
+                if (txtTitle.toUpperCase().indexOf(filter) > -1 || txtCourse.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+{% endblock %}

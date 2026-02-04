@@ -1,0 +1,62 @@
+{% extends "profiles/base.html" %}
+
+{% block content %}
+
+<div class="card-3d" style="max-width: 900px;">
+    <h2>Admin Dashboard Profile</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px;">
+        
+        <div>
+            <h3>Account Info</h3>
+            <div class="data-row">
+                <span class="label">Username</span>
+                <span class="value">{{ profile.user.username }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Email</span>
+                <span class="value">{{ profile.user.email }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Mobile</span>
+                <span class="value">{{ profile.user.mobile }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Role</span>
+                <span class="value" style="color: var(--primary);">{{ profile.user.role|title }}</span>
+            </div>
+        </div>
+
+        <div>
+            <h3>Privileges & Details</h3>
+            <div class="data-row">
+                <span class="label">Department</span>
+                <span class="value">{{ profile.department|default:"Not Updated" }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Designation</span>
+                <span class="value">{{ profile.designation|default:"Admin" }}</span>
+            </div>
+            
+            <div class="data-row">
+                <span class="label">Manage Users</span>
+                <span class="value">{% if profile.can_manage_users %}<span class="badge yes">Allowed</span>{% else %}<span class="badge no">Restricted</span>{% endif %}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Manage Courses</span>
+                <span class="value">{% if profile.can_manage_courses %}<span class="badge yes">Allowed</span>{% else %}<span class="badge no">Restricted</span>{% endif %}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">View Reports</span>
+                <span class="value">{% if profile.can_view_reports %}<span class="badge yes">Allowed</span>{% else %}<span class="badge no">Restricted</span>{% endif %}</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px; display: flex; justify-content: flex-end;">
+        <a href="{% url 'profile_edit' %}" class="btn-3d">✏️ Edit Profile</a>
+        <a href="{% url 'admin_student_list' %}" class="btn-3d btn-success">👨‍🎓 View Students</a>
+    </div>
+</div>
+
+{% endblock %}

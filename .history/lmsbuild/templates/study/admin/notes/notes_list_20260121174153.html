@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-layer-group text-primary"></i> Notes Management</h2>
+        <a href="{% url 'admin_notes_add' %}" class="btn btn-custom"><i class="fas fa-plus"></i> Add New Note</a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h5 class="card-title text-muted">Notes Distribution</h5>
+                <div style="height: 250px;">
+                    <canvas id="notesPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h5 class="card-title text-muted">Upload Activity</h5>
+                <div style="height: 250px;">
+                    <canvas id="activityBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Created By</th>
+                            <th>Visibility</th>
+                            <th>File</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                        <tr>
+                            <td><strong>{{ note.title }}</strong><br><small class="text-muted">{{ note.created_at|date:"M d, Y" }}</small></td>
+                            <td><span class="badge bg-info text-dark">{{ note.course.name|default:"General" }}</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-secondary text-white rounded-circle me-2 d-flex justify-content-center align-items-center" style="width:30px; height:30px;">
+                                        {{ note.created_by.username|slice:":1"|upper }}
+                                    </div>
+                                    {{ note.created_by.username }}
+                                </div>
+                            </td>
+                            <td>
+                                {% if note.visibility == 'public' %}
+                                    <span class="badge bg-success">Public</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Private</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if note.file %}
+                                    <a href="{{ note.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-download"></i> View</a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_notes_edit' note.pk %}" class="btn btn-sm btn-light text-primary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_notes_delete' note.pk %}" class="btn btn-sm btn-light text-danger" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No notes found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Configuration for Pie Chart
+    const ctxPie = document.getElementById('notesPieChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Python', 'Java', 'Web Dev', 'Data Science'], // Replace with Django dynamic data if available
+            datasets: [{
+                data: [12, 19, 3, 5], 
+                backgroundColor: ['#4361ee', '#3f37c9', '#4cc9f0', '#f72585']
+            }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // Configuration for Bar Chart
+    const ctxBar = document.getElementById('activityBarChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            datasets: [{
+                label: 'Notes Uploaded',
+                data: [5, 2, 8, 1, 4],
+                backgroundColor: '#4361ee',
+                borderRadius: 5
+            }]
+        },
+        options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+    });
+</script>
+{% endblock %}

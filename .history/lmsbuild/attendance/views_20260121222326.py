@@ -1,0 +1,222 @@
+import json
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.utils.timezone import now
+
+from .models import Attendance
+from courses.models import Course
+from enrollments.models import Enrollment
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+# ================= STUDENT ATTENDANCE PAGE =================
+
+@login_required
+def student_attendance(request):
+    if request.user.role != "student":
+        return render(request, "403.html")
+
+    attendance_list = Attendance.objects.filter(
+        user=request.user
+    ).order_by("-date")
+
+    return render(
+        request,
+        "attendance/student/attendance_list.html",
+        {
+            "attendance_list": attendance_list
+        }
+    )
+
+
+# ================= TRAINER ATTENDANCE PAGE =================
+@login_required
+def trainer_attendance(request):
+    if request.user.role != "trainer":
+        return render(request, "403.html")
+
+    # Trainer own attendance
+    my_attendance = Attendance.objects.filter(
+        user=request.user
+    ).order_by("-date")
+
+    # Trainer courses
+    trainer_courses = Course.objects.filter(
+        trainer=request.user
+    )
+
+    # Students enrolled in trainer courses
+    student_ids = Enrollment.objects.filter(
+        course__in=trainer_courses
+    ).values_list("student_id", flat=True)
+
+    # Students attendance
+    students_attendance = Attendance.objects.filter(
+        user_id__in=student_ids
+    ).select_related("user").order_by("-date")
+
+    return render(
+        request,
+        "attendance/trainer/attendance_list.html",
+        {
+            "my_attendance": my_attendance,
+            "students_attendance": students_attendance,
+        }
+    )
+
+
+# ================= ATTENDANCE LOGIN (GPS) =================
+@login_required
+def attendance_login(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+    # Read JSON sent from JS
+    data = json.loads(request.body.decode("utf-8"))
+    lat = data.get("latitude")
+    lng = data.get("longitude")
+
+    today = now().date()
+
+    attendance, created = Attendance.objects.get_or_create(
+        user=request.user,
+        date=today,
+        defaults={
+            "role": request.user.role,
+            "login_time": now(),
+            "latitude": lat,
+            "longitude": lng,
+            "status": "present",
+            "marked_by": "system",
+        }
+    )
+
+    # If already exists but login missing
+    if not created and attendance.login_time is None:
+        attendance.login_time = now()
+        attendance.latitude = lat
+        attendance.longitude = lng
+        attendance.save()
+
+    return JsonResponse({
+        "status": "logged_in",
+        "latitude": lat,
+        "longitude": lng
+    })
+
+
+# ================= ATTENDANCE LOGOUT =================
+@login_required
+def attendance_logout(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+    today = now().date()
+
+    try:
+        attendance = Attendance.objects.get(
+            user=request.user,
+            date=today
+        )
+        attendance.logout_time = now()
+        attendance.save()
+        return JsonResponse({"status": "logged_out"})
+    except Attendance.DoesNotExist:
+        return JsonResponse(
+            {"error": "Login not found"},
+            status=400
+        )
+
+
+
+
+
+# ================= ADMIN ATTENDANCE LIST =================
+@login_required
+def admin_attendance_list(request):
+    if request.user.role != "admin":
+        return render(request, "403.html")
+
+    attendance_list = Attendance.objects.select_related("user").order_by("-date")
+
+    return render(
+        request,
+        "attendance/admin/attendance_list.html",
+        {"attendance_list": attendance_list}
+    )
+
+
+# ================= ADMIN CREATE =================
+@login_required
+def admin_attendance_create(request):
+    if request.user.role != "admin":
+        return render(request, "403.html")
+
+    if request.method == "POST":
+        user_id = request.POST.get("user")
+        date = request.POST.get("date")
+        status = request.POST.get("status")
+        login_time = request.POST.get("login_time") or None
+        logout_time = request.POST.get("logout_time") or None
+
+        Attendance.objects.create(
+            user_id=user_id,
+            role=request.POST.get("role"),
+            date=date,
+            login_time=login_time,
+            logout_time=logout_time,
+            status=status,
+            marked_by="admin",
+        )
+
+        messages.success(request, "Attendance added successfully")
+        return redirect("admin_attendance_list")
+
+    return render(request, "attendance/admin/attendance_form.html")
+
+
+# ================= ADMIN UPDATE =================
+@login_required
+def admin_attendance_edit(request, pk):
+    if request.user.role != "admin":
+        return render(request, "403.html")
+
+    attendance = get_object_or_404(Attendance, pk=pk)
+
+    if request.method == "POST":
+        attendance.status = request.POST.get("status")
+        attendance.login_time = request.POST.get("login_time") or None
+        attendance.logout_time = request.POST.get("logout_time") or None
+        attendance.marked_by = "admin"
+        attendance.save()
+
+        messages.success(request, "Attendance updated")
+        return redirect("admin_attendance_list")
+
+    return render(
+        request,
+        "attendance/admin/attendance_form.html",
+        {"attendance": attendance}
+    )
+
+
+# ================= ADMIN DELETE =================
+@login_required
+def admin_attendance_delete(request, pk):
+    if request.user.role != "admin":
+        return render(request, "403.html")
+
+    attendance = get_object_or_404(Attendance, pk=pk)
+
+    if request.method == "POST":
+        attendance.delete()
+        messages.success(request, "Attendance deleted")
+        return redirect("admin_attendance_list")
+
+    return render(
+        request,
+        "attendance/admin/attendance_confirm_delete.html",
+        {"attendance": attendance}
+    )

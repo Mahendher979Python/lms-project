@@ -1,0 +1,35 @@
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<style>
+.lesson-box{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+</style>
+
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<hr>
+
+<h3>📘 Lessons</h3>
+
+{% for lesson in lessons %}
+<div class="lesson-box">
+  <h4>{{ lesson.title }}</h4>
+  <p>{{ lesson.description }}</p>
+
+  <a href="{% url 'student_lesson_detail' lesson.id %}" class="btn">
+    ▶ Watch Video
+  </a>
+</div>
+{% empty %}
+<p>No lessons added</p>
+{% endfor %}
+
+{% endblock %}

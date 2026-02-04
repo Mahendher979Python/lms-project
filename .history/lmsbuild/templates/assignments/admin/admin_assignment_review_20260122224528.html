@@ -1,0 +1,28 @@
+<h2>Assignment Review</h2>
+
+<p><strong>Title:</strong> {{ assignment.title }}</p>
+<p><strong>Course:</strong> {{ assignment.course }}</p>
+<p><strong>Trainer:</strong> {{ assignment.created_by }}</p>
+
+<hr>
+
+<h3>Questions</h3>
+{% for q in questions %}
+  <p>
+    <strong>{{ forloop.counter }}. {{ q.question_text }}</strong><br>
+    A. {{ q.option_a }}<br>
+    B. {{ q.option_b }}<br>
+    C. {{ q.option_c }}<br>
+    D. {{ q.option_d }}<br>
+    <em>Correct: {{ q.correct_option }}</em>
+  </p>
+  <hr>
+{% endfor %}
+
+<a href="{% url 'assignments:admin_approve_assignment' assignment.id %}">
+  ✅ Approve
+</a>
+&nbsp; | &nbsp;
+<a href="{% url 'assignments:admin_reject_assignment' assignment.id %}">
+  ❌ Reject
+</a>

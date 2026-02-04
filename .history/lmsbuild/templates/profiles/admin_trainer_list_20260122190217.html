@@ -1,0 +1,31 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h2>Trainer Directory</h2>
+
+    <table class="table-container">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Qualification</th>
+                <th>Experience</th>
+                <th style="text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in trainers %}
+            <tr class="table-row-3d">
+                <td><strong>{{ t.user.username }}</strong></td>
+                <td>{{ t.qualification }}</td>
+                <td><span class="badge yes">{{ t.experience_years }} Yrs</span></td>
+                <td style="text-align: right;">
+                    <a href="{% url 'admin_profile_detail' 'trainer' t.id %}" class="btn-3d btn-secondary" style="padding: 5px 15px; font-size: 0.8rem;">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

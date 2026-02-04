@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trainer Panel</title>
+
+<style>
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:#f1f5f9;
+}
+.wrapper{display:flex;min-height:100vh;}
+.sidebar{
+  width:240px;
+  background:#1e293b;
+  color:#fff;
+  padding:20px;
+}
+.sidebar h2{text-align:center;margin-bottom:30px;}
+.sidebar a{
+  display:block;
+  padding:12px;
+  margin-bottom:10px;
+  text-decoration:none;
+  color:#fff;
+  border-radius:6px;
+  background:#334155;
+}
+.sidebar a:hover{background:#475569;}
+.logout{background:#dc2626!important;}
+.content{flex:1;padding:30px;}
+.header{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  margin-bottom:25px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.card a{
+  display:inline-block;
+  margin-top:12px;
+  padding:8px 14px;
+  background:#2563eb;
+  color:#fff;
+  text-decoration:none;
+  border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Trainer Panel</h2>
+
+    <a href="{% url 'trainer_dashboard' %}">🏠 Dashboard</a>
+    <a href="{% url 'trainer_course_list' %}">📚 My Courses</a>
+    <a href="{% url 'trainer_course_create' %}">➕ Add Course</a>
+    <a href="{% url 'trainer_video_list' %}">🎥 Videos</a>
+    <a href="{% url 'trainer_ad_list' %}">🖼 Images</a>
+    <a href="{% url 'public_media_view' %}">🌐 Public Media</a>
+
+    <a href="{% url 'logout' %}" class="logout">🚪 Logout</a>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+</div>
+
+</body>
+</html>

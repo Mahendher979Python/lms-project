@@ -1,0 +1,112 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 30px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        font-family: sans-serif;
+    }
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="text"], input[type="password"], select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box; /* Ensures padding doesn't affect width */
+    }
+    select {
+        height: 120px; /* Specific height for multiple select */
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    .btn-submit:hover { background-color: #218838; }
+    .btn-back {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #666;
+        text-decoration: none;
+    }
+    .btn-back:hover { text-decoration: underline; }
+    .error-msg {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+        text-align: center;
+    }
+    .help-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Add New Student</h2>
+
+    {% if error %}
+    <div class="error-msg">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Enter username" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+        </div>
+
+        <div class="form-group">
+            <label>Select Courses</label>
+            <select name="courses" multiple>
+                {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.title }}</option>
+                {% endfor %}
+            </select>
+            <div class="help-text">💡 Hold 'Ctrl' (Windows) or 'Command' (Mac) to select multiple courses.</div>
+        </div>
+
+        <button type="submit" class="btn-submit">Create Student</button>
+    </form>
+
+    <a href="{% url 'student_list' %}" class="btn-back">⬅ Back to List</a>
+</div>
+
+{% endblock %}

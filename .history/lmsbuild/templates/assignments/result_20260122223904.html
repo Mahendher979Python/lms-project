@@ -1,0 +1,15 @@
+<h2>Result – {{ assignment.title }}</h2>
+
+<p>Total Marks: {{ assignment.total_marks }}</p>
+<p>Pass Marks: {{ assignment.pass_marks }}</p>
+<p>Your Score: <strong>{{ submission.score }}</strong></p>
+
+{% if passed %}
+  <h3 style="color:green;">PASS ✅</h3>
+{% else %}
+  <h3 style="color:red;">FAIL ❌</h3>
+{% endif %}
+
+<a href="{% url 'assignments:student_assignment_list' %}">
+  Back to Assignments
+</a>

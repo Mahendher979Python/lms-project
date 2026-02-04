@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<h1>🧑‍🏫 Trainers</h1>
+
+<!-- TOP BAR -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+  <form method="get" style="display:flex; gap:8px;">
+    <input type="text" name="q" placeholder="Search trainer..."
+           style="
+             padding:8px 12px;
+             border-radius:6px;
+             border:1px solid #334155;
+             background:#020617;
+             color:#e5e7eb;
+           ">
+    <button type="submit"
+            style="
+              padding:8px 14px;
+              border-radius:6px;
+              border:none;
+              background:#334155;
+              color:#e5e7eb;
+              cursor:pointer;
+            ">
+      Search
+    </button>
+  </form>
+
+  {% if request.user.is_superuser or request.user.role == 'admin' %}
+  <a href="{% url 'trainer_create' %}"
+     style="
+       padding:10px 18px;
+       background:#22c55e;
+       color:#020617;
+       border-radius:8px;
+       text-decoration:none;
+       font-weight:600;
+     ">
+     ➕ Add Trainer
+  </a>
+  {% endif %}
+
+</div>
+
+<!-- TABLE -->
+<table style="width:100%; border-collapse: collapse;">
+  <thead>
+    <tr style="background:#020617; color:#e5e7eb; text-align:left;">
+      <th style="padding:12px;">Username</th>
+      <th style="padding:12px;">Mobile</th>
+      <th style="padding:12px;">Status</th>
+      <th style="padding:12px;">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for trainer in trainers %}
+    <tr style="border-bottom:1px solid #1e293b;">
+      <td style="padding:12px;">{{ trainer.username }}</td>
+      <td style="padding:12px;">{{ trainer.mobile }}</td>
+      <td style="padding:12px;">
+        {% if trainer.is_active %}
+          <span style="color:#22c55e; font-weight:600;">● Active</span>
+        {% else %}
+          <span style="color:#ef4444; font-weight:600;">● Inactive</span>
+        {% endif %}
+      </td>
+      <td style="padding:12px;">
+        <a href="{% url 'trainer_edit' trainer.id %}"
+           style="color:#60a5fa; margin-right:12px;">Edit</a>
+
+        {% if request.user.is_superuser %}
+        <a href="{% url 'trainer_delete' trainer.id %}"
+           onclick="return confirm('Are you sure?');"
+           style="color:#f87171;">Delete</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4" style="padding:20px; text-align:center; color:#94a3b8;">
+        No trainers found.
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

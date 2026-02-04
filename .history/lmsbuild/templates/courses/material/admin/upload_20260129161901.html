@@ -1,0 +1,96 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--cyan:#00f3ff;
+--lime:#ccff00;
+--glass:rgba(255,255,255,.07);
+--border:rgba(255,255,255,.15);
+}
+
+body{background:#020617;font-family:Inter;color:#e5e7eb}
+
+.upload-wrap{padding:40px;display:flex;justify-content:center}
+
+.upload-card{
+width:480px;
+background:var(--glass);
+border:1px solid var(--border);
+border-radius:25px;
+padding:35px;
+box-shadow:0 20px 40px rgba(0,0,0,.6);
+backdrop-filter:blur(15px);
+text-align:center}
+
+.upload-card h2{
+background:linear-gradient(90deg,var(--cyan),var(--lime));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent}
+
+.field{margin-top:20px;text-align:left}
+
+.field label{font-size:.8rem;color:#94a3b8}
+
+.field input{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,.2);
+background:#020617;
+color:white}
+
+.drop{
+margin-top:25px;
+border:2px dashed rgba(255,255,255,.2);
+padding:35px;
+border-radius:15px;
+cursor:pointer;
+transition:.3s}
+
+.drop:hover{border-color:var(--cyan)}
+
+.btn{
+margin-top:25px;
+width:100%;
+padding:14px;
+border-radius:30px;
+border:none;
+font-weight:700;
+background:linear-gradient(135deg,var(--lime),#9acd00);
+cursor:pointer}
+
+</style>
+
+<div class="upload-wrap">
+
+<div class="upload-card">
+
+<h2><i class="fa-solid fa-cloud-arrow-up"></i> Upload Material</h2>
+<p style="opacity:.6">Course: {{ course.title }}</p>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="field">
+<label>Material Title</label>
+<input type="text" name="title" placeholder="Python Day-1 Notes" required>
+</div>
+
+<div class="field">
+<label>Select File</label>
+<input type="file" name="file" required>
+</div>
+
+<button class="btn">Upload File</button>
+
+</form>
+
+</div>
+</div>
+
+{% endblock %}

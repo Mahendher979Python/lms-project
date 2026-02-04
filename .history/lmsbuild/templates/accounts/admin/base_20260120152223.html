@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LMS Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(120deg, #e5e7eb, #f8fafc);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= TOPBAR ================= */
+header {
+  height: 65px;
+  background: linear-gradient(90deg, #020617, #020617);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.4);
+}
+
+header h2 {
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+header span {
+  color: #38bdf8;
+}
+
+/* ================= LAYOUT ================= */
+.wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #020617, #0f172a);
+  padding-top: 25px;
+  color: #cbd5f5;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 25px;
+  text-decoration: none;
+  color: #94a3b8;
+  transition: .3s;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,.06);
+  color: #fff;
+}
+
+.sidebar a.active {
+  background: rgba(56,189,248,.15);
+  color: #fff;
+  border-left: 4px solid #38bdf8;
+}
+
+/* ================= MAIN CONTENT ================= */
+.main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* ================= DASHBOARD CARDS ================= */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow:
+    0 15px 30px rgba(0,0,0,.15),
+    inset 0 0 0 rgba(255,255,255,.5);
+  transform-style: preserve-3d;
+  transition: .4s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-10px) rotateX(6deg) rotateY(-6deg);
+  box-shadow: 0 30px 50px rgba(0,0,0,.25);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #64748b;
+}
+
+.card h1 {
+  margin: 10px 0 0;
+  font-size: 32px;
+  color: #020617;
+}
+
+.card span {
+  font-size: 28px;
+}
+
+/* ================= CHARTS ================= */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.chart-box {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+  transition: .3s;
+}
+
+.chart-box:hover {
+  transform: translateY(-6px);
+}
+
+.chart-box h3 {
+  margin-bottom: 15px;
+  color: #020617;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🚀 LMS <span>Admin Panel</span></h2>
+  <div>Welcome, Admin</div>
+</header>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a class="active">📊 Dashboard</a>
+    <a>👥 Users</a>
+    <a>🧑‍🏫 Trainers</a>
+    <a>🎓 Students</a>
+    <a>📘 Courses</a>
+    <a>🎥 Media</a>
+    <a>⚙ Settings</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- STATS CARDS -->
+    <section class="cards">
+      <div class="card">
+        <span>👥</span>
+        <h3>Total Users</h3>
+        <h1>1,240</h1>
+      </div>
+
+      <div class="card">
+        <span>🧑‍🏫</span>
+        <h3>Trainers</h3>
+        <h1>48</h1>
+      </div>
+
+      <div class="card">
+        <span>🎓</span>
+        <h3>Students</h3>
+        <h1>920</h1>
+      </div>
+
+      <div class="card">
+        <span>📘</span>
+        <h3>Courses</h3>
+        <h1>36</h1>
+      </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+
+      <div class="chart-box">
+        <h3>User Growth</h3>
+        <canvas id="usersChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <h3>Course Enrollments</h3>
+        <canvas id="coursesChart"></canvas>
+      </div>
+
+    </section>
+
+    <footer>
+      © 2026 LMS Admin Dashboard | Designed with ❤️
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* USERS LINE CHART */
+new Chart(document.getElementById('usersChart'), {
+  type: 'line',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets: [{
+      label: 'Users',
+      data: [200, 350, 500, 720, 900, 1240],
+      borderColor: '#38bdf8',
+      backgroundColor: 'rgba(56,189,248,.25)',
+      tension: .4,
+      fill: true
+    }]
+  }
+});
+
+/* COURSES BAR CHART */
+new Chart(document.getElementById('coursesChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Python','Django','React','AI','ML'],
+    datasets: [{
+      label: 'Enrollments',
+      data: [320, 280, 210, 150, 180],
+      backgroundColor: '#3b82f6'
+    }]
+  }
+});
+</script>
+
+</body>
+</html>

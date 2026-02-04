@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Send Message</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+}
+
+.container{
+    width:500px;
+    margin:60px auto;
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+h2{
+    text-align:center;
+}
+
+input, select, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:15px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#084298;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Send Message</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Receiver</label>
+        <select name="receiver" required>
+            <option value="">Select User</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Subject</label>
+        <input type="text" name="subject" required>
+
+        <label>Message</label>
+        <textarea rows="5" name="body" required></textarea>
+
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+console.log("Send Message Page Loaded");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+{% extends "accounts/admin/base.html" %}
+{% block extra_head %}
+<style>
+  /* Modal Styles specific to this page */
+  .media-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(2px); }
+  .modal-box { position: relative; background: #000; width: 80%; max-width: 800px; margin: 5% auto; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+  .modal-box img, .modal-box video { max-width: 100%; max-height: 80vh; display: block; }
+  .close-btn { position: absolute; top: 15px; right: 15px; color: white; font-size: 30px; cursor: pointer; z-index: 100; font-weight: bold; background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%; text-align: center; line-height: 40px; }
+  .search-bar { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; gap: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2>🎥 Media Management (Videos & Ads)</h2>
+
+<form method="get" class="search-bar">
+    <input type="text" name="search" placeholder="Search title..." value="{{ search }}" class="form-control" style="flex:1;">
+    <select name="status" class="form-control" style="width: 150px;">
+        <option value="">-- Status --</option>
+        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="{% url 'admin_media_list' %}" class="btn" style="background: #e2e8f0;">Reset</a>
+</form>
+
+<div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+    <h3>📹 Session Videos</h3>
+    <a href="/admin/courses/sessionvideo/add/" class="btn btn-primary btn-sm">➕ Add Video</a>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Preview</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for video in videos %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>
+          <strong>{{ video.title }}</strong><br>
+          <small style="color: #64748b;">{{ video.description|truncatechars:40 }}</small>
+      </td>
+      <td>
+        {% if video.video %}
+            <button class="btn" style="background: #334155; color: white; font-size: 12px;" onclick="openVideo('{{ video.video.url }}')">▶ Play</button>
+        {% else %}
+            <span style="color: #94a3b8;">No Media</span>
+        {% endif %}
+      </td>
+      <td>{% if video.is_active %}✅{% else %}❌{% endif %}</td>
+      <td>
+        <a href="{{ video.video.url }}" download class="btn-action">⬇</a>
+        <a href="/admin/courses/sessionvideo/{{ video.id }}/change/" class="btn-action">✏️</a>
+        <a href="/admin/courses/sessionvideo/{{ video.id }}/delete/" class="btn-danger" onclick="return confirm('Delete this video?')">🗑</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" align="center">No videos found</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr style="margin: 40px 0; border: 0; border-top: 1px dashed #ccc;">
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>🖼️ Advertisements</h3>
+    <a href="/admin/courses/advertisement/add/" class="btn btn-primary btn-sm">➕ Add Ad</a>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Image</th>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ad in ads %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>
+        <img src="{{ ad.image.url }}" width="60" style="border-radius: 4px; cursor: pointer; border: 1px solid #ddd;" onclick="openImage('{{ ad.image.url }}')">
+      </td>
+      <td>{{ ad.title }}</td>
+      <td>{% if ad.is_active %}✅{% else %}❌{% endif %}</td>
+      <td>
+        <a href="{{ ad.image.url }}" download class="btn-action">⬇</a>
+        <a href="/admin/courses/advertisement/{{ ad.id }}/change/" class="btn-action">✏️</a>
+        <a href="/admin/courses/advertisement/{{ ad.id }}/delete/" class="btn-danger" onclick="return confirm('Delete this ad?')">🗑</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" align="center">No advertisements found</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div id="mediaModal" class="media-modal" onclick="closeModal()">
+    <div class="close-btn" onclick="closeModal()">×</div>
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <img id="modalImage" style="display:none;">
+        <video id="modalVideo" controls style="display:none;"></video>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function openImage(src) {
+      const modal = document.getElementById("mediaModal");
+      const img = document.getElementById("modalImage");
+      const vid = document.getElementById("modalVideo");
+      
+      modal.style.display = "block";
+      img.style.display = "block";
+      vid.style.display = "none";
+      img.src = src;
+      vid.pause();
+  }
+
+  function openVideo(src) {
+      const modal = document.getElementById("mediaModal");
+      const img = document.getElementById("modalImage");
+      const vid = document.getElementById("modalVideo");
+      
+      modal.style.display = "block";
+      vid.style.display = "block";
+      img.style.display = "none";
+      vid.src = src;
+      vid.play();
+  }
+
+  function closeModal() {
+      const modal = document.getElementById("mediaModal");
+      const vid = document.getElementById("modalVideo");
+      modal.style.display = "none";
+      vid.pause();
+      vid.src = "";
+  }
+</script>
+{% endblock %}

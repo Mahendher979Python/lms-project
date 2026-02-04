@@ -1,0 +1,100 @@
+{% extends "accounts\admin\base.html" %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | Students</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 15px;
+        }
+        a.btn {
+            padding: 8px 14px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            background: #fff;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #343a40;
+            color: #fff;
+        }
+        .active {
+            color: green;
+            font-weight: bold;
+        }
+        .inactive {
+            color: red;
+            font-weight: bold;
+        }
+        .actions a {
+            margin-right: 8px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>👨‍🎓 Students Management</h1>
+
+<a href="{% url 'admin_add_student' %}" class="btn">➕ Add Student</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Roll No</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ student.user.username }}</td>
+            <td>{{ student.roll_no }}</td>
+            <td>{{ student.phone }}</td>
+            <td>
+                {% if student.user.is_active %}
+                    <span class="active">Active</span>
+                {% else %}
+                    <span class="inactive">Inactive</span>
+                {% endif %}
+            </td>
+            <td class="actions">
+                <a href="{% url 'admin_edit_student' student.id %}">✏ Edit</a>
+                <a href="{% url 'admin_delete_student' student.id %}"
+                   onclick="return confirm('Deactivate this student?')">🚫 Deactivate</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">No students found</td>
+        </tr>
+    </tbody>
+</table>
+
+
+{% endblock %}

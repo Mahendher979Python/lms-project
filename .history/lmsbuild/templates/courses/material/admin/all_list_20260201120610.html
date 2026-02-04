@@ -1,0 +1,115 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.section-title{
+    margin-top:30px;
+    font-size:20px;
+    font-weight:600;
+    color:#2563eb
+}
+.material-card{
+    background:#fff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:10px
+}
+.material-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px
+}
+img,video{border-radius:8px}
+</style>
+
+<h2>All Materials</h2>
+
+<!-- ================= IMAGES ================= -->
+<div class="section-title">Images</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+
+<div class="material-card">
+<img src="{{m.file.url}}" width="100%">
+<p><b>{{m.title}}</b></p>
+<small>{{m.course.title}}</small><br><br>
+
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+
+{% endif %}
+{% endfor %}
+</div>
+
+
+<!-- ================= VIDEOS ================= -->
+<div class="section-title">Videos</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+
+<div class="material-card">
+<video width="100%" controls>
+<source src="{{m.file.url}}">
+</video>
+
+<p><b>{{m.title}}</b></p>
+<small>{{m.course.title}}</small><br><br>
+
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+
+{% endif %}
+{% endfor %}
+</div>
+
+
+<!-- ================= PDF ================= -->
+<div class="section-title">PDF Documents</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+
+<div class="material-card">
+<p><b>{{m.title}}</b></p>
+<small>{{m.course.title}}</small><br><br>
+
+<a href="{{m.file.url}}" target="_blank">View PDF</a><br><br>
+
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+
+{% endif %}
+{% endfor %}
+</div>
+
+
+<!-- ================= OTHERS ================= -->
+<div class="section-title">Other Files</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if not m.file.url|lower|slice:"-4:" in ".jpg,.png,.mp4,.pdf" %}
+
+<div class="material-card">
+<p><b>{{m.title}}</b></p>
+<small>{{m.course.title}}</small><br><br>
+
+<a href="{{m.file.url}}" download>Download File</a><br><br>
+
+<a href="{% url 'admin_material_edit' m.id %}">Edit</a> |
+<a href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+</div>
+
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

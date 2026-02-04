@@ -1,0 +1,33 @@
+<h2>📘 Lessons – {{ course.title }}</h2>
+<p>Click Watch to play lesson video</p>
+
+<table border="1" cellpadding="10" cellspacing="0" width="600">
+<tr>
+    <th>Order</th>
+    <th>Lesson Title</th>
+    <th>Video</th>
+</tr>
+
+{% for lesson in lessons %}
+<tr>
+    <td>{{ lesson.order }}</td>
+    <td>{{ lesson.title }}</td>
+    <td>
+        {% if lesson.video %}
+            <a href="{% url 'student_lesson_video' lesson.id %}">
+                ▶ Watch
+            </a>
+        {% else %}
+            Not Available
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3">No lessons added yet</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'student_course_list' %}">⬅ Back to Courses</a>

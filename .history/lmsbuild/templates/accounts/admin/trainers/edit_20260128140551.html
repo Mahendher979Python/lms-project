@@ -1,0 +1,104 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    /* Same styles as Add Trainer, plus Toggle Switch */
+    body { background: radial-gradient(circle at 10% 20%, rgb(15, 15, 30) 0%, rgb(5, 5, 15) 90%); color: white; }
+    
+    .form-wrapper { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+    
+    .form-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        padding: 40px;
+        width: 100%; max-width: 450px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        position: relative;
+    }
+
+    .form-card::before {
+        content: ''; position: absolute; top:0; left:0; width:100%; height:4px;
+        background: linear-gradient(90deg, #bc13fe, #ff0055); /* Purple for Edit */
+    }
+
+    h2 { text-align: center; margin-bottom: 25px; font-family: 'Poppins', sans-serif; }
+    
+    label { display: block; margin-bottom: 8px; font-weight: 500; color: rgba(255,255,255,0.8); }
+    
+    input[type="text"], input[type="password"] {
+        width: 100%; padding: 12px;
+        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px; color: white; outline: none; margin-bottom: 20px;
+    }
+    input:focus { border-color: #bc13fe; box-shadow: 0 0 10px rgba(188, 19, 254, 0.3); }
+
+    /* Toggle Switch */
+    .checkbox-wrapper { display: flex; align-items: center; gap: 15px; margin: 10px 0 25px 0; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc; transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
+        background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #00ff88; box-shadow: 0 0 10px #00ff88; }
+    input:checked + .slider:before { transform: translateX(26px); }
+
+    .btn-group { display: flex; gap: 15px; }
+    .btn-primary {
+        flex: 1; padding: 12px; border: none; border-radius: 50px;
+        background: linear-gradient(135deg, #bc13fe, #764ba2);
+        color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px #bc13fe; }
+    
+    .btn-secondary {
+        flex: 1; padding: 12px; border-radius: 50px; text-align: center;
+        background: rgba(255,255,255,0.1); color: white; text-decoration: none;
+        transition: 0.3s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2><i class="fas fa-user-edit" style="color:#bc13fe"></i> Edit Trainer</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label>Username</label>
+            <input name="username" value="{{ trainer.username }}">
+
+            <label>Mobile Number</label>
+            <input name="mobile" value="{{ trainer.mobile }}">
+
+            <label>New Password <small>(Leave blank to keep)</small></label>
+            <input type="password" name="password" placeholder="••••••••">
+
+            <label>Subject / Domain</label>
+            <input name="subject" value="{{ profile.subject }}">
+
+            <div class="checkbox-wrapper">
+                <label class="switch">
+                    <input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight:600">Active Account</span>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'trainer_list' %}" class="btn-secondary">Back</a>
+                <button class="btn-primary">Update Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

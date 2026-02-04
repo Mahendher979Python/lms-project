@@ -1,0 +1,22 @@
+<h2>Batches</h2>
+
+<a href="{% url 'admin_batch_create' %}">Add Batch</a>
+
+<table border="1">
+<tr>
+    <th>Name</th>
+    <th>Trainer</th>
+    <th>Actions</th>
+</tr>
+
+{% for b in batches %}
+<tr>
+    <td>{{ b.name }}</td>
+    <td>{{ b.trainer.user.username }}</td>
+    <td>
+        <a href="{% url 'admin_batch_edit' b.id %}">Edit</a>
+        <a href="{% url 'admin_batch_delete' b.id %}">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+</table>

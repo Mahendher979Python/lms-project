@@ -1,0 +1,212 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+/* --- General Layout --- */
+.container-fluid {
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* --- Card Styling --- */
+.att-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid #edf2f7;
+}
+
+.att-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Attendance Item --- */
+.history-item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.date-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.work-hours {
+    font-weight: 700;
+    color: #334155;
+}
+
+.time-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.time-row b { color: #334155; }
+
+/* --- Location --- */
+.location-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px dashed #cbd5e1;
+}
+
+.loc-title {
+    color: #ef4444;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.lat-lon-text {
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-blue { background: #3b82f6; color: #fff; }
+.btn-grey { background: #64748b; color: #fff; }
+
+/* --- Map --- */
+.map-frame-container {
+    width: 100%;
+    height: 230px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+iframe { width: 100%; height: 100%; border: none; }
+</style>
+
+<!-- ================= TRAINER OWN ATTENDANCE ================= -->
+<div class="att-card">
+  <div class="att-title">👨‍🏫 My Attendance</div>
+
+  {% for a in my_attendance %}
+  <div class="history-item">
+    <div class="history-header">
+        <span class="date-badge">{{ a.date }}</span>
+        <span class="work-hours">Hours: {{ a.total_work_hours|default:"00:00" }}</span>
+    </div>
+
+    <div class="time-row">
+        <div>Login: <b>{{ a.login_time|default:"-" }}</b></div>
+        <div>Logout: <b>{{ a.logout_time|default:"-" }}</b></div>
+    </div>
+
+    {% if a.latitude and a.longitude %}
+    <div class="location-section">
+        <div class="loc-title">📍 Location</div>
+        <div class="lat-lon-text">Lat: {{ a.latitude }}, Lon: {{ a.longitude }}</div>
+
+        <div class="action-buttons">
+            <a class="btn btn-blue" target="_blank"
+               href="https://www.google.com/maps?q={{ a.latitude }},{{ a.longitude }}">
+                Open Map
+            </a>
+            <button class="btn btn-grey"
+                onclick="copyCoords('{{ a.latitude }}, {{ a.longitude }}')">
+                Copy
+            </button>
+        </div>
+
+        <div class="map-frame-container">
+            <iframe src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&z=15&output=embed"></iframe>
+        </div>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p style="text-align:center;color:#64748b;">No attendance data.</p>
+  {% endfor %}
+</div>
+
+<!-- ================= STUDENTS ATTENDANCE ================= -->
+<div class="att-card">
+  <div class="att-title">🎓 Students Attendance</div>
+
+  {% for a in students_attendance %}
+  <div class="history-item">
+    <div class="history-header">
+        <span class="date-badge">{{ a.date }}</span>
+        <span class="work-hours">{{ a.user.username }}</span>
+    </div>
+
+    <div class="time-row">
+        <div>Login: <b>{{ a.login_time|default:"-" }}</b></div>
+        <div>Logout: <b>{{ a.logout_time|default:"-" }}</b></div>
+        <div>Hours: <b>{{ a.total_work_hours|default:"-" }}</b></div>
+    </div>
+
+    {% if a.latitude and a.longitude %}
+    <div class="location-section">
+        <div class="loc-title">📍 Location</div>
+        <div class="lat-lon-text">Lat: {{ a.latitude }}, Lon: {{ a.longitude }}</div>
+
+        <div class="map-frame-container">
+            <iframe src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&z=14&output=embed"></iframe>
+        </div>
+    </div>
+    {% else %}
+    <div class="location-section" style="text-align:center;color:#94a3b8;">
+        No location data
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p style="text-align:center;color:#64748b;">No students attendance found.</p>
+  {% endfor %}
+</div>
+
+<script>
+function copyCoords(text){
+  navigator.clipboard.writeText(text).then(()=>{
+    alert("Copied: " + text);
+  });
+}
+</script>
+
+{% endblock %}

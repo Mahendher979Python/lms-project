@@ -1,0 +1,97 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ... (Keep your existing root and body styles) ... */
+:root {
+    --primary: #38f9d7;
+    --secondary: #4facfe;
+    --bg-dark: #050914;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+    --window-bg: #0f172a;
+    --danger: #ff4d4d;
+}
+
+/* New Action Icon Styles */
+.hub-action-link {
+    font-size: 1.1rem;
+    margin: 0 8px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.hub-edit { color: var(--secondary); }
+.hub-edit:hover { color: white; text-shadow: 0 0 10px var(--secondary); }
+.hub-delete { color: var(--danger); }
+.hub-delete:hover { color: white; text-shadow: 0 0 10px var(--danger); }
+
+/* ... (Keep your existing table/stat-card styles) ... */
+</style>
+
+<div class="dashboard-stats">
+    </div>
+
+<div class="media-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
+        <h2 style="margin:0;"><i class="fa-solid fa-photo-film" style="color: var(--primary);"></i> Media Hub</h2>
+        <div style="display:flex; gap:15px;">
+            <input class="search-input" id="searchInput" onkeyup="searchTable()" placeholder="Search files...">
+            <a href="{% url 'admin_media_upload' %}" class="action-btn">
+                <i class="fa-solid fa-plus"></i> Upload
+            </a>
+        </div>
+    </div>
+
+    <table class="custom-table" id="mediaTable">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Name</th>
+                <th style="width: 15%;">Course</th>
+                <th style="width: 15%;">Preview</th>
+                <th style="width: 15%;">By</th>
+                <th style="width: 10%;">Status</th>
+                <th style="width: 20%; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in materials %}
+            <tr>
+                <td style="font-weight: 600;">{{m.title}}</td>
+                <td><span class="badge-course">{{m.course.title}}</span></td>
+                <td>
+                    <button class="view-preview-btn" onclick="openPreview('{{m.file.url}}', '{{m.title}}')">
+                        <i class="fa-solid fa-eye"></i> View
+                    </button>
+                </td>
+                <td style="opacity: 0.8;">{{m.uploaded_by.username}}</td>
+                <td><span style="color: var(--primary); font-size: 13px;"><i class="fa-solid fa-circle-check"></i> Active</span></td>
+                <td style="text-align: center;">
+                    <a href="{% url 'admin_media_edit' m.id %}" class="hub-action-link hub-edit" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{{m.file.url}}" download class="hub-action-link" style="color: var(--primary);" title="Download">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                    <a href="{% url 'admin_media_delete' m.id %}" 
+                       onclick="return confirm('Delete this file permanently?')" 
+                       class="hub-action-link hub-delete" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="previewModal">...</div>
+
+<script>
+/* ... (Keep your existing searchTable, openPreview, and Chart logic) ... */
+</script>
+
+{% endblock %}

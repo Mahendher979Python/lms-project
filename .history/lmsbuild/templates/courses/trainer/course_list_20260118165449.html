@@ -1,0 +1,41 @@
+<h2>📚 My Courses</h2>
+
+<a href="{% url 'trainer_course_create' %}">
+    ➕ Add Course
+</a>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Level</th>
+    <th>Status</th>
+    <th>Actions</th>
+</tr>
+
+{% for course in courses %}
+<tr>
+    <td>{{ course.id }}</td>
+    <td>{{ course.title }}</td>
+    <td>{{ course.level }}</td>
+    <td>
+        {% if course.is_published %}
+            Published
+        {% else %}
+            Draft
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'trainer_course_edit' course.id %}">✏️ Edit</a> |
+        <a href="{% url 'trainer_lesson_list' course.id %}">📘 Lessons</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No courses found</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'trainer_dashboard' %}">⬅ Back to Dashboard</a>

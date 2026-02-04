@@ -1,0 +1,287 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* --- 3D & Glassmorphism CSS --- */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --text-color: #333; /* Change to white if your base.html is dark */
+        --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f4f7f6; /* Soft background */
+        min-height: 100vh;
+    }
+
+    /* Header Section */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .header-title h2 {
+        font-size: 2rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+
+    .add-btn {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 10px 20px rgba(118, 75, 162, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .add-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 25px rgba(118, 75, 162, 0.6);
+    }
+
+    /* Stats & Charts Section (Data Viz) */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        border: var(--glass-border);
+        transition: transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+    }
+
+    /* 3D Table Styling */
+    .table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        perspective: 1000px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Space between rows */
+    }
+
+    thead th {
+        text-align: left;
+        padding: 15px;
+        color: #888;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border-bottom: 2px solid #eee;
+    }
+
+    tbody tr {
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        transform-style: preserve-3d;
+    }
+
+    tbody tr:hover {
+        transform: scale(1.01) translateZ(10px);
+        box-shadow: 0 10px 25px rgba(118, 75, 162, 0.2);
+        z-index: 10;
+        background: #fbfbfb;
+    }
+
+    tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border: none;
+    }
+    
+    tbody td:first-child { border-radius: 10px 0 0 10px; }
+    tbody td:last-child { border-radius: 0 10px 10px 0; }
+
+    /* Badges & Actions */
+    .role-badge {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    .role-trainer { background: #e0f2fe; color: #0284c7; }
+    .role-student { background: #dcfce7; color: #166534; }
+
+    .action-btn {
+        margin-right: 10px;
+        text-decoration: none;
+        color: #555;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+    .action-btn.edit:hover { color: #f59e0b; }
+    .action-btn.delete:hover { color: #ef4444; }
+    .file-link { color: #764ba2; text-decoration: none; font-weight: bold; }
+
+</style>
+
+<div class="dashboard-container">
+    
+    <div class="header-section">
+        <div class="header-title">
+            <h2>📘 Manage Notes</h2>
+            <p style="color: #666;">Admin Dashboard & Analytics</p>
+        </div>
+        <a href="{% url 'admin_notes_add' %}" class="add-btn">
+            <i class="fas fa-plus"></i> Add New Note
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card" style="background: var(--primary-gradient); color: white;">
+            <h3>Total Notes</h3>
+            <h1 style="font-size: 4rem; margin: 0;">{{ notes.count }}</h1>
+            <p><i class="fas fa-chart-line"></i> Active learning materials</p>
+        </div>
+
+        <div class="stat-card">
+            <canvas id="notesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>File</th>
+                    <th>Uploaded By</th>
+                    <th>Role</th>
+                    <th>Assigned</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr>
+                    <td style="font-weight: 600; color: #333;">
+                        <i class="fas fa-book-open" style="color: #764ba2; margin-right:8px;"></i>
+                        {{ note.title }}
+                    </td>
+
+                    <td>
+                        {% if note.file %}
+                            <a href="{{ note.file.url }}" target="_blank" class="file-link">
+                                <i class="fas fa-file-pdf"></i> View
+                            </a>
+                        {% else %}
+                            <span style="color: #ccc;">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <img src="https://ui-avatars.com/api/?name={{ note.created_by.username }}&background=random" 
+                             style="width: 25px; border-radius: 50%; vertical-align: middle;">
+                        {{ note.created_by.username }}
+                    </td>
+
+                    <td>
+                        <span class="role-badge {% if 'trainer' in note.created_by.role|lower %}role-trainer{% else %}role-student{% endif %}">
+                            {{ note.created_by.role|title }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <i class="fas fa-users" style="color: #888;"></i> {{ note.assigned_to.count }}
+                    </td>
+
+                    <td style="color: #666; font-size: 0.9rem;">
+                        {{ note.created_at|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'admin_notes_edit' note.id %}" class="action-btn edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_notes_delete' note.id %}" class="action-btn delete" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; color: #888;">
+                        <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem;"></i><br>
+                        No notes found in the database.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // Note: Since we are in a loop, we are calculating simple visuals here.
+    // Ideally, pass specific data from views.py for complex charts.
+    
+    const ctx = document.getElementById('notesChart').getContext('2d');
+    
+    // Generating dummy logic for visual (You can connect this to backend data)
+    const totalNotes = {{ notes.count }};
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Assigned', 'Pending', 'Archived'],
+            datasets: [{
+                label: 'Notes Status',
+                data: [totalNotes, 5, 2], // Example Data
+                backgroundColor: [
+                    'rgba(118, 75, 162, 0.8)',
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(200, 200, 200, 0.5)'
+                ],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
+                title: { display: true, text: 'Assignment Distribution' }
+            },
+            layout: { padding: 20 }
+        }
+    });
+</script>
+
+{% endblock %}

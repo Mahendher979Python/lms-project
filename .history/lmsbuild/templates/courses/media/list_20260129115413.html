@@ -1,0 +1,162 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+.media-card{
+background:rgba(255,255,255,.05);
+padding:30px;
+border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+
+.media-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.media-title{
+font-size:26px;
+font-weight:700;
+color:#38f9d7;
+}
+
+.search-box{
+padding:10px 20px;
+border-radius:30px;
+background:#0f172a;
+border:1px solid rgba(255,255,255,.2);
+color:white;
+}
+
+table{width:100%;border-spacing:0 10px;}
+th{color:#aaa;font-size:13px;padding:12px;}
+td{padding:15px;}
+
+tbody tr{background:rgba(255,255,255,.03);}
+tbody tr:hover{background:rgba(255,255,255,.08);}
+
+.preview-img{
+width:60px;
+height:40px;
+object-fit:cover;
+border-radius:6px;
+}
+
+.download{
+background:#38f9d7;
+padding:6px 18px;
+border-radius:25px;
+color:black;
+font-weight:700;
+text-decoration:none;
+}
+
+.upload-btn{
+background:#38f9d7;
+padding:8px 20px;
+border-radius:30px;
+color:black;
+font-weight:700;
+text-decoration:none;
+}
+
+video{
+width:120px;
+border-radius:8px;
+}
+</style>
+
+<div class="media-card">
+
+<div class="media-head">
+<div class="media-title">
+<i class="fa-solid fa-folder-open"></i> Media Library
+</div>
+
+<div>
+<input id="searchInput" onkeyup="searchTable()" class="search-box" placeholder="Search...">
+<a href="{% url 'admin_media_upload' %}" class="upload-btn">+ Upload</a>
+</div>
+</div>
+
+<table id="mediaTable">
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Course</th>
+<th>Preview</th>
+<th>Uploaded By</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for m in materials %}
+<tr>
+
+<td>{{ m.title }}</td>
+
+<td>{{ m.course.title }}</td>
+
+<td>
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+<a href="{{m.file.url}}" target="_blank">
+<i class="fa-solid fa-file-pdf fa-2x" style="color:red"></i>
+</a>
+
+{% elif m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+<img src="{{m.file.url}}" class="preview-img">
+
+{% elif m.file.url|lower|slice:"-4:" == ".mp4" %}
+<video controls>
+<source src="{{m.file.url}}">
+</video>
+
+{% else %}
+<i class="fa-solid fa-file"></i>
+{% endif %}
+</td>
+
+<td>{{ m.uploaded_by.username }}</td>
+
+<td>{{ m.created_at|date:"d M Y" }}</td>
+
+<td>
+<a href="{{m.file.url}}" download class="download">
+Download
+</a>
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="6" style="text-align:center;opacity:.6;padding:25px;">
+No materials found
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+</div>
+
+<script>
+function searchTable(){
+let input=document.getElementById("searchInput").value.toUpperCase();
+let rows=document.querySelector("tbody").rows;
+for(let i=0;i<rows.length;i++){
+rows[i].style.display=rows[i].innerText.toUpperCase().includes(input)?"":"none";
+}
+}
+</script>
+
+{% endblock %}

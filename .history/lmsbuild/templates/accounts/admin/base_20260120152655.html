@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      /* Dark Theme Palette */
+      --bg-body: #0f172a;       /* Dark Navy Background */
+      --bg-sidebar: #111827;    /* Darker Sidebar */
+      --bg-card: #1e293b;       /* Card Background */
+      
+      --text-main: #f8fafc;     /* Bright White Text */
+      --text-muted: #94a3b8;    /* Grey Text */
+      
+      --accent: #3b82f6;        /* Bright Blue */
+      --accent-glow: rgba(59, 130, 246, 0.5);
+      
+      --danger: #ef4444;        /* Red for Logout */
+      
+      /* Card Gradients */
+      --grad-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      --grad-green: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      --grad-orange: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --grad-red: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif; /* Clean Font */
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 270px;
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      padding: 20px;
+      z-index: 100;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+
+    /* Logo Area */
+    .sidebar h2 {
+      margin: 0 0 30px 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Profile Section (Glowing Circle) */
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent); /* Blue Border */
+      box-shadow: 0 0 20px var(--accent-glow); /* Glowing Effect */
+      margin-bottom: 15px;
+    }
+
+    .profile-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin: 0;
+    }
+    
+    .profile-role {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Sidebar Links */
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+      padding-left: 25px; /* Slight movement on hover */
+    }
+
+    /* Active Link Style (Blue Gradient) */
+    .nav-links a.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    /* ================= MAIN CONTENT ================= */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-body);
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    header.topbar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end; /* Push content to right */
+      padding: 0 30px;
+      /* Glassmorphism */
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* POWER BUTTON LOGOUT */
+    .power-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      font-size: 18px;
+    }
+
+    .power-btn:hover {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); /* Red Glow */
+      transform: scale(1.1);
+    }
+
+    /* Scrollable Area */
+    .content-area {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* ================= DASHBOARD CARDS (Colorful 3D) ================= */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      padding: 25px;
+      border-radius: 16px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Card Backgrounds */
+    .card-blue { background: var(--grad-blue); }
+    .card-green { background: var(--grad-green); }
+    .card-orange { background: var(--grad-orange); }
+    .card-red { background: var(--grad-red); }
+
+    /* Card Content */
+    .stat-title {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .stat-icon {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 40px;
+      opacity: 0.2;
+    }
+
+    /* ================= GENERAL UI ELEMENTS ================= */
+    h1, h2, h3 { color: white; margin-top: 0; }
+    
+    .alert {
+      padding: 15px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid #22c55e;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* Table Container Styling (for child templates) */
+    .table-container {
+      background: var(--bg-card);
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <h2>🚀 LMS Admin</h2>
+
+    <div class="profile-section">
+      <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=3b82f6&color=fff&size=150" class="profile-img" alt="Profile">
+      <h3 class="profile-name">{{ request.user.username|title }}</h3>
+      <span class="profile-role">Super Admin</span>
+    </div>
+
+    <nav class="nav-links">
+      <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </a>
+      <a href="{% url 'admin_user_list' %}" class="{% if request.resolver_match.url_name == 'admin_user_list' %}active{% endif %}">
+        <i class="fas fa-users"></i> Users
+      </a>
+      <a href="{% url 'trainer_list' %}" class="{% if request.resolver_match.url_name == 'trainer_list' %}active{% endif %}">
+        <i class="fas fa-chalkboard-teacher"></i> Trainers
+      </a>
+      <a href="{% url 'admin_students' %}" class="{% if request.resolver_match.url_name == 'admin_student_list' %}active{% endif %}">
+        <i class="fas fa-graduation-cap"></i> Students
+      </a>
+      <a href="#" class="{% if request.resolver_match.url_name == 'admin_courses' %}active{% endif %}">
+        <i class="fas fa-book"></i> Courses
+      </a>
+      <a href="{% url 'admin_media_list' %}" class="{% if request.resolver_match.url_name == 'admin_media_list' %}active{% endif %}">
+        <i class="fas fa-video"></i> Media & Ads
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main-content">
+    
+    <header class="topbar">
+      <a href="{% url 'logout' %}" class="power-btn" title="Logout">
+        <i class="fas fa-power-off"></i>
+      </a>
+    </header>
+
+    <main class="content-area">
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% if request.resolver_match.url_name == 'admin_dashboard' %}
+      <div style="margin-bottom: 25px;">
+        <h2>Dashboard Overview</h2>
+        <p style="color:#94a3b8;">Welcome back, {{ request.user.username }}!</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="stat-card card-blue">
+          <div class="stat-title">Total Students</div>
+          <div class="stat-number">1,204</div>
+          <i class="fas fa-user-graduate stat-icon"></i>
+        </div>
+
+        <div class="stat-card card-green">
+          <div class="stat-title">Revenue</div>
+          <div class="stat-number">$12,450</div>
+          <i class="fas fa-dollar-sign stat-icon"></i>
+        </div>
+
+        <div class="stat-card card-orange">
+          <div class="stat-title">Active Courses</div>
+          <div class="stat-number">45</div>
+          <i class="fas fa-book-open stat-icon"></i>
+        </div>
+
+        <div class="stat-card card-red">
+          <div class="stat-title">Pending Requests</div>
+          <div class="stat-number">12</div>
+          <i class="fas fa-bell stat-icon"></i>
+        </div>
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+
+    </main>
+  </div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.container{padding:30px}
+.btn{background:#4361ee;color:white;padding:8px 15px;border-radius:6px;text-decoration:none}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:12px;border-bottom:1px solid #ddd}
+thead{background:#4361ee;color:white}
+.active{color:green;font-weight:bold}
+.inactive{color:red;font-weight:bold}
+.actions a{margin-right:10px}
+</style>
+
+<div class="container">
+
+<h2>👨‍🏫 Trainer Management</h2>
+
+<a href="{% url 'trainer_create' %}" class="btn">➕ Add Trainer</a>
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Username</th>
+<th>Mobile</th>
+<th>Emp ID</th>
+<th>Subject</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% for t in trainers %}
+<tr>
+<td>{{forloop.counter}}</td>
+<td>{{t.user.username}}</td>
+<td>{{t.user.mobile}}</td>
+<td>{{t.emp_id}}</td>
+<td>{{t.subject}}</td>
+
+<td>
+{% if t.user.is_active %}
+<span class="active">Active</span>
+{% else %}
+<span class="inactive">Inactive</span>
+{% endif %}
+</td>
+
+<td class="actions">
+<a href="{% url 'trainer_edit' t.user.id %}">✏ Edit</a>
+<a href="{% url 'trainer_delete' t.user.id %}"
+onclick="return confirm('Deactivate trainer?')">🗑 Delete</a>
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student | LMS Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* ===============================
+   ROOT VARIABLES
+================================ */
+:root{
+  --bg-dark:#0f172a;
+  --bg-panel:#111827;
+  --bg-light:#f1f5f9;
+  --text-main:#f8fafc;
+  --text-muted:#94a3b8;
+  --accent:#38bdf8;
+}
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI",system-ui;
+}
+
+body{
+  background:var(--bg-light);
+}
+
+/* ===============================
+   TOP BAR
+================================ */
+.topbar{
+  height:60px;
+  background:var(--bg-panel);
+  color:var(--text-main);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+}
+
+.topbar h2{
+  font-size:18px;
+  font-weight:600;
+}
+
+.topbar a{
+  color:#f87171;
+  text-decoration:none;
+  font-size:14px;
+}
+
+/* ===============================
+   LAYOUT
+================================ */
+.layout{
+  display:flex;
+  min-height:calc(100vh - 60px);
+}
+
+/* ===============================
+   SIDEBAR
+================================ */
+.sidebar{
+  width:230px;
+  background:var(--bg-dark);
+  color:var(--text-main);
+  padding:25px 15px;
+}
+
+.sidebar h3{
+  margin-bottom:25px;
+  font-size:16px;
+  text-align:center;
+  color:#60a5fa;
+}
+
+.menu a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 15px;
+  margin-bottom:8px;
+  border-radius:10px;
+  color:var(--text-muted);
+  text-decoration:none;
+  font-size:14px;
+  transition:.3s;
+}
+
+.menu a:hover{
+  background:var(--accent);
+  color:#000;
+}
+
+.menu a.active{
+  background:var(--accent);
+  color:#000;
+}
+
+/* ===============================
+   MAIN CONTENT
+================================ */
+.content{
+  flex:1;
+  padding:30px;
+}
+
+/* ===============================
+   PAGE HEADER (REUSABLE)
+================================ */
+.page-header{
+  margin-bottom:30px;
+}
+
+.page-header h2{
+  font-size:24px;
+  margin-bottom:5px;
+}
+
+.page-header p{
+  color:#64748b;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <h2>LMS Platform</h2>
+  <div>
+    👤 {{ request.user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h3>🎓 Student Panel</h3>
+    <div class="menu">
+      <a href="{% url 'student_dashboard' %}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'student_course_list' %}"><i class="fa-solid fa-book"></i> My Courses</a>
+      <a href="{% url 'student_course_list' %}">Go to Lessons</a>
+      <a href="#"><i class="fa-solid fa-file-pen"></i> Assignments</a>
+      <a href="#"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+      <a href="#"><i class="fa-solid fa-folder-open"></i> Materials</a>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+</div>
+
+</body>
+</html>

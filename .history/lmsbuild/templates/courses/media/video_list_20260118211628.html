@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Class Session Videos</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;">
+
+{% for video in videos %}
+    <div style="border:1px solid #ccc;padding:10px;">
+        <h4>{{ video.title }}</h4>
+        <p>{{ video.description }}</p>
+
+        <video width="100%" controls>
+            <source src="{{ video.video.url }}">
+        </video>
+
+        <small>Trainer: {{ video.created_by.username }}</small>
+    </div>
+{% empty %}
+    <p>No session videos available</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

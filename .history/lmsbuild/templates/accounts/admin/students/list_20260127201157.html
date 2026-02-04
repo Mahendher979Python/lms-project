@@ -1,0 +1,51 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.card{max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px}
+input,select{width:100%;padding:10px;margin:10px 0}
+</style>
+
+<div class="card">
+
+<h3>Edit Student</h3>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" value="{{ student.user.username }}">
+
+<input name="roll_no" value="{{ student.roll_no }}">
+
+<input name="phone" value="{{ student.phone }}">
+
+<select name="trainer">
+{% for t in trainers %}
+<option value="{{ t.id }}" {% if student.trainer.id == t.id %}selected{% endif %}>
+{{ t.user.username }}
+</option>
+{% endfor %}
+</select>
+
+<select name="batch">
+{% for b in batches %}
+<option value="{{ b.id }}" {% if student.batch.id == b.id %}selected{% endif %}>
+{{ b.name }}
+</option>
+{% endfor %}
+</select>
+
+<label>
+<input type="checkbox" name="is_active" {% if student.is_active %}checked{% endif %}>
+Active
+</label>
+
+<br><br>
+
+<button>Update</button>
+
+</form>
+
+</div>
+
+{% endblock %}

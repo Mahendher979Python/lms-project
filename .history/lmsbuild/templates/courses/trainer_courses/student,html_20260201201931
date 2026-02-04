@@ -1,0 +1,58 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <h3 class="mb-4">{{ course.title }} – Students</h3>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Student Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <td>
+                            {{ s.student.user.get_full_name|default:s.student.user.username }}
+                        </td>
+
+                        <td>{{ s.student.user.username }}</td>
+
+                        <td>
+                            <span class="badge bg-success">Active</span>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No students enrolled.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

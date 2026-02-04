@@ -1,0 +1,99 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-3">✏️ Edit Student</h3>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow p-4">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text"
+                       name="username"
+                       class="form-control"
+                       value="{{ form.username.value }}"
+                       required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email"
+                       name="email"
+                       class="form-control"
+                       value="{{ form.email.value }}"
+                       required>
+            </div>
+
+            <!-- Roll No -->
+            <div class="mb-3">
+                <label class="form-label">Roll Number</label>
+                <input type="text"
+                       name="roll_no"
+                       class="form-control"
+                       value="{{ form.roll_no.value }}"
+                       required>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text"
+                       name="phone"
+                       class="form-control"
+                       value="{{ form.phone.value }}"
+                       required>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="active"
+                        {% if form.status.value == "active" %}selected{% endif %}>
+                        Active
+                    </option>
+                    <option value="inactive"
+                        {% if form.status.value == "inactive" %}selected{% endif %}>
+                        Inactive
+                    </option>
+                </select>
+            </div>
+
+            <!-- Change Password -->
+            <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Leave blank to keep current password">
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    💾 Update Student
+                </button>
+
+                <a href="{% url 'admin_students' %}" class="btn btn-secondary">
+                    ↩ Back
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,348 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 6D Variables & Background --- */
+    :root {
+        --neon-blue: #00f3ff;
+        --neon-purple: #bc13fe;
+        --neon-red: #ff3131;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-color: #ffffff;
+    }
+
+    body {
+        /* Deep 6D Background */
+        background: radial-gradient(circle at 10% 20%, rgb(15, 15, 30) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-color);
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        padding: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* --- Header Section --- */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 20px;
+        background: var(--glass-bg);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: var(--glass-border);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+
+    /* --- Action Buttons & Search --- */
+    .controls {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box input {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 12px 20px 12px 40px;
+        border-radius: 50px;
+        color: white;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.5);
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, var(--neon-blue), #4361ee);
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 25px var(--neon-blue);
+    }
+
+    /* --- 6D Table Design --- */
+    .table-container {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 15px; /* Creates space between rows */
+    }
+
+    thead th {
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        padding: 0 20px;
+        text-align: left;
+    }
+
+    tbody tr {
+        background: var(--glass-bg);
+        backdrop-filter: blur(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    /* Hover Effects for Rows */
+    tbody tr:hover {
+        transform: scale(1.01) translateY(-5px);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255,255,255,0.05);
+        z-index: 10;
+        position: relative;
+    }
+
+    td {
+        padding: 20px;
+        color: #fff;
+        vertical-align: middle;
+    }
+
+    /* Rounded corners for rows */
+    td:first-child { border-radius: 15px 0 0 15px; }
+    td:last-child { border-radius: 0 15px 15px 0; }
+
+    /* --- Status Badges --- */
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .status-active {
+        background: rgba(0, 255, 127, 0.15);
+        color: #00ff7f;
+        border: 1px solid #00ff7f;
+        box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+    }
+
+    .status-inactive {
+        background: rgba(255, 49, 49, 0.15);
+        color: #ff3131;
+        border: 1px solid #ff3131;
+        box-shadow: 0 0 10px rgba(255, 49, 49, 0.2);
+    }
+
+    /* --- Action Buttons --- */
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 8px;
+        transition: 0.3s;
+        text-decoration: none;
+        background: rgba(255,255,255,0.1);
+    }
+
+    .btn-edit:hover {
+        background: var(--neon-blue);
+        box-shadow: 0 0 15px var(--neon-blue);
+        transform: rotate(15deg);
+    }
+
+    .btn-delete:hover {
+        background: var(--neon-red);
+        box-shadow: 0 0 15px var(--neon-red);
+        transform: rotate(-15deg);
+    }
+
+    /* Avatar Circle */
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        float: left;
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <div class="header-section">
+        <div>
+            <h2 class="page-title"><i class="fas fa-user-graduate"></i> Student Management</h2>
+            <p style="color:rgba(255,255,255,0.5); margin-top:5px;">Manage your academy students effectively</p>
+        </div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Search students..." onkeyup="searchTable()">
+            </div>
+
+            <a href="{% url 'admin_add_student' %}" class="btn-add">
+                <i class="fas fa-plus"></i> New Student
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Trainer</th>
+                    <th>Batch</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td style="color: var(--neon-blue); font-weight:bold;">#{{ forloop.counter }}</td>
+
+                    <td>
+                        <div class="avatar-circle">
+                            {{ s.user.username|make_list|first|upper }}
+                        </div>
+                        <div style="padding-top:10px; font-weight:600;">
+                            {{ s.user.username }}
+                        </div>
+                    </td>
+
+                    <td>
+                        {% if s.trainer %}
+                            <i class="fas fa-chalkboard-teacher" style="color:var(--neon-purple); margin-right:5px;"></i>
+                            {{ s.trainer.user.username }}
+                        {% else %}
+                            <span style="opacity:0.5">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if s.batch %}
+                            <span style="background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:5px;">
+                                {{ s.batch.name }}
+                            </span>
+                        {% else %}
+                            <span style="opacity:0.5">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if s.user.is_active %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-circle" style="font-size:6px; vertical-align:middle;"></i> Active
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-circle" style="font-size:6px; vertical-align:middle;"></i> Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'admin_edit_student' s.id %}" class="action-btn btn-edit" title="Edit">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a href="{% url 'admin_delete_student' s.id %}" class="action-btn btn-delete" 
+                           onclick="return confirm('Are you sure you want to deactivate this student?')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding: 50px; opacity: 0.7;">
+                        <i class="fas fa-ghost" style="font-size:30px; margin-bottom:10px;"></i><br>
+                        No students found within the system.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+function searchTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("tableSearch");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("studentsTable");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) { // Start at 1 to skip header
+        td = tr[i].getElementsByTagName("td")[1]; // Search by Name Column (Index 1)
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }       
+    }
+}
+</script>
+
+{% endblock %}

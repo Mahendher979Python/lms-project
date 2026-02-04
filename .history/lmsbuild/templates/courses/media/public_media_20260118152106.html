@@ -1,0 +1,23 @@
+<h2>Session Videos</h2>
+
+{% for video in videos %}
+<h4>{{ video.title }}</h4>
+<p>{{ video.description }}</p>
+
+{% if video.video %}
+<video width="400" controls>
+    <source src="{{ video.video.url }}">
+</video>
+{% elif video.video_url %}
+<a href="{{ video.video_url }}" target="_blank">Watch</a>
+{% endif %}
+
+<hr>
+{% endfor %}
+
+<h2>Advertisements</h2>
+
+{% for ad in ads %}
+<img src="{{ ad.image.url }}" width="300">
+<p>{{ ad.title }}</p>
+{% endfor %}

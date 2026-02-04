@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ action }} Session Video</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Title</label><br>
+    <input type="text" name="title"
+           value="{{ video.title|default:'' }}" required><br><br>
+
+    <label>Description</label><br>
+    <textarea name="description">{{ video.description|default:'' }}</textarea><br><br>
+
+    <label>Video File</label><br>
+    <input type="file" name="video" {% if action == "Add" %}required{% endif %}><br><br>
+
+    <button type="submit">{{ action }}</button>
+    <a href="{% url 'trainer_video_list' %}">Cancel</a>
+</form>
+
+{% endblock %}

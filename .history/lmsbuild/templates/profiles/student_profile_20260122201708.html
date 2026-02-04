@@ -1,0 +1,97 @@
+{% extends "accounts/student/base.html" %}
+{% load static %}
+
+{% block title %}My Profile | Student{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 900px; margin: 0 auto;">
+
+    <div class="card-3d" style="text-align: center; position: relative; padding-top:40px;">
+        
+        <a href="{% url 'profile_edit' %}" class="btn-3d" 
+           style="position: absolute; top: 20px; right: 20px; font-size: 0.85rem; padding: 8px 15px;">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+
+        <div style="margin-bottom: 20px;">
+            {% if request.user.profile_pic %}
+                <img src="{{ request.user.profile_pic.url }}" class="avatar" style="width: 120px; height: 120px;">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=2563eb&color=fff" 
+                     class="avatar" style="width: 120px; height: 120px;">
+            {% endif %}
+        </div>
+
+        <h2 style="color: var(--brand-color); margin: 0;">{{ request.user.get_full_name|default:request.user.username }}</h2>
+        <p style="color: var(--text-light); margin-top: 5px;">Student ID: #{{ request.user.id }}</p>
+
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 25px;">
+            <div style="text-align: center;">
+                <h3 style="margin:0; color:var(--text-main);">0</h3>
+                <span style="font-size: 0.85rem; color:var(--text-light);">Courses</span>
+            </div>
+            <div style="text-align: center;">
+                <h3 style="margin:0; color:var(--text-main);">0%</h3>
+                <span style="font-size: 0.85rem; color:var(--text-light);">Attendance</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+        
+        <div class="card-3d">
+            <h3 style="color: var(--text-main); margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                <i class="fas fa-graduation-cap" style="color: var(--brand-color); margin-right: 10px;"></i> Academic Info
+            </h3>
+            
+            <div class="info-row">
+                <span class="label">Education</span>
+                <span class="value">{{ profile.education|default:"-" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">College</span>
+                <span class="value">{{ profile.college|default:"-" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Semester</span>
+                <span class="value badge" style="background: #eff6ff; color: #2563eb;">{{ profile.semester|default:"1" }}</span>
+            </div>
+        </div>
+
+        <div class="card-3d">
+            <h3 style="color: var(--text-main); margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;">
+                <i class="fas fa-user" style="color: var(--brand-color); margin-right: 10px;"></i> Personal Info
+            </h3>
+
+            <div class="info-row">
+                <span class="label">Username</span>
+                <span class="value">{{ request.user.username }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Email</span>
+                <span class="value">{{ request.user.email }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Mobile</span>
+                <span class="value">{{ request.user.mobile|default:"-" }}</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255, 0.5);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .label { font-weight: 500; color: var(--text-light); }
+    .value { font-weight: 600; color: var(--text-main); }
+</style>
+
+{% endblock %}

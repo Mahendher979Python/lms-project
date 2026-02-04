@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Trainer | LMS Platform{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ===== 1. VARIABLES & RESET (Modern Theme) ===== */
+        :root {
+            --dark: #0f172a;       /* Sidebar Background */
+            --panel: #1e293b;      /* Topbar Background */
+            --muted: #94a3b8;      /* Inactive Text */
+            --accent: #38bdf8;     /* Active/Hover Color */
+            --bg-body: #f1f5f9;    /* Page Background */
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
+        
+        /* 🛑 FIXED BODY SCROLL */
+        body { 
+            background: var(--bg-body); 
+            color: #333; 
+            height: 100vh;       /* Full Viewport Height */
+            overflow: hidden;    /* 🛑 Disable Main Browser Scroll */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 2. TOPBAR (Fixed) ===== */
+        .topbar {
+            height: 60px;
+            background: var(--panel);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;      /* Prevent shrinking */
+            z-index: 100;
+        }
+
+        /* ===== 3. LAYOUT STRUCTURE ===== */
+        .layout { 
+            display: flex; 
+            height: calc(100vh - 60px); /* 🛑 Takes remaining height exactly */
+            width: 100%;
+        }
+
+        /* ===== 4. SIDEBAR (Fixed Width, Scrollable if needed) ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--dark);
+            color: white;
+            padding: 25px 15px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;        /* Full height of layout */
+            overflow-y: auto;    /* Scroll sidebar only if content is too long */
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(56, 189, 248, 0.1); /* Light accent background */
+            color: var(--accent);
+        }
+
+        .sidebar i { width: 20px; text-align: center; }
+
+        .sidebar-divider {
+            height: 1px;
+            background: #334155;
+            margin: 10px 0;
+        }
+
+        /* ===== 5. MAIN CONTENT AREA (SCROLLABLE) ===== */
+        .content {
+            flex: 1;
+            padding: 30px;
+            height: 100%;        /* Match layout height */
+            overflow-y: auto;    /* ✅ ONLY THIS AREA SCROLLS */
+            background: var(--bg-body);
+        }
+
+        /* ===== 6. GENERAL COMPONENTS ===== */
+        
+        /* Headers */
+        .header {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent);
+        }
+
+        /* Grid for Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* Individual Card */
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); }
+
+        .card h3 { margin-bottom: 10px; color: var(--panel); }
+        .card p { color: #64748b; font-size: 0.9rem; margin-bottom: 15px; }
+
+        /* Buttons & Links */
+        .btn, .card a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #0f172a;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover, .card a:hover { background: #0ea5e9; color: white; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; color: var(--panel); }
+        tr:hover { background: #f1f5f9; }
+
+        /* Forms */
+        input[type="text"], input[type="number"], textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        /* Scrollbar Styling (Optional - Chrome/Safari) */
+        .content::-webkit-scrollbar { width: 8px; }
+        .content::-webkit-scrollbar-track { background: #f1f5f9; }
+        .content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .content::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    </style>
+
+    <style>
+        /* Modern LMS Variables */
+        :root {
+            --primary: #4f46e5; /* Indigo */
+            --primary-hover: #4338ca;
+            --secondary: #64748b;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+        }
+
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; color: #1e293b; }
+        
+        /* Cards */
+        .lms-card {
+            background: var(--white); border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            padding: 24px; margin-bottom: 24px; border: 1px solid var(--border);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+            border-radius: 8px; font-weight: 600; text-decoration: none; border: none; cursor: pointer;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: white; border: 1px solid var(--secondary); color: var(--secondary); }
+        .btn-danger { color: #ef4444; background: white; border: 1px solid #ef4444; }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+
+        /* Tables */
+        .lms-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .lms-table th { text-align: left; padding: 12px; background: #f1f5f9; color: #475569; }
+        .lms-table td { padding: 14px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .lms-table tr:hover { background-color: #f8fafc; }
+
+        /* Badges & Forms */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .badge-published { background: var(--success-bg); color: var(--success-text); }
+        .badge-draft { background: #f3f4f6; color: #374151; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs { font-size: 0.9rem; color: var(--secondary); margin-bottom: 15px; }
+        .breadcrumbs a { text-decoration: none; color: var(--primary); }
+    </style>
+
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div class="topbar">
+        <div style="font-size: 1.2rem; font-weight: bold;">
+            <i class="fa-solid fa-graduation-cap"></i> LMS Platform
+        </div>
+        <div>
+            <span style="margin-right: 15px; color: var(--muted);">
+                Welcome, {{ request.user.username }}
+            </span>
+            <a href="{% url 'logout' %}" style="color: #f87171; text-decoration: none; font-weight: bold;">
+                <i class="fa-solid fa-power-off"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <div class="sidebar">
+            <h3>Trainer Panel</h3>
+
+            <a href="{% url 'trainer_dashboard' %}">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </a>
+
+            <div class="sidebar-divider"></div>
+
+            <a href="{% url 'trainer_course_list' %}">
+                <i class="fa-solid fa-book-open"></i> My Courses
+            </a>
+            <a href="{% url 'trainer_course_create' %}">
+                <i class="fa-solid fa-plus-circle"></i> Add Course
+            </a>
+
+            <div class="sidebar-divider"></div>
+
+            <a href="{% url 'trainer_video_list' %}">
+                <i class="fa-solid fa-video"></i> Videos
+            </a>
+            <a href="{% url 'trainer_ad_list' %}">
+                <i class="fa-solid fa-image"></i> Images
+            </a>
+
+            <a href="{% url 'trainer_todo_list' %}"> 💬Message</a>
+             <a href="{% url 'trainer_notes_list' %}">📘 Notes</a>
+             <a href="{% url 'trainer_attendance' %}"> 📅 Attendance</a>
+             <a href="{% url 'trainer_attendance_report' %}">📊 My Attendance Report</a>
+
+
+            <a href="{% url 'public_media_view' %}">
+                <i class="fa-solid fa-globe"></i> Public Media
+            </a>
+            <a href="{% url 'profile_view' %}">👤 My Profile</a>
+            <a href="{% url 'profile_edit' %}" style="float:right;">Edit Profile</a>
+
+
+            <div style="margin-top: auto;">
+                <div class="sidebar-divider"></div>
+               <!-- ===== TRAINER SETTINGS ===== -->
+
+
+            </div>
+        </div>
+
+        <div class="content">
+            {% if messages %}
+                {% for message in messages %}
+                <div style="padding: 15px; background: #dcfce7; color: #166534; border-radius: 6px; margin-bottom: 20px; border: 1px solid #bbf7d0;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

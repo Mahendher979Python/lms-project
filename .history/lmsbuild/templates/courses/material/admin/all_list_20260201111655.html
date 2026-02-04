@@ -1,0 +1,121 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    /* 3D Floating Effect for Cards */
+    .material-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 10px;
+    }
+
+    .card-3d {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-3d:hover {
+        transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-preview {
+        width: 100%;
+        height: 160px;
+        background: #f8fafc;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        border: 1px solid #edf2f7;
+    }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .action-btn {
+        padding: 8px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .edit-btn { background: #eef2ff; color: #4f46e5; }
+    .delete-btn { background: #fff1f2; color: #e11d48; }
+
+    .edit-btn:hover { background: #4f46e5; color: white; }
+    .delete-btn:hover { background: #e11d48; color: white; }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2 style="font-weight: 700; color: #1e293b;">
+        <i class="fa-solid fa-folder-tree" style="color: #6366f1;"></i> Study Materials
+    </h2>
+</div>
+
+<div class="material-grid">
+    {% for m in materials %}
+    <div class="card-3d">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <div class="icon-box"><i class="fa-solid fa-file-invoice"></i></div>
+            <div style="margin-left: 15px;">
+                <b style="color: #1e293b; font-size: 1rem; display: block;">{{m.title}}</b>
+                <span style="font-size: 0.8rem; color: #64748b;">Course: {{m.course.title}}</span>
+            </div>
+        </div>
+
+        <div class="file-preview">
+            {% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-file-pdf fa-3x" style="color: #ef4444;"></i><br>
+                    <a href="{{m.file.url}}" target="_blank" style="font-size: 0.85rem; color: #6366f1; text-decoration: none; font-weight: 600;">VIEW PDF</a>
+                </div>
+            {% elif m.file.url|lower|slice:"-4:" == ".mp4" %}
+                <video width="100%" style="border-radius: 10px;" controls>
+                    <source src="{{m.file.url}}">
+                </video>
+            {% elif m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+                <img src="{{m.file.url}}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+            {% else %}
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-file-arrow-down fa-3x" style="color: #64748b;"></i><br>
+                    <a href="{{m.file.url}}" download style="font-size: 0.85rem; color: #1e293b; text-decoration: none;">Download</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <a href="{% url 'admin_material_edit' m.id %}" class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</a>
+            <a href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')" class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+        <i class="fa-solid fa-box-open fa-4x" style="color: #cbd5e1;"></i>
+        <p style="margin-top: 15px; color: #64748b;">No materials uploaded yet.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,95 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from functools import wraps
+
+
+# ==================================================
+# 🔐 ROLE BASED DECORATOR
+# ==================================================
+def role_required(role):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+
+            # user login kakapothe
+            if not request.user.is_authenticated:
+                return redirect("login")
+
+            # role mismatch
+            if request.user.role != role:
+                return redirect("login")
+
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# ==================================================
+# 🏠 HOME
+# ==================================================
+def home(request):
+    return render(request, "home.html")
+
+
+# ==================================================
+# 🔑 LOGIN
+# ==================================================
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user:
+            login(request, user)
+
+            # 🔴 ROLE BASED REDIRECT
+            if user.role == "admin":
+                return redirect("/admin/")
+            elif user.role == "trainer":
+                return redirect("trainer_dashboard")
+            elif user.role == "student":
+                return redirect("student_dashboard")
+
+        return render(request, "accounts/login.html", {
+            "error": "Invalid credentials"
+        })
+
+    return render(request, "accounts/login.html")
+
+
+# ==================================================
+# 🚪 LOGOUT
+# ==================================================
+def user_logout(request):
+    logout(request)
+    return redirect("login")
+
+
+# ==================================================
+# 🧑‍💼 ADMIN DASHBOARD
+# ==================================================
+@login_required
+@role_required("admin")
+def admin_dashboard(request):
+    return render(request, "accounts/admin/dashboard.html")
+
+
+# ==================================================
+# 👨‍🏫 TRAINER DASHBOARD
+# ==================================================
+@login_required
+@role_required("trainer")
+def trainer_dashboard(request):
+    return render(request, "accounts/trainer/dashboard.html")
+
+
+# ==================================================
+# 🎓 STUDENT DASHBOARD
+# ==================================================
+@login_required
+@role_required("student")
+def student_dashboard(request):
+    return render(request, "accounts/student/dashboard.html")

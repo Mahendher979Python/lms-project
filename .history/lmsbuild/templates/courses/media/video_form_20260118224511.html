@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Video</title>
+</head>
+<body>
+
+<h2>{{ action }} Video</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input type="text" name="title"
+           placeholder="Video title"
+           value="{{ video.title|default:'' }}"
+           required><br><br>
+
+    <textarea name="description"
+              placeholder="Description">{{ video.description|default:'' }}</textarea><br><br>
+
+    <input type="file" name="video" {% if action == "Add" %}required{% endif %}><br><br>
+
+    <button type="submit">{{ action }}</button>
+</form>
+
+</body>
+</html>

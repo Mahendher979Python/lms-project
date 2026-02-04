@@ -1,0 +1,113 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .student-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        font-family: sans-serif;
+    }
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+    .header-row h2 {
+        margin: 0;
+        color: #333;
+    }
+    .btn {
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        color: white;
+        font-size: 14px;
+        display: inline-block;
+    }
+    .btn-add { background-color: #28a745; }
+    .btn-edit { background-color: #007bff; }
+    .btn-delete { background-color: #dc3545; }
+    .btn-add:hover { background-color: #218838; }
+    .btn-edit:hover { background-color: #0069d9; }
+    .btn-delete:hover { background-color: #c82333; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        color: #555;
+    }
+    tr:hover { background-color: #f1f1f1; }
+    .course-badge {
+        background-color: #e2e6ea;
+        color: #333;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-right: 5px;
+        display: inline-block;
+        margin-bottom: 2px;
+    }
+    .no-courses {
+        color: #999;
+        font-style: italic;
+    }
+</style>
+
+<div class="student-container">
+    <div class="header-row">
+        <h2>Students List</h2>
+        <a href="{% url 'student_add' %}" class="btn btn-add">➕ Add Student</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Enrolled Courses</th>
+                <th width="150">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td><strong>{{ s.user.username }}</strong></td>
+                <td>
+                    {% for c in s.courses.all %}
+                        <span class="course-badge">{{ c.title }}</span>
+                    {% empty %}
+                        <span class="no-courses">No Courses Assigned</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'student_edit' s.id %}" class="btn btn-edit">Edit</a>
+                    <a href="{% url 'student_delete' s.id %}" 
+                       class="btn btn-delete"
+                       onclick="return confirm('Are you sure you want to delete {{ s.user.username }}?')">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center; padding: 20px;">No students found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

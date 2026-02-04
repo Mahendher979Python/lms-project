@@ -1,0 +1,11 @@
+<h2>{{ assignment.title }} Report</h2>
+
+<p>Total Students: {{ total }}</p>
+<p>Average Score: {{ avg_score }}</p>
+
+<h3>Toppers</h3>
+<ul>
+{% for t in toppers %}
+<li>{{ t.student }} - {{ t.score }}</li>
+{% endfor %}
+</ul>

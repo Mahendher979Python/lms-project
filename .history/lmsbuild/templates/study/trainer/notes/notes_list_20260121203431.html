@@ -1,0 +1,48 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.table-box{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #e5e7eb}
+th{background:#f3f4f6;text-align:left}
+.btn{padding:5px 12px;border-radius:6px;text-decoration:none;font-size:14px}
+.btn-add{background:#4f46e5;color:#fff}
+.btn-edit{background:#22c55e;color:#fff}
+</style>
+
+<div class="table-box">
+<h2>📘 My Notes</h2>
+
+<a href="{% url 'trainer_notes_add' %}" class="btn btn-add">➕ Add Note</a>
+<br><br>
+
+<table>
+<tr>
+  <th>Title</th>
+  <th>Assigned</th>
+  <th>Created</th>
+  <th>Action</th>
+</tr>
+
+{% for note in notes %}
+<tr>
+  <td>{{ note.title }}</td>
+  <td>{{ note.assigned_to.count }}</td>
+  <td>{{ note.created_at|date:"d M Y" }}</td>
+  <td>
+    <a href="{% url 'trainer_notes_edit' note.id %}" class="btn btn-edit">Edit</a>
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="4">No notes added yet</td></tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

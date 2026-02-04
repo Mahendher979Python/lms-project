@@ -1,0 +1,104 @@
+{% extends "accounts/student/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== COURSE GRID ===== */
+.course-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:24px;
+  margin-top:20px;
+}
+
+/* ===== FOLDER CARD ===== */
+.course-folder{
+  background:#f8fafc;
+  border-radius:14px;
+  padding:22px 20px 18px;
+  position:relative;
+  cursor:pointer;
+  transition:.3s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+/* Folder top tab */
+.course-folder::before{
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:20px;
+  width:80px;
+  height:20px;
+  background:#e5e7eb;
+  border-radius:8px 8px 0 0;
+}
+
+/* Hover effect */
+.course-folder:hover{
+  transform:translateY(-6px);
+  box-shadow:0 14px 28px rgba(0,0,0,.15);
+}
+
+/* ===== CONTENT ===== */
+.course-title{
+  font-size:1.1rem;
+  font-weight:600;
+  color:#0f172a;
+  margin-bottom:6px;
+}
+
+.course-trainer{
+  font-size:.85rem;
+  color:#64748b;
+  margin-bottom:14px;
+}
+
+/* ===== VIEW BUTTON ===== */
+.view-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 14px;
+  font-size:.9rem;
+  background:#2563eb;
+  color:#fff;
+  border-radius:8px;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.view-btn:hover{
+  background:#1e40af;
+}
+</style>
+
+<h2>📁 My Courses</h2>
+
+<div class="course-grid">
+
+{% for course in courses %}
+  <div class="course-folder"
+       onclick="window.location.href='{% url 'student_course_detail' course.id %}'">
+
+    <div class="course-title">
+      📘 {{ course.title }}
+    </div>
+
+    <div class="course-trainer">
+      Trainer: {{ course.trainer.username }}
+    </div>
+
+    <a href="{% url 'student_course_detail' course.id %}" class="view-btn">
+      ▶ View Lessons
+    </a>
+
+  </div>
+{% empty %}
+  <p>No courses enrolled</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

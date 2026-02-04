@@ -1,0 +1,86 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    body { font-family: 'Poppins', sans-serif; color: white; background: #0f0f1a; }
+
+    /* Header */
+    .course-header {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+        padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 40px;
+    }
+    
+    .course-title h2 { margin: 0; font-size: 2rem; color: #ff8c00; }
+    .course-title span { opacity: 0.6; font-size: 0.9rem; }
+
+    .btn-add {
+        background: #ff8c00; color: white; padding: 12px 25px; border-radius: 50px;
+        text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;
+        transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+    }
+    .btn-add:hover { transform: translateY(-3px); box-shadow: 0 0 20px #ff8c00; }
+
+    /* Materials Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+    .material-card {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 15px; padding: 20px; position: relative; transition: 0.3s;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .material-card:hover {
+        background: rgba(255,255,255,0.08); transform: translateY(-5px);
+        border-color: #ff8c00; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .icon-box {
+        width: 50px; height: 50px; background: rgba(255, 140, 0, 0.1);
+        border-radius: 12px; display: flex; justify-content: center; align-items: center;
+        font-size: 1.5rem; color: #ff8c00;
+    }
+
+    .info h4 { margin: 0 0 5px 0; font-size: 1.1rem; }
+    .info a { color: #aaa; font-size: 0.85rem; text-decoration: none; transition: 0.3s; }
+    .info a:hover { color: #ff8c00; }
+
+</style>
+
+<div style="padding: 30px;">
+
+    <div class="course-header">
+        <div class="course-title">
+            <span>Course Materials</span>
+            <h2>{{ course.title }}</h2>
+        </div>
+        <a href="{% url 'trainer_material_upload' course.id %}" class="btn-add">
+            <i class="fas fa-plus"></i> Upload New
+        </a>
+    </div>
+
+    <div class="grid">
+        {% for m in materials %}
+        <div class="material-card">
+            <div class="icon-box">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="info">
+                <h4>{{ m.title }}</h4>
+                <a href="{{ m.file.url }}" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View / Download
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
+            <p>No materials uploaded for this course yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

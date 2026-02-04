@@ -1,0 +1,171 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.att-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.05);
+}
+
+.att-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-login { background:#22c55e; color:#fff; }
+.btn-logout { background:#ef4444; color:#fff; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+th {
+  background: #f1f5f9;
+}
+
+.map-box {
+  display: none;
+  margin-top: 15px;
+}
+
+iframe {
+  width: 100%;
+  height: 280px;
+  border-radius: 12px;
+  border: none;
+}
+
+.view-link {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+}
+</style>
+
+<!-- ================= ATTENDANCE TRACKER ================= -->
+<div class="att-card">
+  <div class="att-title">📍 Attendance Tracker</div>
+
+  <button class="btn btn-login" onclick="markLogin()">Login</button>
+  <button class="btn btn-logout" onclick="markLogout()">Logout</button>
+
+  {% if attendance_today %}
+    <p><b>In Time:</b> {{ attendance_today.login_time|default:"-" }}</p>
+    <p><b>Out Time:</b> {{ attendance_today.logout_time|default:"-" }}</p>
+  {% endif %}
+
+  <div id="liveMap" class="map-box">
+    <iframe id="liveMapFrame"></iframe>
+  </div>
+</div>
+
+<!-- ================= ATTENDANCE HISTORY ================= -->
+<div class="att-card">
+  <div class="att-title">📅 Attendance History</div>
+
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Login</th>
+      <th>Logout</th>
+      <th>Work Hours</th>
+      <th>Location</th>
+    </tr>
+
+    {% for a in attendance_list %}
+    <tr>
+      <td>{{ a.date }}</td>
+      <td>{{ a.login_time|default:"-" }}</td>
+      <td>{{ a.logout_time|default:"-" }}</td>
+      <td>{{ a.total_work_hours|default:"-" }}</td>
+      <td>
+        {% if a.latitude %}
+          <span class="view-link"
+            onclick="toggleMap('{{ a.id }}', '{{ a.latitude }}', '{{ a.longitude }}')">
+            View
+          </span>
+        {% else %}
+          -
+        {% endif %}
+      </td>
+    </tr>
+
+    <!-- MAP ROW -->
+    <tr id="mapRow-{{ a.id }}" style="display:none">
+      <td colspan="5">
+        <iframe
+          src="https://maps.google.com/maps?q={{a.latitude}},{{a.longitude}}&z=15&output=embed">
+        </iframe>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<form hidden>{% csrf_token %}</form>
+
+<script>
+function csrf(){
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+/* ---------- LOGIN ---------- */
+function markLogin(){
+  navigator.geolocation.getCurrentPosition(pos => {
+    fetch("{% url 'attendance_login' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrf(),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude
+      })
+    }).then(() => {
+      const mapBox = document.getElementById("liveMap");
+      const frame = document.getElementById("liveMapFrame");
+
+      mapBox.style.display = "block";
+      frame.src = `https://maps.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=15&output=embed`;
+
+      setTimeout(() => location.reload(), 800);
+    });
+  });
+}
+
+/* ---------- LOGOUT ---------- */
+function markLogout(){
+  fetch("{% url 'attendance_logout' %}", {
+    method: "POST",
+    headers: { "X-CSRFToken": csrf() }
+  }).then(() => setTimeout(() => location.reload(), 800));
+}
+
+/* ---------- TOGGLE MAP IN LIST ---------- */
+function toggleMap(id, lat, lng){
+  const row = document.getElementById("mapRow-" + id);
+  row.style.display = row.style.display === "none" ? "table-row" : "none";
+}
+</script>
+
+{% endblock %}

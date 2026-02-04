@@ -1,0 +1,124 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body { background: radial-gradient(circle at 10% 20%, rgb(10, 25, 30) 0%, rgb(5, 10, 15) 90%); color: white; font-family: 'Poppins', sans-serif; }
+    
+    .form-wrapper { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 80vh; padding: 20px; }
+    
+    .form-card {
+        background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+        padding: 40px 50px; width: 100%; max-width: 500px;
+        border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5); position: relative; overflow: hidden;
+    }
+
+    /* Cyan Top Border */
+    .form-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        background: linear-gradient(90deg, #00f3ff, #0099ff);
+    }
+
+    /* Back Button Style */
+    .back-nav {
+        align-self: flex-start;
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto 15px auto;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        padding: 8px 15px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-back:hover {
+        color: #00f3ff;
+        background: rgba(0, 243, 255, 0.1);
+        border-color: #00f3ff;
+        transform: translateX(-5px);
+    }
+
+    h2 { text-align: center; margin-bottom: 30px; font-weight: 700; letter-spacing: 1px; }
+    
+    label { font-size: 0.9rem; margin-bottom: 5px; display: block; opacity: 0.8; }
+
+    input, select, textarea {
+        width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
+        color: white; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s;
+        box-sizing: border-box; font-family: 'Poppins', sans-serif;
+    }
+
+    textarea { height: 100px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #00f3ff; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+    
+    select option { background: #0f1c24; }
+
+    .btn-primary {
+        width: 100%; padding: 14px; border: none; border-radius: 50px;
+        background: linear-gradient(135deg, #00f3ff, #0099ff);
+        color: #000; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+
+</style>
+
+<div class="form-wrapper">
+    <div class="back-nav">
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Return to Dashboard
+        </a>
+    </div>
+
+    <div class="form-card">
+        <h2><i class="fas fa-plus-circle" style="color:#00f3ff; margin-right:10px;"></i> Create Course</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label>Course Title</label>
+            <input type="text" name="title" placeholder="e.g. Master Python" required autocomplete="off">
+            
+            <label>Description</label>
+            <textarea name="description" placeholder="Brief overview of the course..."></textarea>
+
+            <label>Difficulty Level</label>
+            <select name="level">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+
+            <label>Duration (e.g., 4 Weeks)</label>
+            <input type="text" name="duration" placeholder="Duration" required>
+
+            <label>Assign Trainer</label>
+            <select name="trainer" required>
+                <option value="">Select Trainer</option>
+                {% for t in trainers %}
+                <option value="{{ t.id }}">{{ t.user.username }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-primary">Save Course</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

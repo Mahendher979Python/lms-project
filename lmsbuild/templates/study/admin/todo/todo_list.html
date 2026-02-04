@@ -1,0 +1,132 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.page-title{
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:15px;
+}
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.search-box input{
+  padding:8px 12px;
+  width:220px;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+.add-btn{
+  padding:8px 14px;
+  background:#2563eb;
+  color:#fff;
+  text-decoration:none;
+  border-radius:4px;
+}
+.add-btn:hover{ background:#1d4ed8; }
+
+.todo-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+}
+.todo-table th{
+  background:#f3f4f6;
+  text-align:left;
+  padding:10px;
+  font-size:14px;
+}
+.todo-table td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  font-size:14px;
+}
+.todo-table tr:hover{
+  background:#f9fafb;
+}
+.badge{
+  padding:4px 8px;
+  background:#e0e7ff;
+  color:#1e40af;
+  border-radius:12px;
+  font-size:12px;
+}
+.chart-box{
+  background:#fff;
+  padding:15px;
+  margin-top:25px;
+  border:1px solid #e5e7eb;
+  border-radius:6px;
+}
+</style>
+
+<h2 class="page-title">📝 Admin Todo List</h2>
+
+<div class="top-bar">
+  <form method="GET" class="search-box">
+    <input type="text" name="q" placeholder="Search todo..." value="{{ request.GET.q }}">
+  </form>
+
+  <a href="{% url 'admin_todo_add' %}" class="add-btn">➕ Add Todo</a>
+</div>
+
+<table class="todo-table">
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    <th>File</th>
+    <th>Assigned Students</th>
+    <th>Created</th>
+  </tr>
+
+  {% for todo in todos %}
+  <tr>
+    <td><strong>{{ todo.title }}</strong></td>
+    <td>{{ todo.description|truncatechars:60 }}</td>
+    <td>
+      {% if todo.file %}
+        <a href="{{ todo.file.url }}" target="_blank">View</a>
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td><span class="badge">{{ todo.assigned_to.count }}</span></td>
+    <td>{{ todo.created_at|date:"d M Y" }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5">No Todos Found</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- SIMPLE DATA VISUALIZATION -->
+<div class="chart-box">
+  <h3>📊 Todo Overview</h3>
+  <canvas id="todoChart" height="90"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('todoChart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Total Todos'],
+    datasets: [{
+      label: 'Todos Count',
+      data: [{{ todos|length }}],
+      backgroundColor: '#2563eb'
+    }]
+  },
+  options: {
+    plugins:{ legend:{ display:false } },
+    scales:{ y:{ beginAtZero:true } }
+  }
+});
+</script>
+
+{% endblock %}

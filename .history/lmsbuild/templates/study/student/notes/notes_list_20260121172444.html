@@ -1,0 +1,42 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<h2>📘 My Notes</h2>
+
+<table border="1" cellpadding="10" width="100%">
+  <tr>
+    <th>Title</th>
+    <th>File</th>
+    <th>Assigned By</th>
+    <th>Role</th>
+    <th>Date</th>
+  </tr>
+
+  {% for note in notes %}
+  <tr>
+    <td>{{ note.title }}</td>
+
+    <td>
+      {% if note.file %}
+        <a href="{{ note.file.url }}" target="_blank">View</a>
+      {% else %}
+        -
+      {% endif %}
+    </td>
+
+    <td>{{ note.created_by.username }}</td>
+
+    <td>
+      <strong>{{ note.created_by.role|title }}</strong>
+    </td>
+
+    <td>{{ note.created_at|date:"d M Y" }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5">No notes assigned yet</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

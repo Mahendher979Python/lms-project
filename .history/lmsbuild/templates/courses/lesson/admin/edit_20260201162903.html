@@ -1,0 +1,16 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h3>Edit Lesson</h3>
+
+<form method="post">
+{% csrf_token %}
+
+<input class="form-control mb-2" name="title" value="{{ lesson.title }}">
+<textarea class="form-control mb-2" name="description">{{ lesson.description }}</textarea>
+
+<button class="btn btn-success">Update</button>
+
+</form>
+
+{% endblock %}

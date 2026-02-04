@@ -1,0 +1,98 @@
+{% extends "accounts/student/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+.welcome-box{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:white;
+    padding:30px;
+    border-radius:15px;
+    margin-bottom:30px;
+}
+
+/* WELCOME TEXT */
+.welcome-text{
+    font-size:26px;
+    letter-spacing:1px;
+}
+
+/* USERNAME MARQUEE */
+.username-marquee{
+    display:inline-block;
+    margin-left:10px;
+    font-weight:700;
+    color:#fde047;
+    animation:marquee 4s ease-in-out infinite alternate;
+    cursor:pointer;
+}
+
+@keyframes marquee{
+    from{ transform:translateX(0) }
+    to{ transform:translateX(25px) }
+}
+
+/* RANDOM HOVER */
+.username-marquee:hover{
+    animation:shake .4s infinite, glow 1s infinite alternate;
+}
+
+@keyframes shake{
+    0%{transform:translate(0)}
+    25%{transform:translate(-2px,1px)}
+    50%{transform:translate(2px,-1px)}
+    75%{transform:translate(-1px,2px)}
+    100%{transform:translate(0)}
+}
+
+@keyframes glow{
+    from{text-shadow:0 0 5px #fde047}
+    to{text-shadow:0 0 20px #fde047}
+}
+
+/* STATS */
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.stat-card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    border-left:5px solid var(--accent);
+}
+
+.stat-card h3{
+    font-size:32px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="welcome-box">
+    <h2 class="welcome-text">
+        Welcome To
+        <span class="username-marquee">{{ request.user.username }}</span>
+    </h2>
+    <p>You have <b>2 pending assignments</b> this week.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>{{ courses_count|default:"0" }}</h3>
+        <p>Enrolled Courses</p>
+    </div>
+    <div class="stat-card" style="border-color:#10b981">
+        <h3>12</h3>
+        <p>Lessons Completed</p>
+    </div>
+    <div class="stat-card" style="border-color:#f59e0b">
+        <h3>85%</h3>
+        <p>Average Score</p>
+    </div>
+</div>
+
+{% endblock %}

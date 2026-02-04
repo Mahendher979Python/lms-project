@@ -1,0 +1,91 @@
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<style>
+/* Lesson Box Styling */
+.lesson-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.lesson-box h4 {
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+/* BACK BUTTON STYLING */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  padding: 10px 20px;
+  background-color: #64748b; /* Slate Grey */
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px; /* Space below button */
+}
+
+.btn-back:hover {
+  background-color: #475569; /* Darker Slate on hover */
+  transform: translateX(-3px); /* Slight movement effect */
+}
+</style>
+
+<a href="{% url 'student_course_list' %}" class="btn-back">
+    <i class="fa-solid fa-arrow-left"></i> Back to Courses
+</a>
+
+<div class="page-header" style="margin-top: 15px;">
+    <h2>{{ course.title }}</h2>
+    <p style="color: #64748b;">{{ course.description }}</p>
+</div>
+
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+<h3 style="margin-bottom: 15px;">📘 Course Lessons</h3>
+
+{% if lessons %}
+  {% for lesson in lessons %}
+    <div class="lesson-box">
+      <h4>{{ lesson.title }}</h4>
+      <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+        {{ lesson.description }}
+      </p>
+      
+      {% if lesson.video %}
+        <div style="border-radius: 8px; overflow: hidden;">
+            <video width="100%" controls style="display: block;">
+              <source src="{{ lesson.video.url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+        </div>
+      {% else %}
+        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; color: #94a3b8; font-size: 13px;">
+            <i class="fa-regular fa-file"></i> No video content available.
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% else %}
+  <div style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+      <p style="color: #94a3b8;">No lessons have been added to this course yet.</p>
+  </div>
+{% endif %}
+
+<br>
+<a href="{% url 'student_course_list' %}" class="btn-back" style="background: #94a3b8;">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+{% endblock %}

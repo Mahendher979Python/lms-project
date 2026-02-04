@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-container">
+
+    <div class="hero-text">
+      <h1>Welcome to Our <br>Learning Management System</h1>
+      <p>Admin | Trainer | Student Platform</p>
+
+      <div class="hero-btns">
+        <a href="{% url 'login' %}" class="btn primary">Login</a>
+        <a href="{% url 'student_courses' %}" class="btn outline">
+          Explore Courses</a>
+
+      </div>
+    </div>
+
+    <div class="hero-img">
+      <img src="{% static 'images/hero-laptop.png' %}" alt="LMS">
+    </div>
+
+  </div>
+</section>
+
+<!-- COURSES -->
+<section class="courses">
+  <h2 class="section-title">Popular Courses</h2>
+
+  <div class="course-grid">
+
+    <div class="course-card">
+      <img src="{% static 'images/webdevelopment.png' %}">
+      <h3>Web Development</h3>
+      <p>By Prof. Mahendher <span>6 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+    <div class="course-card">
+      <img src="{% static 'images/datascience.png' %}">
+      <h3>Data Science</h3>
+      <p>By Prof. John <span>8 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+    <div class="course-card">
+      <img src="{% static 'images/digitalmarket.png' %}">
+      <h3>Digital Marketing</h3>
+      <p>By Prof. Shilpa <span>10 Weeks</span></p>
+      <button>View Course</button>
+    </div>
+
+  </div>
+
+<p class="courses-desc">
+  Our LMS course structure is designed to provide a clear and engaging learning path.
+  Each course includes interactive video lectures, downloadable study materials,
+  practical assignments, and progress tracking dashboards. Trainers can upload content
+  and evaluate submissions, while students benefit from quizzes, certificates, and
+  peer discussions. Administrators oversee enrollment, analytics, and performance reports,
+  ensuring a smooth and transparent learning experience across all modules.
+</p>
+
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="feature">
+    <img src="{% static 'images/online-session.png' %}">
+    <span>Online Courses</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/video-session.png' %}">
+    <span>Video Sessions</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/assignment-list.png' %}">
+    <span>Assignments</span>
+  </div>
+
+  <div class="feature">
+    <img src="{% static 'images/study-material.png' %}">
+    <span>Study Materials</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section">
+  <div class="about-content">
+    <h2>About Us</h2>
+    <p>
+      Our Learning Management System (LMS) is a simple and user-friendly online
+      platform designed to make learning easy and accessible for everyone.
+      It allows students to learn anytime, trainers to manage courses and
+      assignments, and administrators to control the system efficiently.
+      With online courses, study materials, video sessions, and assignments
+      in one place, our LMS supports smooth, flexible, and modern digital
+      learning.
+    </p>
+    <a href="#" class="about-btn">Learn More</a>
+  </div>
+
+  <div class="about-image">
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f">
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/base.js' %}"></script>
+{% endblock %}

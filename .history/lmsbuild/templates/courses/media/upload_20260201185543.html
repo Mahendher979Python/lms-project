@@ -1,0 +1,122 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary:#38f9d7;
+    --secondary:#4facfe;
+    --glass:rgba(15,23,42,.85);
+    --border:rgba(255,255,255,.1);
+}
+body{
+    background:radial-gradient(circle at top,#0b1225,#02040b);
+    color:#fff;
+    font-family:Inter,sans-serif;
+}
+.upload-wrapper{
+    max-width:580px;
+    margin:60px auto;
+    padding:40px;
+    background:var(--glass);
+    border-radius:28px;
+    border:1px solid var(--border);
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.title{
+    font-size:28px;
+    font-weight:800;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin-bottom:8px;
+}
+.sub{color:#94a3b8;margin-bottom:30px;}
+.form-group{margin-bottom:22px;}
+label{display:block;margin-bottom:8px;color:#cbd5e1}
+input,select{
+    width:100%;
+    padding:14px 18px;
+    border-radius:14px;
+    background:rgba(0,0,0,.4);
+    border:1px solid var(--border);
+    color:#fff;
+}
+.drop-area{
+    border:2px dashed rgba(56,249,215,.3);
+    padding:35px;
+    border-radius:20px;
+    text-align:center;
+    cursor:pointer;
+}
+.drop-area:hover{border-color:var(--primary)}
+.drop-area i{font-size:40px;color:var(--primary)}
+.file-name{margin-top:10px;color:var(--primary)}
+.btn{
+    margin-top:20px;
+    width:100%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    padding:15px;
+    border-radius:30px;
+    border:none;
+    font-weight:800;
+}
+</style>
+
+<div class="upload-wrapper">
+
+    <div class="title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Material</div>
+    <div class="sub">Upload Video / PDF / Images</div>
+
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" placeholder="Example: Django Day 1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Select Course</label>
+            <select name="course" required>
+                <option value="">-- Select --</option>
+                {% for c in courses %}
+                <option value="{{c.id}}">{{c.title}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="drop-area">
+                <i class="fa-solid fa-file-arrow-up"></i><br><br>
+                Click to choose file
+                <input type="file" hidden name="file" required
+                       accept=".pdf,image/*,video/mp4,video/webm"
+                       onchange="showFile(this)">
+                <div id="fileName" class="file-name"></div>
+            </label>
+        </div>
+
+        <button class="btn" id="submitBtn">
+            <i class="fa-solid fa-upload"></i> Upload
+        </button>
+
+    </form>
+</div>
+
+<script>
+function showFile(input){
+    document.getElementById("fileName").innerText =
+        "Selected: "+input.files[0].name;
+}
+
+document.getElementById("uploadForm").onsubmit=function(){
+    let b=document.getElementById("submitBtn");
+    b.innerHTML="Uploading...";
+    b.disabled=true;
+}
+</script>
+
+{% endblock %}

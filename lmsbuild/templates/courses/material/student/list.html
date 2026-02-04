@@ -1,0 +1,271 @@
+{% extends "accounts/student/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #6366f1;
+    --secondary: #4f46e5;
+    --bg: #f1f5f9;
+    --white: #ffffff;
+}
+
+.student-container {
+    padding: 30px;
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header Styling */
+.header-box {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 40px;
+    border-radius: 24px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+/* Search & Filter Bar */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.filter-wrapper { display: flex; gap: 10px; }
+
+.filter-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.search-bar {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    width: 300px;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Material Cards */
+.material-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.material-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+}
+
+.material-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+.card-top {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.bg-pdf { background: #fff1f2; color: #e11d48; }
+.bg-video { background: #f0fdf4; color: #16a34a; }
+.bg-image { background: #eff6ff; color: #2563eb; }
+
+.card-body { padding: 20px; }
+.card-title { font-weight: 700; font-size: 1.1rem; color: #1e293b; margin-bottom: 15px; }
+
+.btn-open {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    border: 2px solid #f1f5f9;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-open:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Full Screen Preview Overlay */
+#previewOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+}
+
+.preview-header {
+    padding: 15px 25px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-btn:hover { background: #e2e8f0; }
+
+.preview-body {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fafafa;
+    padding: 20px;
+}
+
+iframe, video, img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+</style>
+
+<div class="student-container">
+    <div class="header-box">
+        <h2 style="font-weight: 800; margin: 0;">{{ course.title }}</h2>
+        <p style="opacity: 0.9; margin-top: 5px;">Access your learning materials and resources</p>
+    </div>
+
+    <div class="controls-row">
+        <div class="filter-wrapper">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="filter-btn" data-filter="video"><i class="fa-solid fa-circle-play"></i> Video</button>
+            <button class="filter-btn" data-filter="image"><i class="fa-solid fa-image"></i> Image</button>
+        </div>
+        <input id="searchInput" class="search-bar" placeholder="🔍 Search materials...">
+    </div>
+
+    <div class="material-grid">
+        {% for m in materials %}
+        <div class="material-card" data-type="{{ m.material_type }}">
+            <div class="card-top {% if m.material_type == 'pdf' %}bg-pdf{% elif m.material_type == 'video' %}bg-video{% else %}bg-image{% endif %}">
+                <i class="fa-solid {% if m.material_type == 'pdf' %}fa-file-pdf{% elif m.material_type == 'video' %}fa-circle-play{% else %}fa-image{% endif %} fa-4x"></i>
+            </div>
+            <div class="card-body">
+                <div class="card-title">{{ m.title }}</div>
+                <button class="btn-open" onclick="openFullPreview('{{ m.material_type }}','{{ m.file.url }}','{{ m.title }}')">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Material
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="previewOverlay">
+    <div class="preview-header">
+        <button class="back-btn" onclick="closePreview()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Course
+        </button>
+        <h4 id="previewTitle" style="margin:0; color:#1e293b;"></h4>
+        <div style="width: 100px;"></div> </div>
+    <div class="preview-body" id="previewContent">
+        </div>
+</div>
+
+<script>
+// SEARCH FUNCTIONALITY
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let val = this.value.toLowerCase();
+    document.querySelectorAll(".material-card").forEach(c => {
+        c.style.display = c.innerText.toLowerCase().includes(val) ? "block" : "none";
+    });
+});
+
+// FILTER FUNCTIONALITY
+document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        let f = btn.dataset.filter;
+        document.querySelectorAll(".material-card").forEach(c => {
+            c.style.display = (f == "all" || c.dataset.type == f) ? "block" : "none";
+        });
+    };
+});
+
+// PREVIEW LOGIC
+function openFullPreview(type, url, title) {
+    const overlay = document.getElementById("previewOverlay");
+    const content = document.getElementById("previewContent");
+    document.getElementById("previewTitle").innerText = title;
+
+    let html = "";
+    if (type == "video") {
+        html = `<video controls autoplay style="width:80%; border-radius:15px;"><source src="${url}"></video>`;
+    } else if (type == "pdf") {
+        // PDF embed for better viewing
+        html = `<iframe src="${url}#toolbar=0" width="90%" height="100%" style="border:none;"></iframe>`;
+    } else {
+        html = `<img src="${url}" style="max-height:80vh; object-fit:contain;">`;
+    }
+
+    content.innerHTML = html;
+    overlay.style.display = "flex";
+    document.body.style.overflow = "hidden"; // Stop scrolling background
+}
+
+function closePreview() {
+    document.getElementById("previewOverlay").style.display = "none";
+    document.getElementById("previewContent").innerHTML = "";
+    document.body.style.overflow = "auto";
+}
+</script>
+
+{% endblock %}d

@@ -1,0 +1,52 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h2>📘 Notes Dashboard</h2>
+
+<canvas id="notesChart" height="100"></canvas>
+
+<script>
+new Chart(document.getElementById('notesChart'),{
+ type:'bar',
+ data:{
+  labels:['Total Notes','Public','Private','Courses','Assigned Users'],
+  datasets:[{
+   label:'Counts',
+   data:[
+    {{total_notes}},
+    {{public_notes}},
+    {{private_notes}},
+    {{courses_count}},
+    {{assigned_users}}
+   ],
+   backgroundColor:'#6366f1'
+  }]
+ }
+});
+</script>
+
+<br>
+
+<a href="{% url 'admin_notes_add' %}" class="btn">➕ Add Note</a>
+
+<table width="100%" style="margin-top:20px">
+<tr>
+<th>Title</th><th>Course</th><th>Visibility</th><th>Users</th><th>Actions</th>
+</tr>
+{% for n in notes %}
+<tr>
+<td>{{n.title}}</td>
+<td>{{n.course|default:"--"}}</td>
+<td>{{n.visibility}}</td>
+<td>{{n.assigned_to.count}}</td>
+<td>
+<a href="{% url 'admin_notes_edit' n.id %}">Edit</a> |
+<a href="{% url 'admin_notes_delete' n.id %}">Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

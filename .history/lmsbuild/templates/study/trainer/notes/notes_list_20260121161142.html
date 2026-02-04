@@ -1,0 +1,20 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<h2>📘 My Notes</h2>
+
+<a href="{% url 'trainer_notes_add' %}">➕ Add Note</a>
+
+<ul>
+{% for note in notes %}
+  <li>
+    {{ note.title }} |
+    <a href="{{ note.file.url }}" target="_blank">View</a> |
+    <a href="{% url 'trainer_notes_edit' note.id %}">Edit</a>
+  </li>
+{% empty %}
+  <li>No notes added</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

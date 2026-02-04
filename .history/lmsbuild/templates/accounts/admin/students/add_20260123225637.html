@@ -1,0 +1,76 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+/* SAME CSS – NO CHANGE */
+.form-wrapper{background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;font-family:'Segoe UI',sans-serif}
+.form-card{background:#fff;padding:40px;width:100%;max-width:500px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.05)}
+.form-header{text-align:center;margin-bottom:30px}
+.form-header h2{margin-bottom:5px}
+.form-group{margin-bottom:20px}
+label{font-weight:600;margin-bottom:8px;display:block}
+input,select{width:100%;padding:12px;border:2px solid #e1e5eb;border-radius:8px}
+.btn-group{display:flex;gap:15px;margin-top:30px}
+.btn{flex:1;padding:12px;border:none;border-radius:8px;font-weight:600}
+.btn-primary{background:#4361ee;color:#fff}
+.btn-secondary{background:#e9ecef}
+</style>
+
+<div class="form-wrapper">
+ <div class="form-card">
+  <div class="form-header">
+   <h2>➕ Add New Student</h2>
+   <p>Assign student to trainer</p>
+  </div>
+
+<div class="form-header">
+<h2>➕ Add New Student</h2>
+<p>Assign student to trainer</p>
+</div>
+
+<form method="post">
+{% csrf_token %}
+
+<!-- ✅ USER MODEL -->
+<div class="form-group">
+<label>Username</label>
+<input type="text" name="username" required>
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input type="email" name="email" required>
+</div>
+
+<!-- ✅ STUDENT MODEL -->
+<div class="form-group">
+<label>Roll No</label>
+{{ form.roll_no }}
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+{{ form.phone }}
+</div>
+
+<!-- ✅ TRAINER -->
+<div class="form-group">
+<label>Trainer / Domain</label>
+<select name="trainer" required>
+<option value="">-- Select Trainer --</option>
+{% for t in trainers %}
+<option value="{{ t.id }}">{{ t.user.username }} — {{ t.subject }}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="btn-group">
+<a href="{% url 'admin_students' %}" class="btn btn-secondary">Cancel</a>
+<button class="btn btn-primary">Create Student</button>
+</div>
+
+</form>
+</div>
+</div>
+{% endblock %}
+

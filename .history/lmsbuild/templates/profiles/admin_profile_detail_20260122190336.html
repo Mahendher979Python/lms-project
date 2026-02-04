@@ -1,0 +1,52 @@
+{% extends "profiles/base.html" %}
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<div class="card-3d">
+    <h2>{{ role|title }} Profile Details</h2>
+    
+    <div style="margin: 20px 0;">
+        <div class="data-row">
+            <span class="label">Username</span>
+            <span class="value">{{ profile.user.username }}</span>
+        </div>
+        <div class="data-row">
+            <span class="label">Email</span>
+            <span class="value">{{ profile.user.email }}</span>
+        </div>
+
+        {% if role == "student" %}
+            <div class="data-row">
+                <span class="label">Education</span>
+                <span class="value">{{ profile.education }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">College</span>
+                <span class="value">{{ profile.college }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Semester</span>
+                <span class="value">{{ profile.semester }}</span>
+            </div>
+        {% elif role == "trainer" %}
+            <div class="data-row">
+                <span class="label">Qualification</span>
+                <span class="value">{{ profile.qualification }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Experience</span>
+                <span class="value">{{ profile.experience_years }} Years</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Expertise</span>
+                <span class="value">{{ profile.expertise }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="javascript:history.back()" class="btn-3d btn-secondary">⬅ Go Back</a>
+    </div>
+</div>
+
+{% endblock %}

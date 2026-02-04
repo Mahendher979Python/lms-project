@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Admin – {{ course.title }} Materials</h2>
+
+<a href="{% url 'admin_material_upload' course.id %}">
+<button>Add Material</button>
+</a>
+
+<hr>
+
+<table border="1" cellpadding="10">
+
+<tr>
+    <th>Title</th>
+    <th>File</th>
+    <th>Date</th>
+</tr>
+
+{% for m in materials %}
+<tr>
+    <td>{{ m.title }}</td>
+    <td>
+        <a href="{{ m.file.url }}" target="_blank">Download</a>
+    </td>
+    <td>{{ m.created_at }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3">No Materials</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

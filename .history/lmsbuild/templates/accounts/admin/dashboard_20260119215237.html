@@ -1,0 +1,30 @@
+{% extends "accounts/admin/base.html" %}
+
+
+{% block content %}
+  <h1>Dashboard</h1>
+  <p style="color: #64748b;">Welcome back, <strong>{{ request.user.username }}</strong>!</p>
+  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 250px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <h3>👥 Users</h3>
+      <p>Manage students & trainers.</p>
+      <a href="{% url 'admin_create_user' %}" class="btn btn-primary">➕ Create User</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 250px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <h3>📚 Courses</h3>
+      <p>View active courses.</p>
+      <a href="{% url 'admin_course_list' %}" class="btn btn-primary">View Courses</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 250px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <h3>🎥 Media</h3>
+      <p>Manage Videos & Ads.</p>
+      <a href="{% url 'admin_media_list' %}" class="btn btn-primary">Manage Media</a>
+    </div>
+
+  </div>
+{% endblock %}

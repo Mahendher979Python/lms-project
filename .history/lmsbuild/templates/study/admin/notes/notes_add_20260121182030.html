@@ -1,0 +1,228 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+
+<style>
+    /* Dark Theme Styles */
+    :root {
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #6366f1;
+        --border: #334155;
+    }
+
+    body {
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Centered Form Container */
+    .add-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh;
+        padding: 20px;
+    }
+
+    .form-box {
+        background: var(--bg-card);
+        width: 100%;
+        max-width: 700px;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border: 1px solid var(--border);
+    }
+
+    /* Header */
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 15px;
+    }
+    .form-header h2 { margin: 0; font-size: 1.5rem; color: white; }
+    .close-btn { text-decoration: none; color: var(--text-muted); font-size: 1.5rem; }
+    .close-btn:hover { color: #fff; }
+
+    /* Inputs */
+    label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+    input[type="text"], select, textarea, input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        background: #0f172a;
+        border: 1px solid var(--border);
+        color: white;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Assign Box with Select All */
+    .assign-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .select-all-label {
+        font-size: 0.85rem;
+        color: var(--accent);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .assign-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #0f172a;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+    }
+    
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px;
+        border-radius: 4px;
+        transition: 0.2s;
+    }
+    .user-item:hover { background: rgba(255,255,255,0.05); }
+    .user-item input { width: auto; margin: 0; cursor: pointer; }
+    .user-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+    .tag-trainer { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+    .tag-student { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+    /* Buttons */
+    .btn-submit {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+    .btn-submit:hover { background: #4f46e5; transform: translateY(-1px); }
+
+</style>
+
+<div class="add-container">
+    <div class="form-box">
+        
+        <div class="form-header">
+            <h2>➕ Add New Note</h2>
+            <a href="{% url 'admin_notes_list' %}" class="close-btn">&times;</a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label>Note Title</label>
+            <input type="text" name="title" required placeholder="Ex: Python Basics - Chapter 1">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label>Course (Optional)</label>
+                    <select name="course">
+                        <option value="">-- No Course --</option>
+                        {% for c in courses %}
+                            <option value="{{ c.id }}">{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Visibility</label>
+                    <select name="visibility">
+                        <option value="private">Private (Only Assigned)</option>
+                        <option value="public">Public (Everyone)</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Description</label>
+            <textarea name="description" rows="4" placeholder="Enter brief details regarding the note..."></textarea>
+
+            <label>Upload Document (PDF/Docx)</label>
+            <input type="file" name="file">
+
+            <div class="assign-header">
+                <label style="margin:0">Assign To Users</label>
+                <label class="select-all-label">
+                    <input type="checkbox" id="selectAllBtn"> Select All Users
+                </label>
+            </div>
+
+            <div class="assign-grid">
+                {% for u in trainers %}
+                <label class="user-item">
+                    <input type="checkbox" name="assigned_to" value="{{ u.id }}" class="assign-chk">
+                    <span>{{ u.username }}</span>
+                    <span class="user-tag tag-trainer">Trainer</span>
+                </label>
+                {% endfor %}
+
+                {% for u in students %}
+                <label class="user-item">
+                    <input type="checkbox" name="assigned_to" value="{{ u.id }}" class="assign-chk">
+                    <span>{{ u.username }}</span>
+                    <span class="user-tag tag-student">Student</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn-submit">Create Note</button>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const checkboxes = document.querySelectorAll('.assign-chk');
+
+        selectAllBtn.addEventListener('change', function() {
+            const isChecked = this.checked;
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        // Optional: If user unchecks one box manually, uncheck "Select All"
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    selectAllBtn.checked = false;
+                }
+                // Check if all are checked to re-enable Select All (Optional polish)
+                const allChecked = Array.from(checkboxes).every(c => c.checked);
+                if(allChecked) selectAllBtn.checked = true;
+            });
+        });
+    });
+</script>
+
+{% endblock %}

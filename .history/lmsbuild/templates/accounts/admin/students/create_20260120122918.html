@@ -1,0 +1,49 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+
+<head>
+    <title>Student Created</title>
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: Arial;
+            padding: 40px;
+        }
+        .box {
+            background: #fff;
+            padding: 30px;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+        }
+        .cred {
+            background: #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>✅ Student Created</h2>
+
+    <p>Login Credentials</p>
+
+    <div class="cred">Username: {{ username }}</div>
+    <div class="cred">Password: {{ password }}</div>
+
+    <a href="{% url 'admin_students' %}">← Back to Students</a>
+</div>
+
+{% endblock %}

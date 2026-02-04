@@ -1,0 +1,52 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.box{max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px}
+input,select{width:100%;padding:10px;margin-bottom:15px}
+button{background:#4361ee;color:white;padding:10px;border:none;width:100%}
+</style>
+
+<div class="box">
+
+<h2>Add Student</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" placeholder="Username" required>
+
+<select id="trainer" name="trainer">
+{% for t in trainers %}
+<option value="{{t.id}}">{{t.user.username}}</option>
+{% endfor %}
+</select>
+
+<select id="batch" name="batch">
+{% for b in batches %}
+<option value="{{b.id}}" data-trainer="{{b.trainer.id}}">
+{{b.name}}
+</option>
+{% endfor %}
+</select>
+
+<button>Create</button>
+
+</form>
+
+</div>
+
+<script>
+const trainer=document.getElementById("trainer")
+const batch=document.getElementById("batch")
+
+function filter(){
+[...batch.options].forEach(o=>{
+o.style.display=o.dataset.trainer==trainer.value?"block":"none"
+})
+}
+trainer.addEventListener("change",filter)
+filter()
+</script>
+
+{% endblock %}

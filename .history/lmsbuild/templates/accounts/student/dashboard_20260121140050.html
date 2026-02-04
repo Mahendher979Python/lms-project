@@ -1,0 +1,238 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* --- 3D WELCOME CARD WITH MARQUEE --- */
+    .welcome-card {
+        background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        padding: 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 25px -5px rgba(67, 56, 202, 0.4), 0 8px 10px -6px rgba(67, 56, 202, 0.2);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Marquee Container */
+    .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+        margin-bottom: 10px;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    /* Marquee Animation */
+    .marquee-text {
+        display: inline-block;
+        font-size: 2rem;
+        font-weight: 800;
+        text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        animation: scrollText 12s linear infinite;
+        padding-left: 100%; /* Start from right */
+    }
+
+    @keyframes scrollText {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-150%); } /* Move way to the left */
+    }
+
+    .welcome-card p { font-size: 1.1rem; opacity: 0.9; margin-top: 5px; z-index: 2; position: relative;}
+
+    /* Background decoration */
+    .welcome-card::before {
+        content: ''; position: absolute; top: -50px; right: -50px;
+        width: 200px; height: 200px; background: rgba(255,255,255,0.1);
+        border-radius: 50%; pointer-events: none;
+    }
+
+    /* --- 3D STATS GRID --- */
+    .stats-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 25px; margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        padding: 25px; border-radius: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+        border: 1px solid rgba(255,255,255,0.6);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative; overflow: hidden;
+    }
+
+    /* Lift Effect */
+    .stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+
+    .stat-card h3 { font-size: 2.5rem; color: #111827; margin-bottom: 5px; font-weight: 800; }
+    .stat-card p { font-size: 0.9rem; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .stat-card i {
+        position: absolute; bottom: 15px; right: 15px;
+        font-size: 3.5rem; opacity: 0.05; transform: rotate(-10deg);
+    }
+
+    /* Border Colors */
+    .stat-card.blue { border-bottom: 4px solid #3b82f6; }
+    .stat-card.green { border-bottom: 4px solid #10b981; }
+    .stat-card.orange { border-bottom: 4px solid #f59e0b; }
+
+    /* --- 3D CHARTS SECTION --- */
+    .charts-wrapper {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 30px;
+    }
+
+    .chart-card {
+        background: #ffffff;
+        padding: 25px; border-radius: 20px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        border: 1px solid #f3f4f6;
+    }
+
+    .chart-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px;
+    }
+    .chart-header h4 { font-size: 1.2rem; color: #374151; font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="welcome-card">
+        <div class="marquee-container">
+            <div class="marquee-text">
+                Welcome back, {{ request.user.username }}! &nbsp;&nbsp; • &nbsp;&nbsp; Let's Learn! &nbsp;&nbsp; • &nbsp;&nbsp; {{ request.user.username }}
+            </div>
+        </div>
+        <p><i class="fa-solid fa-bell"></i> You have <b>2 Assignments</b> pending review.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <h3>{{ courses_count|default:"4" }}</h3>
+            <p>Enrolled Courses</p>
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="stat-card green">
+            <h3>12</h3>
+            <p>Lessons Completed</p>
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stat-card orange">
+            <h3>85%</h3>
+            <p>Average Score</p>
+            <i class="fa-solid fa-star"></i>
+        </div>
+    </div>
+
+    <div class="charts-wrapper">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4>Course Progress</h4>
+                <i class="fa-solid fa-chart-simple" style="color:#3b82f6;"></i>
+            </div>
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4>Time Spent</h4>
+                <i class="fa-solid fa-clock" style="color:#8b5cf6;"></i>
+            </div>
+            <div style="height: 300px; display:flex; justify-content:center;">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Chart.defaults.font.family = "'Segoe UI', sans-serif";
+            
+            // --- 1. 3D Bar Chart (Gradient Fill) ---
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            
+            // Create Gradient: Top (Light) to Bottom (Dark) -> Simulates 3D lighting
+            const gradBar = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradBar.addColorStop(0, '#60a5fa'); // Light Blue
+            gradBar.addColorStop(1, '#2563eb'); // Dark Blue
+
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Python', 'Django', 'React', 'SQL'],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [75, 55, 90, 40],
+                        backgroundColor: gradBar,
+                        borderRadius: 10,  // Makes bars rounded
+                        borderSkipped: false, // Rounds bottom too
+                        barThickness: 35,
+                        hoverBackgroundColor: '#1d4ed8' // Darker on hover
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: '#f3f4f6' } },
+                        x: { grid: { display: false } }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+            // --- 2. 3D Doughnut Chart (Shadows & Colors) ---
+            const ctxPie = document.getElementById('doughnutChart').getContext('2d');
+            
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Videos', 'Quiz', 'Reading'],
+                    datasets: [{
+                        data: [15, 5, 8],
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#10b981', // Green
+                            '#f59e0b'  // Orange
+                        ],
+                        hoverOffset: 20, // Pops out significantly on hover (3D effect)
+                        borderWidth: 0,  // No border for smoother look
+                        shadowOffsetX: 3,
+                        shadowOffsetY: 3,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0,0,0,0.5)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%', // Thinner ring looks more modern
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

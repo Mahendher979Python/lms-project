@@ -1,0 +1,193 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #4f46e5;
+    --cyan: #00f3ff;
+    --lime: #ccff00;
+    --glass: rgba(255, 255, 255, .07);
+    --border: rgba(255, 255, 255, .15);
+    --bg: #020617;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: #e5e7eb; }
+
+.wrap { padding: 40px; max-width: 600px; margin: 0 auto; }
+
+/* Header Styling */
+.header-area { margin-bottom: 30px; text-align: center; }
+.header-area h2 {
+    font-size: 2rem;
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Card Styling */
+.card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Elements */
+.form-group { margin-bottom: 25px; }
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+/* Custom File Upload */
+.file-upload-wrapper {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.file-upload-wrapper:hover { border-color: var(--lime); }
+
+.file-info { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; }
+
+/* Buttons */
+.btn-group { display: flex; gap: 15px; margin-top: 30px; }
+
+.btn-update {
+    flex: 2;
+    background: linear-gradient(135deg, var(--lime), #9acd00);
+    color: #000;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-update:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(204, 255, 0, 0.3);
+}
+
+.btn-cancel {
+    flex: 1;
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.btn-cancel:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+
+/* Success Animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.saving { animation: pulse 1s infinite ease-in-out; }
+</style>
+
+<div class="wrap">
+    <div class="header-area">
+        <h2><i class="fa-solid fa-pen-nib"></i> Edit Material</h2>
+        <p style="color: #64748b; margin-top: 10px;">Refining: {{ material.title }}</p>
+    </div>
+
+    <div class="card">
+        <form id="editForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-heading"></i> Document Title</label>
+                <input type="text" name="title" value="{{ material.title }}" required placeholder="Enter material name">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-file-export"></i> Update File Content</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" name="file" id="fileInput" style="display: none;">
+                    <label for="fileInput" style="cursor: pointer; color: var(--cyan); margin: 0;">
+                        <i class="fa-solid fa-cloud-arrow-up fa-2x"></i><br>
+                        <span id="fileName">Click to browse or drag file</span>
+                    </label>
+                    <div class="file-info">Leave empty to keep the current file</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="javascript:history.back()" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-update" id="submitBtn">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // File Name Display Logic
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            const name = this.files[0].name;
+            fileNameDisplay.innerHTML = `<strong>Selected:</strong> ${name}`;
+            fileNameDisplay.style.color = "var(--lime)";
+        }
+    });
+
+    // Button Loading State
+    const form = document.getElementById('editForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.onsubmit = function() {
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+        submitBtn.classList.add('saving');
+        submitBtn.style.opacity = "0.7";
+        submitBtn.disabled = true;
+    };
+</script>
+
+{% endblock %}

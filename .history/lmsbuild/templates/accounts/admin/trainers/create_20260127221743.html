@@ -1,0 +1,31 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.box{max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px}
+input{width:100%;padding:10px;margin-bottom:15px}
+button{background:#4361ee;color:white;padding:10px;border:none;width:100%}
+</style>
+
+<div class="box">
+
+<h2>Add Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="username" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<input name="mobile" placeholder="Mobile" required>
+
+<input name="subject" placeholder="Subject / Domain" required>
+
+<button>Create Trainer</button>
+
+</form>
+
+</div>
+
+{% endblock %}

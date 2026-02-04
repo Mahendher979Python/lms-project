@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Courses</title>
+</head>
+<body>
+
+<h2>📘 My Courses</h2>
+
+<ul>
+{% for c in courses %}
+  <li>
+    <b>{{ c.title }}</b> –
+    <a href="{% url 'student_course_detail' c.id %}">Open</a>
+  </li>
+{% empty %}
+<p>No enrolled courses</p>
+{% endfor %}
+</ul>
+
+</body>
+</html>

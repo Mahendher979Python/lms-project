@@ -1,0 +1,131 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.section-title{
+    margin-top:30px;
+    font-size:20px;
+    font-weight:600;
+    color:#2563eb
+}
+.material-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px
+}
+.material-card{
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 6px 15px rgba(0,0,0,.08)
+}
+.material-card img,
+.material-card video{
+    border-radius:8px
+}
+.btn-row{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap
+}
+.btn{
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:13px;
+    text-decoration:none;
+    font-weight:600
+}
+.preview{background:#eef2ff;color:#4f46e5}
+.download{background:#ecfdf5;color:#16a34a}
+.edit{background:#fef3c7;color:#d97706}
+.delete{background:#fee2e2;color:#dc2626}
+</style>
+
+<h2>All Materials</h2>
+
+<!-- ================= IMAGES ================= -->
+<div class="section-title">Images</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".jpg" or m.file.url|lower|slice:"-4:" == ".png" %}
+<div class="material-card">
+    <img src="{{m.file.url}}" width="100%">
+    <p><b>{{m.title}}</b></p>
+    <small>{{m.course.title}}</small>
+    <div class="btn-row">
+        <a class="btn preview" href="{{m.file.url}}" target="_blank" rel="noopener noreferrer">Preview</a>
+        <a class="btn download" href="{{m.file.url}}" download>Download</a>
+        <a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+        <a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- ================= VIDEOS ================= -->
+<div class="section-title">Videos</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".mp4" %}
+<div class="material-card">
+    <video width="100%" controls>
+        <source src="{{m.file.url}}">
+    </video>
+    <p><b>{{m.title}}</b></p>
+    <small>{{m.course.title}}</small>
+    <div class="btn-row">
+        <a class="btn preview" href="{{m.file.url}}" target="_blank" rel="noopener noreferrer">Open</a>
+        <a class="btn download" href="{{m.file.url}}" download>Download</a>
+        <a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+        <a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- ================= PDF ================= -->
+<div class="section-title">PDF Documents</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if m.file.url|lower|slice:"-4:" == ".pdf" %}
+<div class="material-card">
+    <p><b>{{m.title}}</b></p>
+    <small>{{m.course.title}}</small>
+    <div class="btn-row">
+        <a class="btn preview" href="{{m.file.url}}" target="_blank" rel="noopener noreferrer">Preview PDF</a>
+        <a class="btn download" href="{{m.file.url}}" download>Download</a>
+        <a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+        <a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+<!-- ================= OTHERS ================= -->
+<div class="section-title">Other Files</div>
+
+<div class="material-grid">
+{% for m in materials %}
+{% if not m.file.url|lower|slice:"-4:" in ".jpg,.png,.mp4,.pdf" %}
+<div class="material-card">
+    <p><b>{{m.title}}</b></p>
+    <small>{{m.course.title}}</small>
+    <div class="btn-row">
+        <a class="btn preview" href="{{m.file.url}}" target="_blank" rel="noopener noreferrer">Open</a>
+        <a class="btn download" href="{{m.file.url}}" download>Download</a>
+        <a class="btn edit" href="{% url 'admin_material_edit' m.id %}">Edit</a>
+        <a class="btn delete" href="{% url 'admin_material_delete' m.id %}" onclick="return confirm('Delete?')">Delete</a>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+
+{% endblock %}

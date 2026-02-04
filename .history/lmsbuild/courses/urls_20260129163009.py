@@ -1,0 +1,27 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # ================= ADMIN COURSE =================
+    path("admin/courses/", views.admin_course_list, name="admin_course_list"),
+    path("admin/courses/add/", views.admin_course_create, name="admin_course_create"),
+    path("admin/courses/<int:pk>/edit/", views.admin_course_edit, name="admin_course_edit"),
+    path("admin/courses/<int:pk>/delete/", views.admin_course_delete, name="admin_course_delete"),
+
+    # ================= ADMIN MEDIA =================
+    path("admin/media/", views.admin_media_list, name="admin_media_list"),
+    path("admin/media/upload/", views.admin_media_upload, name="admin_media_upload"),
+
+    # ================= ADMIN MATERIAL =================
+    path("admin/courses/<int:course_id>/materials/", views.admin_material_list, name="admin_material_list"),
+    path("admin/courses/<int:course_id>/materials/upload/", views.admin_material_upload, name="admin_material_upload"),
+    path("admin/materials/<int:material_id>/delete/", views.admin_material_delete, name="admin_material_delete"),
+
+    # ================= TRAINER MATERIAL =================
+    path("trainer/courses/<int:course_id>/materials/", views.trainer_material_list, name="trainer_material_list"),
+    path("trainer/courses/<int:course_id>/materials/upload/", views.trainer_material_upload, name="trainer_material_upload"),
+    path("trainer/materials/<int:material_id>/edit/", views.trainer_material_edit, name="trainer_material_edit"),
+
+    # ================= TRAINER COURSES =================
+    path("trainer/courses/", views.trainer_course_list, name="trainer_course_list"),
+]

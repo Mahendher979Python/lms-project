@@ -1,0 +1,266 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-blue: #2563eb;
+        --secondary-gray: #64748b;
+        --bg-light: #f8fafc;
+        --border-color: #e2e8f0;
+        --success-green: #22c55e;
+        --danger-red: #ef4444;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Inter', sans-serif;
+        color: #1e293b;
+    }
+
+    .lms-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #0f172a;
+    }
+
+    /* Action Buttons */
+    .btn-add {
+        background-color: var(--primary-blue);
+        color: #ffffff !important;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.2s;
+    }
+
+    .btn-add:hover {
+        background-color: #1d4ed8;
+    }
+
+    /* Main Content Card */
+    .content-card {
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        background-color: #ffffff;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--secondary-gray);
+    }
+
+    /* Data Table */
+    .lms-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .lms-table th {
+        background-color: #f1f5f9;
+        text-align: left;
+        padding: 1rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        color: var(--secondary-gray);
+    }
+
+    .lms-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .lms-table tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* File Info */
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #eff6ff;
+        color: var(--primary-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 1.2rem;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #334155;
+        margin: 0;
+    }
+
+    .file-meta {
+        font-size: 0.8rem;
+        color: var(--secondary-gray);
+    }
+
+    /* Badge */
+    .uploader-badge {
+        background-color: #f1f5f9;
+        color: #475569;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Operations */
+    .op-link {
+        padding: 0.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: 0.2s;
+    }
+
+    .download-op { color: var(--primary-blue); }
+    .download-op:hover { background-color: #eff6ff; }
+
+    .delete-op { color: var(--danger-red); }
+    .delete-op:hover { background-color: #fef2f2; }
+
+    .empty-state {
+        padding: 4rem;
+        text-align: center;
+        color: var(--secondary-gray);
+    }
+</style>
+
+<div class="lms-container">
+    
+    <div class="page-header">
+        <div>
+            <h1>Course Materials</h1>
+            <p style="color: var(--secondary-gray); margin-top: 0.25rem;">Course: <strong>{{ course.title }}</strong></p>
+        </div>
+        <a href="{% url 'admin_material_upload' course.id %}" class="btn-add">
+            <i class="fas fa-upload"></i> Upload Material
+        </a>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header">
+            <h3>All Files ({{ materials.count }})</h3>
+        </div>
+        
+        <table class="lms-table">
+            <thead>
+                <tr>
+                    <th>Material Name</th>
+                    <th>Uploaded By</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materials %}
+                <tr>
+                    <td>
+                        <div class="file-info">
+                            <div class="file-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <p class="file-name">{{ m.title }}</p>
+                                <span class="file-meta">Asset ID: #{{ m.id }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="uploader-badge">
+                            <i class="far fa-user"></i> {{ m.uploaded_by.username }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{{ m.file.url }}" target="_blank" class="op-link download-op" title="Download">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        <a href="{% url 'admin_material_delete' m.id %}" 
+                           class="op-link delete-op" 
+                           onclick="return confirm('Are you sure you want to delete this file?')"
+                           title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No materials uploaded for this course yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Simple icon switcher based on file extension
+    document.querySelectorAll('.file-info').forEach(container => {
+        const title = container.querySelector('.file-name').innerText.toLowerCase();
+        const icon = container.querySelector('.file-icon i');
+        
+        if (title.endsWith('.pdf')) {
+            icon.className = 'fas fa-file-pdf';
+            icon.parentElement.style.color = '#ef4444'; // PDF Red
+        } else if (title.endsWith('.zip') || title.endsWith('.rar')) {
+            icon.className = 'fas fa-file-archive';
+            icon.parentElement.style.color = '#f59e0b'; // Zip Orange
+        } else if (title.match(/\.(jpg|jpeg|png|gif)$/)) {
+            icon.className = 'fas fa-file-image';
+            icon.parentElement.style.color = '#8b5cf6'; // Image Purple
+        } else if (title.match(/\.(doc|docx)$/)) {
+            icon.className = 'fas fa-file-word';
+            icon.parentElement.style.color = '#2563eb'; // Word Blue
+        }
+    });
+</script>
+
+{% endblock %}

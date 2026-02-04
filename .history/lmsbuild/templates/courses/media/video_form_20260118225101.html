@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Video</title>
+</head>
+<body>
+
+<h2>{{ action }} Video</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input type="text"
+           name="title"
+           placeholder="Video title"
+           value="{{ video.title|default:'' }}"
+           required>
+    <br><br>
+
+    <textarea name="description"
+              placeholder="Description">{{ video.description|default:'' }}</textarea>
+    <br><br>
+
+    <!-- ONLY VIDEO FILES + SIZE CHECK -->
+    <input type="file"
+           name="video"
+           accept="video/*"
+           {% if action == "Add" %}required{% endif %}>
+    <br><br>
+
+    <button type="submit">{{ action }}</button>
+</form>
+
+<script>
+document.querySelector('input[name="video"]').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    // ❌ Not a video
+    if (!file.type.startsWith('video/')) {
+        alert("Only VIDEO files are allowed!");
+        this.value = "";
+        return;
+    }
+
+    // ❌ Size > 500MB
+    const maxSize = 500 * 1024 * 1024; // 500MB
+    if (file.size > maxSize) {
+        alert("Video size must be less than 500MB!");
+        this.value = "";
+        return;
+    }
+});
+</script>
+
+</body>
+</html>

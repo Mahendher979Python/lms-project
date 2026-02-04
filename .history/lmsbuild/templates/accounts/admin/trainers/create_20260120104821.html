@@ -1,0 +1,162 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 30px;
+        background-color: #1e293b; /* Slate 800 */
+        border-radius: 10px;
+        color: #f1f5f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #f8fafc;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #475569;
+        background-color: #0f172a; /* Slate 900 */
+        color: #e2e8f0;
+        outline: none;
+        box-sizing: border-box; /* Fixes padding issues */
+    }
+
+    .form-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .checkbox-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-size: 0.95rem;
+        text-decoration: none;
+        text-align: center;
+        flex: 1;
+    }
+
+    .btn-save {
+        background-color: #22c55e;
+        color: #020617;
+    }
+    .btn-save:hover { background-color: #16a34a; }
+
+    .btn-cancel {
+        background-color: #ef4444;
+        color: #ffffff;
+    }
+    .btn-cancel:hover { background-color: #dc2626; }
+
+    .message-list {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #3f1818; /* Dark Red bg for errors */
+        border: 1px solid #ef4444;
+        border-radius: 6px;
+        color: #fecaca;
+    }
+</style>
+
+<div class="form-container">
+    <h1 class="form-title">➕ Create Trainer</h1>
+
+    {% if messages %}
+        <div class="message-list">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-input" required placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-input" required placeholder="Enter password">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input type="text" name="mobile" class="form-input" required placeholder="Enter mobile number">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Qualification</label>
+            <input type="text" name="qualification" class="form-input" required placeholder="e.g. B.Tech, MBA">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Designation</label>
+            <input type="text" name="designation" class="form-input" required placeholder="e.g. Senior Trainer">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Experience (Years)</label>
+            <input type="number" name="experience" class="form-input" required placeholder="e.g. 5">
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" name="is_active" class="checkbox-input" checked>
+            <label class="form-label" style="margin-bottom:0;">Active Status</label>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'trainer_list' %}" class="btn btn-cancel">Cancel</a>
+            <button type="submit" class="btn btn-save">💾 Save Trainer</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

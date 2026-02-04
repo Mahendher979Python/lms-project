@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Media Management 3D</title>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --accent-color: #e94560;
+            --btn-grad: linear-gradient(45deg, #e94560, #a92b3f);
+            --shadow-light: -5px -5px 15px rgba(255, 255, 255, 0.05);
+            --shadow-dark: 5px 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            perspective: 1000px;
+            overflow-x: hidden;
+        }
+
+        /* 3D Container Titles */
+        h2, h3 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== 3D SEARCH BAR ===== */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            transform-style: preserve-3d;
+        }
+
+        .glass-input, .glass-select, .glass-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-dark);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .glass-input::placeholder { color: rgba(255,255,255,0.6); }
+
+        .glass-btn {
+            background: var(--btn-grad);
+            cursor: pointer;
+            font-weight: bold;
+            transform: translateZ(0);
+        }
+
+        .glass-btn:active {
+            transform: scale(0.95);
+        }
+
+        .reset-link {
+            color: #fff;
+            align-self: center;
+            border-bottom: 1px dashed #fff;
+        }
+
+        /* ===== 3D GRID LAYOUT (REPLACING TABLE) ===== */
+        .grid-3d {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== 3D CARD STYLES ===== */
+        .card-3d {
+            background: var(--card-bg);
+            border-top: 1px solid var(--card-border);
+            border-left: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
+            transition: 0.5s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Hover Effect for 3D Tilt */
+        .card-3d:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 35px rgba(233, 69, 96, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .status-badge {
+            font-size: 0.8em;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+        }
+        .status-active { color: #4eff8a; box-shadow: 0 0 10px #4eff8a; }
+        .status-inactive { color: #ff4e4e; box-shadow: 0 0 10px #ff4e4e; }
+
+        .media-preview {
+            width: 100%;
+            height: 180px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .media-preview video, .media-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+            cursor: pointer;
+        }
+
+        .media-preview:hover img, .media-preview:hover video {
+            transform: scale(1.1);
+        }
+
+        .card-details h4 { margin: 0 0 10px 0; color: #fff; }
+        .card-details p { font-size: 0.9em; color: rgba(255,255,255,0.7); }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .btn-3d {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 0.85em;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-3d:hover { background: var(--accent-color); color: #fff; box-shadow: 0 0 15px var(--accent-color); }
+        .btn-delete:hover { background: #ff4757; box-shadow: 0 0 15px #ff4757; }
+
+        .add-btn-wrapper { text-align: center; margin: 20px; }
+        .add-btn {
+            display: inline-block;
+            background: var(--btn-grad);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.4);
+            transition: 0.3s;
+        }
+        .add-btn:hover { transform: translateY(-3px) scale(1.05); }
+
+        /* ===== MODAL 3D ===== */
+        .media-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-box {
+            background: rgba(20, 20, 30, 0.95);
+            width: 80%; max-width: 900px;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 50px rgba(233, 69, 96, 0.3);
+            text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5) rotateX(-90deg); opacity: 0; }
+            100% { transform: scale(1) rotateX(0); opacity: 1; }
+        }
+
+        .modal-box img, .modal-box video {
+            max-width: 100%; max-height: 70vh;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .close-btn {
+            position: absolute; top: -15px; right: -15px;
+            background: var(--accent-color);
+            color: #fff;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            line-height: 40px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .close-btn:hover { transform: rotate(90deg); }
+
+        hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); margin: 40px 0; }
+        
+        .empty-state { text-align: center; color: rgba(255,255,255,0.5); width: 100%; grid-column: 1 / -1; }
+    </style>
+</head>
+
+<body>
+
+<h2>Admin – Media Management</h2>
+
+<form method="get" class="search-container">
+    <input type="text"
+           name="search"
+           class="glass-input"
+           placeholder="Search title / description..."
+           value="{{ search }}"
+           style="width: 300px;">
+
+    <select name="status" class="glass-select">
+        <option value="" style="color:#000;">All Status</option>
+        <option value="active" style="color:#000;" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" style="color:#000;" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" class="glass-btn">🔍 Search</button>
+    <a href="{% url 'admin_media_list' %}" class="reset-link">🔄 Reset</a>
+</form>
+
+<hr>
+
+<h3>📹 Session Videos</h3>
+<div class="add-btn-wrapper">
+    <a href="/admin/courses/sessionvideo/add/" class="add-btn">➕ Add New Video</a>
+</div>
+
+<div class="grid-3d">
+    {% for video in videos %}
+    <div class="card-3d" data-tilt>
+        <div class="card-header">
+            <span style="font-weight:bold; color:var(--accent-color);">#{{ forloop.counter }}</span>
+            <span class="status-badge {% if video.is_active %}status-active{% else %}status-inactive{% endif %}">
+                {% if video.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+        </div>
+
+        <div class="media-preview">
+            {% if video.video %}
+                <video muted preload="metadata" onclick="openVideo('{{ video.video.url }}')">
+                    <source src="{{ video.video.url }}">
+                </video>
+                <div style="position:absolute; pointer-events:none; font-size:30px;">▶️</div>
+            {% else %}
+                <span style="color:gray;">No Preview</span>
+            {% endif %}
+        </div>
+
+        <div class="card-details">
+            <h4>{{ video.title }}</h4>
+            <p>{{ video.description|truncatechars:60 }}</p>
+            <p style="font-size:0.8em; color:#aaa;">👤 {{ video.created_by.username }}</p>
+        </div>
+
+        <div class="action-buttons">
+            {% if video.video %}
+                <a href="{{ video.video.url }}" download class="btn-3d">⬇ Save</a>
+            {% else %}
+                <span class="btn-3d" style="opacity:0.5; cursor:not-allowed;">-</span>
+            {% endif %}
+            
+            <a href="/admin/courses/sessionvideo/{{ video.id }}/change/" class="btn-3d">✏️ Edit</a>
+            <a href="/admin/courses/sessionvideo/{{ video.id }}/delete/" 
+               class="btn-3d btn-delete" 
+               onclick="return confirm('Are you sure you want to delete this video?')">🗑 Del</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state"><h3>No session videos found 🕸️</h3></div>
+    {% endfor %}
+</div>
+
+<hr>
+
+<h3>🖼️ Advertisements / Pamphlets</h3>
+<div class="add-btn-wrapper">
+    <a href="/admin/courses/advertisement/add/" class="add-btn">➕ Add New Ad</a>
+</div>
+
+<div class="grid-3d">
+    {% for ad in ads %}
+    <div class="card-3d" data-tilt>
+        <div class="card-header">
+            <span style="font-weight:bold; color:var(--accent-color);">#{{ forloop.counter }}</span>
+            <span class="status-badge {% if ad.is_active %}status-active{% else %}status-inactive{% endif %}">
+                {% if ad.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+        </div>
+
+        <div class="media-preview">
+            <img src="{{ ad.image.url }}" onclick="openImage('{{ ad.image.url }}')">
+        </div>
+
+        <div class="card-details">
+            <h4>{{ ad.title }}</h4>
+            <p>{{ ad.description|truncatechars:50 }}</p>
+            <p style="font-size:0.8em; color:#aaa;">📅 {{ ad.created_at|date:"d M Y" }}</p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ ad.image.url }}" download class="btn-3d">⬇ Save</a>
+            <a href="/admin/courses/advertisement/{{ ad.id }}/change/" class="btn-3d">✏️ Edit</a>
+            <a href="/admin/courses/advertisement/{{ ad.id }}/delete/" 
+               class="btn-3d btn-delete"
+               onclick="return confirm('Are you sure you want to delete this ad?')">🗑 Del</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state"><h3>No advertisements found 🕸️</h3></div>
+    {% endfor %}
+</div>
+
+<br><br>
+<div style="text-align:center; margin-bottom: 40px;">
+    <a href="{% url 'admin_dashboard' %}" class="glass-btn">⬅ Back to Dashboard</a>
+</div>
+
+<div id="mediaModal" class="media-modal" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="close-btn" onclick="closeModal()">×</div>
+        <img id="modalImage" style="display:none;">
+        <video id="modalVideo" controls style="display:none; width:100%;"></video>
+    </div>
+</div>
+
+<script>
+    // Simple 3D Tilt Effect using Vanilla JS
+    document.querySelectorAll('.card-3d').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Calculate rotation
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg rotation
+            const rotateY = ((x - centerX) / centerX) * 10;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+
+    // Modal Logic
+    function openImage(src) {
+        document.getElementById("mediaModal").style.display = "block";
+        const img = document.getElementById("modalImage");
+        img.style.display = "inline-block";
+        img.src = src;
+        
+        const vid = document.getElementById("modalVideo");
+        vid.style.display = "none";
+        vid.pause();
+    }
+
+    function openVideo(src) {
+        document.getElementById("mediaModal").style.display = "block";
+        const vid = document.getElementById("modalVideo");
+        vid.style.display = "inline-block";
+        vid.src = src;
+        
+        document.getElementById("modalImage").style.display = "none";
+    }
+
+    function closeModal() {
+        document.getElementById("mediaModal").style.display = "none";
+        const vid = document.getElementById("modalVideo");
+        vid.pause();
+        vid.src = "";
+    }
+</script>
+
+</body>
+</html>

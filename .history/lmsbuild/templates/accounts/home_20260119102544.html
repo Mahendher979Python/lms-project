@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ================= HOME PAGE STYLES ================= */
+
+    /* 1. HERO SECTION */
+    .hero {
+        padding: 80px 0;
+        background: linear-gradient(135deg, var(--bg-body) 0%, var(--bg-card) 100%);
+        position: relative;
+    }
+    .hero-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+    }
+    .hero-text { flex: 1; }
+    .hero-text h1 {
+        font-size: 48px;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        color: var(--text-main);
+    }
+    .hero-text span { color: var(--primary); }
+    .hero-text p {
+        font-size: 18px;
+        color: var(--text-light);
+        margin-bottom: 30px;
+    }
+
+    /* Functional Search Bar */
+    .search-box {
+        background: var(--bg-card);
+        padding: 8px;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Soft shadow */
+        display: flex;
+        border: 1px solid var(--border);
+        max-width: 450px;
+    }
+    .search-box input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        background: transparent;
+        color: var(--text-main);
+    }
+    .search-box button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .search-box button:hover { background: var(--primary-hover); }
+
+    .hero-img { flex: 1; text-align: right; }
+    .hero-img img {
+        width: 100%;
+        max-width: 550px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* Clean depth, no 3D tilt */
+    }
+
+    /* 2. STATS SECTION */
+    .stats {
+        background: var(--bg-card);
+        padding: 40px 0;
+        margin-top: -40px;
+        position: relative;
+        z-index: 2;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        border: 1px solid var(--border);
+    }
+    .stat-box h3 { font-size: 32px; color: var(--primary); margin-bottom: 5px; }
+    .stat-box p { color: var(--text-light); font-weight: 500; }
+
+    /* 3. COURSES SECTION */
+    .section-padding { padding: 80px 20px; max-width: 1200px; margin: auto; }
+    .section-header { text-align: center; margin-bottom: 50px; }
+    .section-header h2 { font-size: 36px; color: var(--text-main); margin-bottom: 10px; }
+    .section-header p { color: var(--text-light); }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-8px); /* Subtle lift on hover */
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .card-img { height: 180px; width: 100%; object-fit: cover; }
+    .card-body { padding: 20px; }
+    .card-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-light); margin-bottom: 10px; }
+    .rating { color: #f59e0b; }
+    .card h3 { font-size: 20px; margin-bottom: 10px; color: var(--text-main); }
+    .instructor { display: flex; align-items: center; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); }
+    .instructor img { width: 35px; height: 35px; border-radius: 50%; }
+    .price { margin-left: auto; font-weight: bold; color: var(--primary); font-size: 18px; }
+
+    /* 4. CTA SECTION */
+    .cta {
+        background: var(--primary);
+        color: white;
+        text-align: center;
+        padding: 60px 20px;
+        border-radius: 20px;
+        margin: 80px 20px;
+    }
+    .cta h2 { margin-bottom: 15px; }
+    .btn-white {
+        background: white; color: var(--primary);
+        padding: 12px 30px; border-radius: 50px;
+        display: inline-block; font-weight: 700; margin-top: 20px;
+    }
+    .btn-white:hover { transform: scale(1.05); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-container { flex-direction: column; text-align: center; }
+        .stats { flex-direction: column; gap: 30px; margin: 20px; }
+        .search-box { margin: 0 auto 30px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-text">
+            <h1>Learn Skills for the <br><span>Future Today</span></h1>
+            <p>Access 500+ courses from industry experts. Upgrade your career with our LMS Platform.</p>
+
+            <form action="#" method="GET" class="search-box">
+                <input type="text" name="q" placeholder="Search for courses (e.g. Python)..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="hero-img">
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" alt="Learning">
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <div class="stat-box">
+        <h3>10k+</h3>
+        <p>Active Learners</p>
+    </div>
+    <div class="stat-box">
+        <h3>500+</h3>
+        <p>Video Courses</p>
+    </div>
+    <div class="stat-box">
+        <h3>4.8</h3>
+        <p>User Ratings</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="section-header">
+        <h2>Popular Courses</h2>
+        <p>Explore our top-rated content curated for you.</p>
+    </div>
+
+    <div class="grid-container">
+        <div class="card">
+            <img src="{% static 'images/webdevelopment.png' %}" onerror="this.src='https://images.unsplash.com/photo-1547658719-da2b51169166?w=500'" class="card-img">
+            <div class="card-body">
+                <div class="card-meta">
+                    <span><i class="fas fa-book-open"></i> 15 Lessons</span>
+                    <span class="rating"><i class="fas fa-star"></i> 4.9</span>
+                </div>
+                <h3>Complete Web Development</h3>
+                <div class="instructor">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg">
+                    <span style="font-size:14px; color:var(--text-light);">Prof. Mahendher</span>
+                    <span class="price">$49</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="{% static 'images/datascience.png' %}" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500'" class="card-img">
+            <div class="card-body">
+                <div class="card-meta">
+                    <span><i class="fas fa-video"></i> 22 Lessons</span>
+                    <span class="rating"><i class="fas fa-star"></i> 4.7</span>
+                </div>
+                <h3>Python Data Science</h3>
+                <div class="instructor">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg">
+                    <span style="font-size:14px; color:var(--text-light);">Prof. Shilpa</span>
+                    <span class="price">$59</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="{% static 'images/digitalmarket.png' %}" onerror="this.src='https://images.unsplash.com/photo-1557838923-2985c318be48?w=500'" class="card-img">
+            <div class="card-body">
+                <div class="card-meta">
+                    <span><i class="fas fa-clock"></i> 8 Weeks</span>
+                    <span class="rating"><i class="fas fa-star"></i> 4.5</span>
+                </div>
+                <h3>Digital Marketing Pro</h3>
+                <div class="instructor">
+                    <img src="https://randomuser.me/api/portraits/men/85.jpg">
+                    <span style="font-size:14px; color:var(--text-light);">Prof. John</span>
+                    <span class="price">Free</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <h2>Ready to start your journey?</h2>
+    <p>Join our community today and get access to free introductory courses.</p>
+    <a href="{% url 'login' %}" class="btn-white">Join Now</a>
+</section>
+
+{% endblock %}

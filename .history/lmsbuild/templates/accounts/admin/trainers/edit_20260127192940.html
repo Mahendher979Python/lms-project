@@ -1,0 +1,39 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<div class="form-wrapper">
+<div class="form-card">
+
+<h2>Edit Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<label>Username</label>
+<input name="username" value="{{ trainer.username }}">
+
+<label>Mobile</label>
+<input name="mobile" value="{{ trainer.mobile }}">
+
+<label>Employee ID</label>
+<input name="emp_id" value="{{ profile.emp_id }}">
+
+<label>Subject</label>
+<input name="subject" value="{{ profile.subject }}">
+
+<label>
+<input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+ Active
+</label>
+
+<br><br>
+
+<button class="btn-primary">Update</button>
+<a href="{% url 'trainer_list' %}">Back</a>
+
+</form>
+
+</div>
+</div>
+
+{% endblock %}

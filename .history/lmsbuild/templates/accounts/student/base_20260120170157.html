@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student | LMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg-dark:#0f172a;
+  --bg-panel:#111827;
+  --bg-light:#f1f5f9;
+  --text-main:#f8fafc;
+  --text-muted:#94a3b8;
+  --accent:#38bdf8;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI";}
+
+body{background:var(--bg-light);}
+
+.topbar{
+  height:60px;
+  background:var(--bg-panel);
+  color:var(--text-main);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 25px;
+}
+
+.layout{display:flex;min-height:calc(100vh - 60px);}
+
+.sidebar{
+  width:230px;
+  background:var(--bg-dark);
+  color:#fff;
+  padding:25px 15px;
+}
+
+.sidebar h3{
+  text-align:center;
+  margin-bottom:25px;
+  color:#60a5fa;
+}
+
+.menu a{
+  display:flex;
+  gap:10px;
+  padding:12px 15px;
+  margin-bottom:8px;
+  border-radius:10px;
+  color:#cbd5f5;
+  text-decoration:none;
+}
+
+.menu a:hover,
+.menu a.active{
+  background:var(--accent);
+  color:#000;
+}
+
+.content{
+  flex:1;
+  padding:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <h2>LMS Platform</h2>
+  <div>
+    👤 {{ request.user.username }} |
+    <a href="{% url 'logout' %}" style="color:#f87171;">Logout</a>
+  </div>
+</div>
+
+<div class="layout">
+
+  <div class="sidebar">
+    <h3>🎓 Student Panel</h3>
+    <div class="menu">
+      <a href="{% url 'student_dashboard' %}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'student_course_list' %}"><i class="fa-solid fa-book"></i> My Courses</a>
+      <a href="#"><i class="fa-solid fa-file-pen"></i> Assignments</a>
+      <a href="#"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+      <a href="#"><i class="fa-solid fa-folder-open"></i> Materials</a>
+       <div class="upgrade-box">
+      <h4>Upgrade Courses 🚀</h4>
+      <small>Unlock premium learning</small>
+      <button>Upgrade Now</button>
+    </div>
+    </div>
+  </div>
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+</div>
+
+</body>
+</html>

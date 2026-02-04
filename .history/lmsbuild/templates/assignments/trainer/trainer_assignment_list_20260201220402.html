@@ -1,0 +1,15 @@
+<h2>My Assignments</h2>
+
+<a href="{% url 'assignments:trainer_assignment_create' %}">➕ Create Assignment</a>
+
+<ul>
+{% for a in assignments %}
+<li>
+    {{ a.title }}
+    | <a href="{% url 'assignments:trainer_assignment_submissions' a.id %}">Submissions</a>
+    | <a href="{% url 'assignments:trainer_assignment_report' a.id %}">Report</a>
+</li>
+{% empty %}
+<li>No assignments</li>
+{% endfor %}
+</ul>

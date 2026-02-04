@@ -1,0 +1,74 @@
+{% extends "profiles/base.html" %}
+{% load static %}
+
+{% block title %}Admin Profile | LMS{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+
+    <div class="card-3d" style="display: flex; align-items: center; gap: 30px; padding: 40px;">
+        <div style="position: relative;">
+            {% if request.user.profile_pic %}
+                <img src="{{ request.user.profile_pic.url }}" class="avatar" style="width: 120px; height: 120px; border: 4px solid var(--bg-color);">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=ef4444&color=fff" 
+                     class="avatar" style="width: 120px; height: 120px; border: 4px solid var(--bg-color);">
+            {% endif %}
+            <div style="position: absolute; bottom: 5px; right: 5px; background: #10b981; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--bg-color);"></div>
+        </div>
+
+        <div style="flex: 1;">
+            <h2 style="margin: 0; font-size: 2rem; color: var(--text-main);">{{ request.user.username }}</h2>
+            <span class="badge" style="background: #fef2f2; color: #ef4444; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-top: 10px; display: inline-block; box-shadow: var(--shadow-in);">
+                Super Admin
+            </span>
+        </div>
+
+        <div>
+            <a href="{% url 'profile_edit' %}" class="btn-3d">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        
+        <div class="card-3d">
+            <h3 style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 20px;">
+                <i class="fas fa-info-circle" style="color: var(--brand-color);"></i> Account Details
+            </h3>
+            <div class="info-row"><span>Email:</span> <strong>{{ request.user.email }}</strong></div>
+            <div class="info-row"><span>Mobile:</span> <strong>{{ request.user.mobile|default:"--" }}</strong></div>
+            <div class="info-row"><span>Joined:</span> <strong>{{ request.user.date_joined|date:"M d, Y" }}</strong></div>
+        </div>
+
+        <div class="card-3d">
+            <h3 style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 20px;">
+                <i class="fas fa-key" style="color: var(--brand-color);"></i> System Privileges
+            </h3>
+            
+            <div class="info-row">
+                <span>Manage Users</span> 
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+            </div>
+            <div class="info-row">
+                <span>Manage Courses</span> 
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+            </div>
+            <div class="info-row">
+                <span>View Reports</span> 
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+            </div>
+            <div class="info-row">
+                <span>System Config</span> 
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.5); color: var(--text-main); }
+    .info-row:last-child { border-bottom: none; }
+</style>
+{% endblock %}

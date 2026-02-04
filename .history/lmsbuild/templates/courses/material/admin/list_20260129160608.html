@@ -1,0 +1,249 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<!-- External libs (keep here if not already in base.html) -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<style>
+:root {
+    --neon-cyan: #00f3ff;
+    --neon-lime: #ccff00;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.container { padding: 30px; }
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: var(--glass-border);
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-lime));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.btn-upload {
+    background: linear-gradient(135deg, var(--neon-lime), #a3cc00);
+    color: #000 !important;
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+    box-shadow: 0 0 15px rgba(204,255,0,0.2);
+}
+.btn-upload:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px var(--neon-lime);
+}
+
+/* Table */
+.material-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.material-table th {
+    text-align: left;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.material-table td {
+    background: rgba(255,255,255,0.03);
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.material-table td:first-child {
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px 0 0 12px;
+    font-weight: 600;
+    color: var(--neon-cyan);
+}
+
+.material-table td:last-child {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-radius: 0 12px 12px 0;
+    text-align: right;
+}
+
+.material-table tr:hover td {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--neon-cyan);
+}
+
+/* Actions */
+.download-link {
+    color: var(--neon-lime);
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+.download-link:hover { text-shadow: 0 0 10px var(--neon-lime); }
+
+.delete-btn {
+    color: #ff4545;
+    text-decoration: none;
+    font-size: 1.1rem;
+    margin-left: 15px;
+    transition: 0.3s;
+}
+.delete-btn:hover {
+    color: #ff0000;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.user-badge {
+    background: rgba(255,255,255,0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+#statsChart { height: 180px; width: 100%; }
+</style>
+
+<div class="container">
+  <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px;">
+
+    <!-- LEFT: MATERIAL LIST -->
+    <div class="glass-card">
+      <div class="header-row">
+        <div>
+          <h2 class="page-title"><i class="fa-solid fa-folder-tree"></i> Materials Vault</h2>
+          <p style="opacity:.6;margin:5px 0 0 0;">Course: {{ course.title }}</p>
+        </div>
+
+        <a href="{% url 'admin_material_upload' course.id %}" class="btn-upload">
+          <i class="fas fa-cloud-upload-alt"></i> New Upload
+        </a>
+      </div>
+
+      <table class="material-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Uploaded By</th>
+            <th>File</th>
+            <th style="text-align:right;">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for m in materials %}
+          <tr>
+            <td>
+              <i class="fa-regular fa-file-lines" style="margin-right:10px;opacity:.7;"></i>
+              {{ m.title }}
+            </td>
+
+            <td>
+              <span class="user-badge">
+                <i class="fa-solid fa-user-ninja" style="font-size:.7rem;margin-right:5px;"></i>
+                {{ m.uploaded_by.username }}
+              </span>
+            </td>
+
+            <td>
+              <a href="{{ m.file.url }}" target="_blank" class="download-link">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+            </td>
+
+            <td>
+              <a href="{% url 'admin_material_delete' m.id %}"
+                 class="delete-btn"
+                 onclick="return confirm('Delete this material permanently?')"
+                 title="Delete">
+                <i class="fa-solid fa-trash-can"></i>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" style="text-align:center;opacity:.5;padding:40px;">
+              System database empty: No materials found.
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RIGHT: STATS -->
+    <div class="glass-card">
+      <h4 style="color:var(--neon-cyan);margin-top:0;text-transform:uppercase;letter-spacing:1px;">
+        Storage Intel
+      </h4>
+
+      <div id="statsChart"></div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,.1);margin:20px 0;">
+
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;opacity:.8;">
+        <span>Total Assets:</span>
+        <span style="color:var(--neon-lime);font-weight:bold;">{{ materials.count }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var chartDom = document.getElementById('statsChart');
+var myChart = echarts.init(chartDom);
+
+var option = {
+  tooltip: { trigger: 'item' },
+  series: [{
+    type: 'pie',
+    radius: ['65%', '85%'],
+    avoidLabelOverlap: false,
+    itemStyle: {
+      borderRadius: 10,
+      borderColor: '#050a0f',
+      borderWidth: 2
+    },
+    label: { show: false },
+    data: [
+      { value: {{ materials.count }}, name: 'Active Files', itemStyle:{color:'#00f3ff'} },
+      { value: 5, name: 'Buffer', itemStyle:{color:'rgba(255,255,255,0.05)'} }
+    ]
+  }]
+};
+
+myChart.setOption(option);
+window.addEventListener('resize', function(){ myChart.resize(); });
+</script>
+
+{% endblock %}

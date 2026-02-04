@@ -1,0 +1,16 @@
+{% extends "accounts/base.html" %}
+
+{% block content %}
+
+<h1>Admin Dashboard</h1>
+<p>Welcome {{ request.user.username }}</p>
+
+<hr>
+
+<ul>
+  <li><a href="{% url 'admin_create_user' %}" class="btn">➕ Create User</a></li><br>
+  <li><a href="{% url 'admin_course_list' %}" class="btn">📚 Courses</a></li><br>
+  <li><a href="{% url 'admin_media_list' %}" class="btn">🎥 Media</a></li>
+</ul>
+
+{% endblock %}

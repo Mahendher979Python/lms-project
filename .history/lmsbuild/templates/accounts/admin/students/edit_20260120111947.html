@@ -1,0 +1,26 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Edit Student</h2>
+
+<p><b>Username:</b> {{ student.user.username }}</p>
+
+<form method="post">
+  {% csrf_token %}
+
+  <label>Courses</label><br>
+  <select name="courses" multiple>
+    {% for course in courses %}
+      <option value="{{ course.id }}"
+        {% if course in student.courses.all %}selected{% endif %}>
+        {{ course.title }}
+      </option>
+    {% endfor %}
+  </select><br><br>
+
+  <button type="submit">Update</button>
+</form>
+
+<a href="{% url 'student_list' %}">⬅ Back</a>
+
+{% endblock %}

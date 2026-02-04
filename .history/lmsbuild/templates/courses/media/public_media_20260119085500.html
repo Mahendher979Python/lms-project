@@ -1,0 +1,141 @@
+{% extends 'accounts/trainer/base.html' %}
+{% block title %}Session Videos & Updates{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Layout: 2 Columns (Videos Left, Ads Right) */
+    .media-container {
+        display: grid;
+        grid-template-columns: 3fr 1fr; /* 75% Videos, 25% Ads */
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* Video Card */
+    .video-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 24px;
+        transition: transform 0.2s;
+    }
+    .video-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+    .video-wrapper {
+        width: 100%;
+        background: #000;
+        aspect-ratio: 16 / 9; /* Cinematic Ratio */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .video-wrapper video { width: 100%; height: 100%; object-fit: contain; }
+
+    .video-body { padding: 20px; }
+    .video-title { margin: 0 0 8px 0; font-size: 1.25rem; color: #1e293b; }
+    .video-desc { color: #64748b; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+
+    /* Ad Card */
+    .ad-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .ad-card img { width: 100%; height: auto; display: block; }
+    .ad-footer { padding: 10px; font-size: 0.85rem; color: #94a3b8; background: #f8fafc; }
+
+    /* Responsive: Mobile lo single column avvali */
+    @media (max-width: 900px) {
+        .media-container { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="breadcrumbs">
+    <a href="{% url 'trainer_dashboard' %}">Dashboard</a> / 
+    <span>Session Videos</span>
+</div>
+
+<div class="page-header">
+    <h2>🎥 Session Recordings</h2>
+    <p style="color: #64748b;">Watch previous sessions and check latest updates.</p>
+</div>
+
+<div class="media-container">
+    
+    <div class="video-section">
+        {% for video in videos %}
+        <div class="video-card">
+            <div class="video-wrapper">
+                {% if video.video %}
+                    <video controls controlsList="nodownload">
+                        <source src="{{ video.video.url }}">
+                        Your browser does not support the video tag.
+                    </video>
+                {% elif video.video_url %}
+                    <div style="text-align: center; padding: 40px; color: white;">
+                        <p style="margin-bottom: 15px;">🔗 External Video Link</p>
+                        <a href="{{ video.video_url }}" target="_blank" class="btn btn-primary">
+                            ▶ Watch on External Site
+                        </a>
+                    </div>
+                {% else %}
+                    <div style="color: white;">No Video Source</div>
+                {% endif %}
+            </div>
+            
+            <div class="video-body">
+                <h3 class="video-title">{{ video.title }}</h3>
+                <p class="video-desc">{{ video.description|default:"No description provided." }}</p>
+                
+                <div style="display: flex; gap: 10px;">
+                    {% if video.video_url %}
+                        <a href="{{ video.video_url }}" target="_blank" class="btn btn-secondary btn-sm">
+                            🔗 Open Link
+                        </a>
+                    {% endif %}
+                    <button class="btn btn-secondary btn-sm">⬇ Resources</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div class="lms-card" style="text-align: center; padding: 40px;">
+                <h3>📭 No Videos Yet</h3>
+                <p>Check back later for session recordings.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="ad-section">
+        <h4 style="margin-top: 0; margin-bottom: 15px; color: #64748b;">📢 Updates & Promos</h4>
+        
+        {% for ad in ads %}
+        <div class="ad-card">
+            {% if ad.image %}
+                <img src="{{ ad.image.url }}" alt="{{ ad.title }}">
+            {% else %}
+                <div style="padding: 40px; background: #f1f5f9; color: #94a3b8;">No Image</div>
+            {% endif %}
+            
+            <div class="ad-footer">
+                <strong>{{ ad.title }}</strong>
+            </div>
+        </div>
+        {% empty %}
+            <p style="color: #cbd5e1; font-style: italic;">No active advertisements.</p>
+        {% endfor %}
+
+        <div class="lms-card" style="padding: 15px; text-align: center; margin-top: 20px;">
+            <strong style="display: block; margin-bottom: 10px;">📅 Next Session</strong>
+            <span style="color: #4f46e5; font-size: 1.2rem; font-weight: bold;">Tomorrow, 10 AM</span>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

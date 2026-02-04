@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LMS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    /* --- GLOBAL RESETS --- */
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f1f5f9; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* --- TOPBAR --- */
+    header.topbar { height: 60px; background: #1e293b; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+    header.topbar h2 { margin: 0; font-size: 20px; font-weight: 600; }
+    .user-info a { color: #f87171; text-decoration: none; font-weight: bold; margin-left: 10px; }
+
+    /* --- LAYOUT --- */
+    .container { display: flex; flex: 1; overflow: hidden; }
+
+    /* --- SIDEBAR --- */
+    .sidebar { width: 250px; background: #0f172a; color: #cbd5e1; display: flex; flex-direction: column; padding-top: 20px; border-right: 1px solid #334155; flex-shrink: 0; }
+    .sidebar a { display: block; padding: 14px 24px; color: #94a3b8; text-decoration: none; border-left: 3px solid transparent; transition: 0.2s; }
+    .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.06); color: white; border-left-color: #3b82f6; }
+
+    /* --- CONTENT AREA --- */
+    .content { flex: 1; padding: 30px; overflow-y: auto; background: #f8fafc; color: #333; }
+
+    /* --- COMMON UI ELEMENTS (Tables, Forms) --- */
+    h1, h2, h3 { color: #1e293b; margin-top: 0; }
+    
+    /* Tables */
+    table.admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    table.admin-table th, table.admin-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    table.admin-table th { background: #f1f5f9; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
+    table.admin-table tr:hover { background-color: #f8fafc; }
+
+    /* Buttons */
+    .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; cursor: pointer; border: none; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-danger { color: #ef4444; }
+    .btn-action { margin-right: 5px; color: #3b82f6; text-decoration: none; }
+
+    /* Forms */
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #475569; }
+    .form-control { width: 100%; max-width: 400px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <header class="topbar">
+    <h2>🚀 LMS Admin</h2>
+    <div class="user-info">
+      {{ request.user.username }} | <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <aside class="sidebar">
+      <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">📊 Dashboard</a>
+      <a href="{% url 'admin_create_user' %}" class="{% if request.resolver_match.url_name == 'admin_create_user' %}active{% endif %}">👤 Create User</a>
+      <a href="{% url 'admin_students' %}" class="{% if request.resolver_match.url_name == 'admin_students' %}active{% endif %}">🎓 Students</a>
+      <a href="{% url 'admin_trainers' %}" class="{% if request.resolver_match.url_name == 'admin_trainers' %}active{% endif %}">👨‍🏫 Trainers</a>
+      <a href="{% url 'admin_course_list' %}" class="{% if request.resolver_match.url_name == 'admin_course_list' %}active{% endif %}">📘 Courses</a>
+      <a href="{% url 'admin_media_list' %}" class="{% if request.resolver_match.url_name == 'admin_media_list' %}active{% endif %}">🎥 Media & Ads</a>
+      <a href="{% url 'admin_settings' %}" class="{% if request.resolver_match.url_name == 'admin_settings' %}active{% endif %}">⚙ Settings</a>
+    </aside>
+
+    <main class="content">
+      {% if messages %}
+        {% for message in messages %}
+          <div style="padding: 10px; margin-bottom: 20px; background: #dcfce7; color: #166534; border-radius: 6px;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "accounts\admin\base.html" %}
+
+{% block content %}
+
+<style>
+.form-box{
+  max-width:450px;margin:40px auto;background:#0f172a;
+  padding:30px;border-radius:16px;border:1px solid #1e293b;
+}
+input,select{
+  width:100%;padding:12px;margin-bottom:15px;
+  background:#020617;color:#fff;border:1px solid #1e293b;
+  border-radius:10px;
+}
+button{
+  width:100%;padding:12px;background:#22c55e;
+  border:none;border-radius:10px;font-weight:700;
+}
+</style>
+
+<div class="form-box">
+  <h2>Edit User</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    <input name="username" value="{{ user.username }}" required>
+    <input type="email" name="email" value="{{ user.email }}" required>
+
+    <input type="password" name="password" placeholder="New Password (optional)">
+
+    <select name="status">
+      <option value="active" {% if user.is_active %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if not user.is_active %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button>Update</button>
+  </form>
+</div>
+
+{% endblock %}

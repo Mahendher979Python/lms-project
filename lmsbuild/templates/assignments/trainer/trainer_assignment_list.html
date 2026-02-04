@@ -1,0 +1,12 @@
+<h2>Available Assignments</h2>
+
+<ul>
+{% for a in assignments %}
+<li>
+{{ a.title }}
+<a href="{% url 'assignments:start_exam' a.id %}">Start</a>
+</li>
+{% empty %}
+<li>No assignments</li>
+{% endfor %}
+</ul>

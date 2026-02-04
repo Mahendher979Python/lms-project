@@ -1,0 +1,145 @@
+{% extends 'accounts/trainer/base.html' %}
+
+{% block title %}Students | {{ course.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .student-container {
+        padding: 30px;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .student-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .table-header {
+        background: linear-gradient(90deg, #4f46e5, #6366f1);
+        padding: 20px 30px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-header h2 { margin: 0; font-size: 1.4rem; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 20px 30px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    td {
+        padding: 20px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background-color: #fcfdff; }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: #e0e7ff;
+        color: #4f46e5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .batch-badge {
+        background: #ecfdf5;
+        color: #059669;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid #d1fae5;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="student-container">
+    <div class="student-card">
+        <div class="table-header">
+            <h2>{{course.title}} Students</h2>
+            <span style="font-size: 0.9rem; opacity: 0.9;">Total: {{ students|length }}</span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Details</th>
+                    <th>Batch</th>
+                    <th style="text-align: right;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar-circle">
+                                {{ s.user.username|slice:":1" }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">{{ s.user.username }}</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">{{ s.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="batch-badge">{{ s.batch.name }}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <span style="color: #10b981; font-size: 0.9rem;">● Active</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">
+                        <div class="empty-state">
+                            <p style="font-size: 1.2rem;">No students found.</p>
+                            <p>Assigned students will appear here.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

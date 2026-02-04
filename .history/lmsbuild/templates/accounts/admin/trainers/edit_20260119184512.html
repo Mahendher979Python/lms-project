@@ -1,0 +1,20 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Edit Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="first_name" value="{{ trainer.first_name }}">
+<input name="surname" value="{{ trainer.surname }}">
+<input name="qualification" value="{{ trainer.qualification }}">
+<input name="designation" value="{{ trainer.designation }}">
+<input name="phone" value="{{ trainer.phone }}">
+<textarea name="address">{{ trainer.address }}</textarea>
+<input type="date" name="joining_date" value="{{ trainer.joining_date }}">
+
+<button class="btn btn-primary">Update</button>
+</form>
+
+{% endblock %}

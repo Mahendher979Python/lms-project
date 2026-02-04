@@ -1,0 +1,27 @@
+<h2>My Exam History</h2>
+
+<table border="1">
+<tr>
+  <th>Assignment</th>
+  <th>Attempt</th>
+  <th>Score</th>
+  <th>Status</th>
+</tr>
+
+{% for s in submissions %}
+<tr>
+  <td>{{ s.assignment.title }}</td>
+  <td>{{ s.attempt_number }}</td>
+  <td>{{ s.score }}</td>
+  <td>
+    {% if s.score >= s.assignment.pass_marks %}
+      PASS
+    {% else %}
+      FAIL
+    {% endif %}
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="4">No attempts yet</td></tr>
+{% endfor %}
+</table>

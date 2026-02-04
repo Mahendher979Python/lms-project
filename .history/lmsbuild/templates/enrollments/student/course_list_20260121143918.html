@@ -1,0 +1,161 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+/* ===============================
+   COURSE GRID
+================================ */
+.course-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:30px;
+  padding:10px;
+}
+
+/* ===============================
+   FOLDER CARD
+================================ */
+.folder-card{
+  background:linear-gradient(135deg,#facc15,#ca8a04);
+  height:200px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  font-weight:600;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 12px 30px rgba(0,0,0,.2);
+  transition:transform .3s;
+}
+
+.folder-card:hover{
+  transform:translateY(-6px);
+}
+
+/* ===============================
+   MODAL
+================================ */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.modal-box{
+  background:#fff;
+  width:420px;
+  max-height:80vh;
+  overflow-y:auto;
+  border-radius:14px;
+  padding:20px;
+  position:relative;
+}
+
+.close-btn{
+  position:absolute;
+  right:15px;
+  top:10px;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.topic-list{
+  list-style:none;
+  padding:0;
+  margin:10px 0;
+}
+
+.topic-list li{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.download-btn{
+  display:block;
+  margin-top:15px;
+  background:#16a34a;
+  color:#fff;
+  padding:10px;
+  text-align:center;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:500;
+}
+</style>
+
+<h2>📚 My Courses</h2>
+
+<!-- ===============================
+     COURSE LIST
+================================ -->
+<div class="course-grid">
+{% for course in courses %}
+  <div class="folder-card"
+       onclick="openCourse('{{ course.id }}','{{ course.title }}')">
+    {{ course.title }}
+  </div>
+{% empty %}
+  <p>No courses enrolled</p>
+{% endfor %}
+</div>
+
+<!-- ===============================
+     MODAL
+================================ -->
+<div id="courseModal" class="modal">
+  <div class="modal-box">
+    <span class="close-btn" onclick="closeModal()">×</span>
+
+    <h3 id="modalTitle"></h3>
+
+    <ul id="topicList" class="topic-list"></ul>
+
+    <a id="downloadBtn" class="download-btn">
+      📥 Download Course Materials
+    </a>
+  </div>
+</div>
+
+<!-- ===============================
+     SCRIPT
+================================ -->
+<script>
+function openCourse(courseId,title){
+  document.getElementById("modalTitle").innerText = title;
+  document.getElementById("courseModal").style.display = "flex";
+
+  fetch(`/courses/student/course/${courseId}/topics/`)
+    .then(res => res.json())
+    .then(data => {
+      let list = document.getElementById("topicList");
+      list.innerHTML = "";
+
+      data.topics.forEach(t => {
+        list.innerHTML += `
+          <li>
+            📘 ${t.title}
+            ${t.video ? `<a href="${t.video}" target="_blank">▶</a>` : ""}
+          </li>
+        `;
+      });
+
+      document.getElementById("downloadBtn").href =
+        `/courses/student/course/${courseId}/download/`;
+    });
+}
+
+function closeModal(){
+  document.getElementById("courseModal").style.display = "none";
+}
+</script>
+
+{% endblock %}

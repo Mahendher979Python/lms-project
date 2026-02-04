@@ -1,0 +1,97 @@
+{% extends "accounts/admin/base.html" %}
+
+
+{% block content %}
+
+<h2>🎥 Media Management</h2>
+
+<!-- SEARCH -->
+<form method="get" style="margin-bottom:20px;">
+<input name="search" value="{{ search }}" placeholder="Search..." />
+<select name="status">
+<option value="">All</option>
+<option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+<option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+</select>
+<button type="submit">Search</button>
+</form>
+
+<h3>📹 Session Videos</h3>
+<a href="/admin/courses/sessionvideo/add/" class="btn">➕ Add Video</a>
+
+<table border="1" width="100%" cellpadding="6">
+<tr>
+<th>#</th><th>Title</th><th>Status</th><th>Preview</th><th>Action</th>
+</tr>
+
+{% for video in videos %}
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{{ video.title }}</td>
+<td>{% if video.is_active %}✅{% else %}❌{% endif %}</td>
+<td>
+<video width="120" muted onclick="openVideo('{{ video.video.url }}')">
+<source src="{{ video.video.url }}">
+</video>
+</td>
+<td>
+<a href="/admin/courses/sessionvideo/{{ video.id }}/change/">✏️</a> |
+<a href="/admin/courses/sessionvideo/{{ video.id }}/delete/">🗑</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<hr>
+
+<h3>🖼 Advertisements</h3>
+<a href="/admin/courses/advertisement/add/" class="btn">➕ Add Ad</a>
+
+<table border="1" width="100%" cellpadding="6">
+<tr>
+<th>#</th><th>Title</th><th>Image</th><th>Status</th>
+</tr>
+
+{% for ad in ads %}
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{{ ad.title }}</td>
+<td>
+<img src="{{ ad.image.url }}" width="100"
+onclick="openImage('{{ ad.image.url }}')" style="cursor:pointer;">
+</td>
+<td>{% if ad.is_active %}✅{% else %}❌{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+
+<!-- MODAL -->
+<div id="mediaModal" class="media-modal" onclick="closeModal()">
+<div class="modal-box" onclick="event.stopPropagation()">
+<div class="close-btn" onclick="closeModal()">×</div>
+<img id="modalImage" style="display:none">
+<video id="modalVideo" controls style="display:none"></video>
+</div>
+</div>
+
+<script>
+function openImage(src){
+mediaModal.style.display="block";
+modalImage.style.display="block";
+modalVideo.style.display="none";
+modalImage.src=src;
+}
+function openVideo(src){
+mediaModal.style.display="block";
+modalVideo.style.display="block";
+modalImage.style.display="none";
+modalVideo.src=src;
+}
+function closeModal(){
+mediaModal.style.display="none";
+modalVideo.pause();
+modalVideo.src="";
+}
+</script>
+
+{% endblock %}

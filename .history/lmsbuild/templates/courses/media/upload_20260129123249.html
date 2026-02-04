@@ -1,0 +1,142 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+
+.upload-wrapper{
+max-width:600px;
+margin:auto;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:35px;
+box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+
+.upload-title{
+font-size:24px;
+font-weight:700;
+color:#38f9d7;
+margin-bottom:5px;
+}
+
+.upload-sub{
+opacity:.6;
+margin-bottom:25px;
+}
+
+.form-group{margin-bottom:20px;}
+
+label{display:block;margin-bottom:8px;color:#aaa;}
+
+input,select{
+width:100%;
+padding:12px 15px;
+border-radius:12px;
+background:#020617;
+border:1px solid rgba(255,255,255,.15);
+color:white;
+outline:none;
+}
+
+input:focus,select:focus{border-color:#38f9d7;}
+
+.drop-area{
+border:2px dashed rgba(255,255,255,.2);
+padding:35px;
+border-radius:15px;
+text-align:center;
+cursor:pointer;
+transition:.3s;
+}
+
+.drop-area:hover{border-color:#38f9d7;}
+
+.drop-area i{
+font-size:35px;
+color:#38f9d7;
+margin-bottom:10px;
+}
+
+.file-name{
+margin-top:10px;
+font-size:13px;
+opacity:.7;
+}
+
+.upload-btn{
+margin-top:20px;
+width:100%;
+background:linear-gradient(135deg,#38f9d7,#4facfe);
+border:none;
+padding:12px;
+border-radius:30px;
+font-weight:700;
+cursor:pointer;
+}
+
+.upload-btn:hover{
+box-shadow:0 0 20px #38f9d7;
+}
+
+</style>
+
+<div class="upload-wrapper">
+
+<div class="upload-title">
+<i class="fa-solid fa-cloud-arrow-up"></i> Upload Media
+</div>
+
+<div class="upload-sub">
+Upload PDF / Video / Image for courses
+</div>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="form-group">
+<label>Material Title</label>
+<input name="title" placeholder="Ex: Python Day 1 Notes" required>
+</div>
+
+<div class="form-group">
+<label>Select Course</label>
+<select name="course" required>
+<option value="">-- Select Course --</option>
+{% for c in courses %}
+<option value="{{c.id}}">{{c.title}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label>Upload File</label>
+
+<label class="drop-area">
+<i class="fa-solid fa-file-arrow-up"></i><br>
+Click to choose file
+<input type="file" hidden name="file" required onchange="showFile(this)">
+<div id="fileName" class="file-name"></div>
+</label>
+
+</div>
+
+<button class="upload-btn" type="submit">
+<i class="fa-solid fa-upload"></i> Upload
+</button>
+
+</form>
+
+</div>
+
+<script>
+function showFile(input){
+document.getElementById("fileName").innerText =
+"Selected: "+input.files[0].name;
+}
+</script>
+
+{% endblock %}

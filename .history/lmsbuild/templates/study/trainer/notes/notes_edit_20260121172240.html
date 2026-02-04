@@ -1,0 +1,36 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<h2>✏ Edit Note (Trainer)</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>
+    Title<br>
+    <input type="text" name="title" value="{{ note.title }}">
+  </p>
+
+  <p>
+    Description<br>
+    <textarea name="description">{{ note.description }}</textarea>
+  </p>
+
+  <p>
+    Replace File<br>
+    <input type="file" name="file">
+  </p>
+
+  <h4>Assign Students</h4>
+  {% for s in students %}
+    <input type="checkbox" name="assigned_to" value="{{ s.id }}"
+      {% if s in note.assigned_to.all %}checked{% endif %}>
+    {{ s.username }}<br>
+  {% endfor %}
+
+  <br>
+  <button type="submit">Update</button>
+  <a href="{% url 'trainer_notes_list' %}">Back</a>
+</form>
+
+{% endblock %}

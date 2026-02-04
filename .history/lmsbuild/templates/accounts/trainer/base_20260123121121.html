@@ -1,0 +1,315 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Trainer | LMS{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --success: #10b981;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --light-bg: #f1f5f9;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --sidebar-width: 270px;
+      --topbar-height: 70px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--light-bg);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--dark-bg);
+      color: #cbd5f5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      height: var(--topbar-height);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      margin-right: 12px;
+    }
+
+    .brand h2 {
+      color: #fff;
+      font-size: 1.2rem;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+    }
+
+    .nav-menu {
+      flex: 1;
+      padding: 20px 12px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin: 20px 10px 8px;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: #cbd5f5;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      transition: 0.25s;
+    }
+
+    .nav-link i {
+      width: 22px;
+      margin-right: 10px;
+      font-size: 1.1rem;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      color: #fff;
+    }
+
+    /* ================= MAIN ================= */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= TOPBAR ================= */
+    .topbar {
+      height: var(--topbar-height);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-title {
+      font-weight: 600;
+      color: var(--primary-dark);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-pill {
+      background: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #fee2e2;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: var(--danger);
+      color: #fff;
+      transform: rotate(90deg);
+    }
+
+    /* ================= CONTENT ================= */
+    .content-area {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* ================= COMMON UI ================= */
+    .lms-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f1f5f9;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar">
+  <div class="brand">
+    <img src="{% static 'images/logo.png' %}">
+    <h2>LMS Trainer</h2>
+  </div>
+
+  <nav class="nav-menu">
+
+    <div class="section-title">Main</div>
+    <a href="{% url 'trainer_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'trainer_dashboard' %}active{% endif %}">
+      <i class="fa-solid fa-gauge-high"></i> Dashboard
+    </a>
+
+    <div class="section-title">Teaching</div>
+    <a href="{% url 'trainer_course_list' %}" class="nav-link">
+      <i class="fa-solid fa-book"></i> My Courses
+    </a>
+    <a href="{% url 'trainer_course_create' %}" class="nav-link">
+      <i class="fa-solid fa-plus-circle"></i> Add Course
+    </a>
+
+    <div class="section-title">Assignments</div>
+    <a href="{% url 'assignments:trainer_assignment_list' %}" class="nav-link">
+      <i class="fa-solid fa-pen-to-square"></i> Assignments
+    </a>
+    <a href="{% url 'assignments:trainer_assignment_create' %}" class="nav-link">
+      <i class="fa-solid fa-circle-plus"></i> Create Assignment
+    </a>
+
+    <div class="section-title">Records</div>
+    <a href="{% url 'trainer_attendance' %}" class="nav-link">
+      <i class="fa-solid fa-calendar-check"></i> Attendance
+    </a>
+
+    <hr style="border-color:rgba(255,255,255,0.1)">
+
+    <a href="{% url 'profile_view' %}" class="nav-link">
+      <i class="fa-solid fa-user"></i> My Profile
+    </a>
+
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<div class="main-wrapper">
+
+  <header class="topbar">
+    <div class="page-title">
+      {% block page_title %}Trainer Panel{% endblock %}
+    </div>
+
+    <div class="user-actions">
+      <div class="user-pill">
+        {{ request.user.username|title }}
+      </div>
+      <button class="logout-btn" onclick="confirmLogout()">
+        <i class="fa-solid fa-power-off"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="content-area">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+
+<script>
+  function confirmLogout() {
+    Swal.fire({
+      title: "Logout?",
+      text: "You will be logged out",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      confirmButtonText: "Logout"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "{% url 'logout' %}";
+      }
+    });
+  }
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

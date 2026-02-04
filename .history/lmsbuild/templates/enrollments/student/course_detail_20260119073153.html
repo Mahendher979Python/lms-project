@@ -1,0 +1,56 @@
+{% extends "accounts/student/base.html" %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lesson-list { display: flex; flex-direction: column; gap: 15px; }
+    .lesson-item {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid #cbd5e1;
+    }
+    .lesson-item:hover { border-left-color: var(--accent); }
+    .lesson-info h4 { font-size: 16px; margin-bottom: 5px; }
+    .lesson-info p { font-size: 13px; color: #64748b; margin: 0; }
+    .status-icon { color: #10b981; margin-right: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <a href="{% url 'student_course_list' %}" style="color: #64748b; font-size: 14px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Courses
+        </a>
+        <h2 style="margin-top: 10px;">{{ course.title }}</h2>
+        <p>{{ course.description }}</p>
+    </div>
+
+    <h3 style="margin-bottom: 20px; font-size: 18px;">Curriculum</h3>
+
+    {% if lessons %}
+    <div class="lesson-list">
+        {% for lesson in lessons %}
+        <div class="lesson-item">
+            <div class="lesson-info">
+                <h4><i class="fa-regular fa-circle-play"></i> {{ lesson.title }}</h4>
+                <p>{{ lesson.description|truncatechars:80 }}</p>
+            </div>
+            
+            <a href="{% url 'student_lesson_detail' course.id lesson.id %}" class="btn" style="background: var(--bg-dark);">
+                Start <i class="fa-solid fa-play"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>No lessons uploaded for this course yet.</p>
+    {% endif %}
+
+{% endblock %}

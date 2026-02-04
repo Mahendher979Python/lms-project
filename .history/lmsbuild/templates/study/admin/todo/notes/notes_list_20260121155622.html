@@ -1,0 +1,32 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>📘 Notes (Admin)</h2>
+<a href="{% url 'admin_notes_add' %}">➕ Add Notes</a>
+
+<table border="1" cellpadding="10" style="margin-top:15px;">
+<tr>
+  <th>Title</th>
+  <th>File</th>
+  <th>Actions</th>
+</tr>
+
+{% for note in notes %}
+<tr>
+  <td>{{ note.title }}</td>
+  <td>
+    {% if note.file %}
+      <a href="{{ note.file.url }}" target="_blank">View</a>
+    {% endif %}
+  </td>
+  <td>
+    <a href="{% url 'admin_notes_edit' note.id %}">Edit</a> |
+    <a href="{% url 'admin_notes_delete' note.id %}">Delete</a>
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="3">No Notes</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}

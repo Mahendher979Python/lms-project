@@ -1,0 +1,58 @@
+
+{% load static %}
+
+
+<style>
+.course-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+.course-card{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+.course-card h3{
+    margin-bottom:8px;
+}
+.course-card p{
+    margin:4px 0;
+    color:#555;
+}
+.btn{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 14px;
+    background:#2563eb;
+    color:#fff;
+    border-radius:6px;
+    text-decoration:none;
+}
+.btn:hover{ background:#1e40af; }
+</style>
+
+<h2>📚 Available Courses</h2>
+
+{% if courses %}
+<div class="course-grid">
+    {% for course in courses %}
+    <div class="course-card">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+        <p>👨‍🏫 Trainer: {{ course.trainer.username }}</p>
+
+        <a href="{% url 'student_course_detail' course.id %}" class="btn">
+            View Lessons
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No courses available</p>
+{% endif %}
+
+<a href="{% url 'student_dashboard' %}">⬅ Back</a>
+
+

@@ -1,0 +1,80 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.form-box{
+  max-width:800px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+.form-box h2{margin-bottom:15px}
+label{font-weight:600}
+input, textarea, select{
+  width:100%;
+  padding:8px;
+  margin:5px 0 15px;
+}
+.assign-box{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.btn{
+  padding:8px 16px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn-save{background:#4f46e5;color:#fff}
+.btn-back{margin-left:10px}
+</style>
+
+<div class="form-box">
+<h2>➕ Add New Note</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label>
+<input type="text" name="title" required>
+
+<label>Description</label>
+<textarea name="description"></textarea>
+
+<label>Upload File</label>
+<input type="file" name="file">
+
+<label>Course</label>
+<select name="course">
+  <option value="">-- Optional --</option>
+  {% for c in courses %}
+    <option value="{{ c.id }}">{{ c.title }}</option>
+  {% endfor %}
+</select>
+
+<label>Visibility</label>
+<select name="visibility" required>
+  <option value="private">Private</option>
+  <option value="public">Public</option>
+</select>
+
+<h4>Assign To</h4>
+<div class="assign-box">
+{% for user in trainers %}
+<label><input type="checkbox" name="assigned_to" value="{{ user.id }}"> {{ user.username }} (Trainer)</label>
+{% endfor %}
+{% for user in students %}
+<label><input type="checkbox" name="assigned_to" value="{{ user.id }}"> {{ user.username }} (Student)</label>
+{% endfor %}
+</div>
+
+<br>
+<button class="btn btn-save">Save</button>
+<a href="{% url 'admin_notes_list' %}" class="btn btn-back">Cancel</a>
+
+</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Todo</title>
+</head>
+<body>
+
+<h2>➕ Add Todo</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>
+    Title:<br>
+    <input type="text" name="title" required>
+  </p>
+
+  <p>
+    Description:<br>
+    <textarea name="description"></textarea>
+  </p>
+
+  <p>
+    Upload File (optional):<br>
+    <input type="file" name="file">
+  </p>
+
+  <p>
+    Assign Students:<br>
+    {% for student in students %}
+      <input type="checkbox" name="students" value="{{ student.id }}">
+      {{ student.username }} <br>
+    {% endfor %}
+  </p>
+
+  <button type="submit">Save Todo</button>
+</form>
+
+</body>
+</html>

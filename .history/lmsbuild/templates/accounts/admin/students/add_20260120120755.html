@@ -1,0 +1,12 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Add Student</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Student</button>
+</form>
+
+{% endblock %}

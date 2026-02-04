@@ -1,0 +1,36 @@
+{% extends "accounts/trainer/base.html" %}
+
+{% block content %}
+<h2>➕ Add Todo</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>
+    Title:<br>
+    <input type="text" name="title" required>
+  </p>
+
+  <p>
+    Description:<br>
+    <textarea name="description"></textarea>
+  </p>
+
+  <p>
+    File (optional):<br>
+    <input type="file" name="file">
+  </p>
+
+  <p>
+    Assign Students:<br>
+    {% for student in students %}
+      <label>
+        <input type="checkbox" name="students" value="{{ student.id }}">
+        {{ student.username }}
+      </label><br>
+    {% endfor %}
+  </p>
+
+  <button type="submit">Save Todo</button>
+</form>
+{% endblock %}

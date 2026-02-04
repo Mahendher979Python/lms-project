@@ -1,0 +1,214 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        --trainer-primary: #4338ca;
+        --trainer-bg: #f3f4f6;
+    }
+
+    body { background-color: var(--trainer-bg); font-family: 'Inter', sans-serif; }
+
+    .main-wrapper { padding: 25px; }
+
+    /* Glassmorphism Header */
+    .trainer-header {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    /* Modern Table Design */
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+
+    .custom-table { width: 100%; border-collapse: collapse; }
+    .custom-table th {
+        background: #f8fafc;
+        padding: 15px;
+        font-weight: 600;
+        color: #475569;
+        text-align: left;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .custom-table td { padding: 16px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    
+    /* File Icons */
+    .file-icon { font-size: 1.5rem; margin-right: 12px; }
+    .pdf-clr { color: #ef4444; }
+    .vid-clr { color: #22c55e; }
+    .img-clr { color: #3b82f6; }
+
+    /* Action Buttons */
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-view { background: #e0e7ff; color: #4338ca; }
+    .btn-view:hover { background: #4338ca; color: white; }
+    .btn-del { background: #fee2e2; color: #dc2626; margin-left: 8px; }
+    .btn-del:hover { background: #dc2626; color: white; }
+    .btn-dl { background: #f1f5f9; color: #475569; margin-left: 8px; }
+
+    /* Preview Modal (Simple CSS) */
+    .preview-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8);
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        max-width: 80%;
+        max-height: 80%;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        position: relative;
+    }
+    .close-modal {
+        position: absolute;
+        top: -40px; right: 0;
+        color: white; font-size: 30px; cursor: pointer;
+    }
+</style>
+
+<div class="main-wrapper">
+    <div class="trainer-header">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">{{ course.title }}</h4>
+            <small class="text-muted">Manage your shared course materials</small>
+        </div>
+        <a href="{% url 'trainer_material_upload' course.id %}" class="btn btn-primary px-4 py-2" style="border-radius: 10px;">
+            <i class="fa-solid fa-cloud-arrow-up me-2"></i> Upload New
+        </a>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-end">
+        <input type="text" id="trainerSearch" class="form-control w-25 shadow-sm" placeholder="Search your materials...">
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table" id="trainerTable">
+            <thead>
+                <tr>
+                    <th>Material Details</th>
+                    <th>Uploaded Date</th>
+                    <th class="text-center">Control Center</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materials %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="file-icon">
+                                {% if ".pdf" in m.file.url %}
+                                    <i class="fa-solid fa-file-pdf pdf-clr"></i>
+                                {% elif ".mp4" in m.file.url or ".webm" in m.file.url %}
+                                    <i class="fa-solid fa-file-video vid-clr"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-file-image img-clr"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="fw-bold d-block text-dark">{{ m.title }}</span>
+                                <small class="text-muted text-uppercase" style="font-size: 10px;">{{ m.material_type|default:"Material" }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="text-secondary">{{ m.created_at|date:"d M, Y" }}</span></td>
+                    <td class="text-center">
+                        <button onclick="openPreview('{{ m.file.url }}')" class="btn-action btn-view">
+                            <i class="fa-solid fa-eye"></i> Preview
+                        </button>
+                        
+                        <a href="{{ m.file.url }}" download class="btn-action btn-dl">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+
+                        <a href="{% url 'trainer_material_delete' m.id %}" 
+                           class="btn-action btn-del"
+                           onclick="return confirm('Confirm Delete: {{ m.title }}?')">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-box-archive fa-3x mb-3 d-block opacity-25"></i>
+                        No materials found for this course. Start uploading!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="previewModal" class="preview-modal">
+    <div class="modal-content text-center">
+        <span class="close-modal" onclick="closePreview()">&times;</span>
+        <div id="previewArea"></div>
+    </div>
+</div>
+
+<script>
+    // 1. Search Logic
+    document.getElementById('trainerSearch').addEventListener('keyup', function() {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#trainerTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    // 2. Preview Logic (Supports Images & PDF)
+    function openPreview(url) {
+        const modal = document.getElementById('previewModal');
+        const area = document.getElementById('previewArea');
+        area.innerHTML = ''; // Clear old preview
+
+        if(url.toLowerCase().endsWith('.pdf')) {
+            area.innerHTML = `<iframe src="${url}" width="600" height="500" style="border:none;"></iframe>`;
+        } else if (url.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+            area.innerHTML = `<img src="${url}" style="max-width:100%; max-height:500px; border-radius:8px;">`;
+        } else if (url.toLowerCase().match(/\.(mp4|webm)$/)) {
+            area.innerHTML = `<video controls style="max-width:100%; max-height:500px;"><source src="${url}" type="video/mp4"></video>`;
+        } else {
+            window.open(url, '_blank');
+            return;
+        }
+        
+        modal.style.display = 'flex';
+    }
+
+    function closePreview() {
+        document.getElementById('previewModal').style.display = 'none';
+        document.getElementById('previewArea').innerHTML = '';
+    }
+</script>
+
+{% endblock %}

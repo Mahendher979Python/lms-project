@@ -1,0 +1,39 @@
+{% extends 'accounts\trainer\base.html' %}
+
+{% block title %}Add/Edit Lesson{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h2>➕ Lesson – {{ course.title }}</h2>
+    </div>
+
+    <div class="card" style="max-width: 600px;">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <p>
+                <strong>{{ form.title.label }}</strong><br>
+                {{ form.title }}
+            </p>
+            <p>
+                <strong>{{ form.description.label }}</strong><br>
+                {{ form.description }}
+            </p>
+            <p>
+                <strong>{{ form.order.label }}</strong><br>
+                {{ form.order }}
+            </p>
+            <p>
+                <strong>{{ form.video.label }}</strong><br>
+                {{ form.video }}
+            </p>
+
+            <button type="submit" class="btn">💾 Save Lesson</button>
+        </form>
+    </div>
+
+    <br>
+    <a href="{% url 'trainer_lesson_list' course.id %}">
+        ⬅ Back to Lessons
+    </a>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "accounts/student/base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+  /* Page Header */
+  .page-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+  }
+  
+  .page-header h2 {
+    color: #1e293b;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  /* Grid Layout - Responsive Boxes */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 10px;
+  }
+
+  /* The Folder/Card Design */
+  .course-card {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Hover Effect - Lifts up like picking a folder */
+  .course-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    border-color: #3b82f6;
+  }
+
+  /* Folder Top / Image Placeholder */
+  .card-header-visual {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    position: relative;
+  }
+
+  /* Folder Tab look */
+  .card-header-visual::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 33px;
+    color: #2563eb;
+    background: white;
+    padding: 10px;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 2;
+  }
+
+  /* Card Body */
+  .card-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .course-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .course-desc {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 15px;
+    flex-grow: 1; /* Pushes button to bottom */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits text to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .instructor-info {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 20px;
+    background: #f1f5f9;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .instructor-info i {
+    margin-right: 8px;
+    color: #2563eb;
+  }
+
+  /* Button Styling */
+  .btn-view {
+    display: block;
+    text-align: center;
+    background: #2563eb;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .btn-view:hover {
+    background: #1d4ed8;
+  }
+
+  /* Empty State */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    background: #f8fafc;
+    border-radius: 12px;
+    color: #64748b;
+  }
+</style>
+
+<div class="page-header">
+  <h2>📚 My Learning Dashboard</h2>
+</div>
+
+<div class="course-grid">
+{% for course in courses %}
+  <div class="course-card">
+    
+    <div class="card-header-visual">
+      <i class="fas fa-book-open"></i> <div class="icon-overlay">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h3 class="course-title">{{ course.title }}</h3>
+      
+      <p class="course-desc">{{ course.description|truncatewords:20 }}</p>
+      
+      <div class="instructor-info">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span>Trainer: <strong>{{ course.trainer.username }}</strong></span>
+      </div>
+
+      <a href="{% url 'student_course_detail' course.id %}" class="btn-view">
+        Start Learning <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty-state">
+    <i class="fas fa-folder-open" style="font-size: 40px; margin-bottom: 15px;"></i>
+    <p>No courses assigned to you yet.</p>
+  </div>
+{% endfor %}
+</div>
+
+{% endblock %}

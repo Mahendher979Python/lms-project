@@ -1,0 +1,18 @@
+<h2>My Students</h2>
+
+<table border="1">
+<tr>
+    <th>Username</th>
+    <th>Roll No</th>
+    <th>Batch</th>
+</tr>
+
+{% for s in students %}
+<tr>
+    <td>{{ s.user.username }}</td>
+    <td>{{ s.roll_no }}</td>
+    <td>{{ s.batch }}</td>
+</tr>
+{% endfor %}
+
+</table>

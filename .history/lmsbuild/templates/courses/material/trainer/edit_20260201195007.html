@@ -1,0 +1,65 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .edit-container { max-width: 600px; margin: 50px auto; }
+    .edit-card {
+        background: white; padding: 40px; border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
+    }
+    .current-file {
+        background: #f8fafc; padding: 15px; border-radius: 12px;
+        border-left: 4px solid #f59e0b; margin-bottom: 25px;
+    }
+    .btn-update {
+        background: #10b981; color: white; border: none; padding: 12px;
+        border-radius: 10px; font-weight: 700; width: 100%; transition: 0.3s;
+    }
+    .btn-update:hover { background: #059669; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+</style>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <h4 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Material</h4>
+        
+        <form method="post" enctype="multipart/form-data" id="editForm">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="fw-bold text-muted small mb-2">TITLE</label>
+                <input type="text" name="title" class="form-control form-control-lg" 
+                       value="{{ material.title }}" required
+                       style="border-radius: 10px; font-size: 16px;">
+            </div>
+
+            <div class="current-file">
+                <p class="mb-1 small text-muted fw-bold">CURRENT FILE</p>
+                <a href="{{ material.file.url }}" target="_blank" class="text-decoration-none text-warning fw-bold">
+                    <i class="fa-solid fa-file-lines me-1"></i> View Existing Document
+                </a>
+            </div>
+
+            <div class="mb-4">
+                <label class="fw-bold text-muted small mb-2">REPLACE FILE (OPTIONAL)</label>
+                <input type="file" name="file" class="form-control" style="border-radius: 10px;">
+                <small class="text-muted">Leave empty to keep the current file</small>
+            </div>
+
+            <button type="submit" class="btn-update" id="updateBtn">
+                Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('editForm').onsubmit = function() {
+        const btn = document.getElementById('updateBtn');
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Updating...`;
+        btn.style.opacity = '0.7';
+    }
+</script>
+
+{% endblock %}

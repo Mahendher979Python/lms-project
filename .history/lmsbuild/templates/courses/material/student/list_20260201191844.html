@@ -1,0 +1,25 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<h3>{{ course.title }} - Materials</h3>
+
+<table border="1" cellpadding="10">
+<tr>
+<th>#</th>
+<th>Title</th>
+<th>Type</th>
+<th>File</th>
+</tr>
+
+{% for m in materials %}
+<tr>
+<td>{{forloop.counter}}</td>
+<td>{{m.title}}</td>
+<td>{{m.material_type}}</td>
+<td><a href="{{m.file.url}}" target="_blank">View</a></td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

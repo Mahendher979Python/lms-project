@@ -1,0 +1,28 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<h2>Edit Student</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="first_name" value="{{ student.first_name }}">
+<input name="surname" value="{{ student.surname }}">
+<input name="phone" value="{{ student.phone }}">
+<input name="qualification" value="{{ student.qualification }}">
+<textarea name="address">{{ student.address }}</textarea>
+
+<label>Courses</label>
+<select name="courses" multiple>
+{% for c in courses %}
+<option value="{{ c.id }}"
+{% if c in student.courses.all %}selected{% endif %}>
+{{ c.title }}
+</option>
+{% endfor %}
+</select>
+
+<button class="btn btn-primary">Update</button>
+</form>
+
+{% endblock %}

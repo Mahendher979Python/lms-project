@@ -1,0 +1,39 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<h3>{{ course.title }} – My Materials</h3>
+
+<a href="{% url 'trainer_material_upload' course.id %}" class="btn btn-primary mb-3">
+Upload
+</a>
+
+<table class="table">
+<tr>
+<th>Title</th>
+<th>Preview</th>
+<th>Actions</th>
+</tr>
+
+{% for m in materials %}
+<tr>
+<td>{{ m.title }}</td>
+
+<td>
+<a href="{{ m.file.url }}" target="_blank">View</a>
+</td>
+
+<td>
+<a href="{% url 'trainer_material_delete' m.id %}"
+   onclick="return confirm('Delete this material?')">
+Delete
+</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="3">No materials found.</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

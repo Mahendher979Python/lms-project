@@ -1,0 +1,59 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+.form-box{
+  max-width:700px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+label{font-weight:600}
+input, textarea{
+  width:100%;
+  padding:8px;
+  margin:5px 0 15px;
+}
+.assign-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer}
+.btn-save{background:#4f46e5;color:#fff}
+</style>
+
+<div class="form-box">
+<h2>➕ Add Note</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label>Title</label>
+<input type="text" name="title" required>
+
+<label>Description</label>
+<textarea name="description"></textarea>
+
+<label>Upload File</label>
+<input type="file" name="file">
+
+<h4>Assign Students</h4>
+<div class="assign-grid">
+{% for user in students %}
+<label>
+<input type="checkbox" name="assigned_to" value="{{ user.id }}">
+{{ user.username }}
+</label>
+{% endfor %}
+</div>
+
+<br>
+<button class="btn btn-save">Save Note</button>
+<a href="{% url 'trainer_notes_list' %}">Cancel</a>
+
+</form>
+</div>
+
+{% endblock %}

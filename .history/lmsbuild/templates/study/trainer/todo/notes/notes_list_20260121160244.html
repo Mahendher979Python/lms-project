@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chalkboard-teacher text-success"></i> My Shared Notes</h2>
+        <a href="{% url 'trainer_notes_add' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Share New Note
+        </a>
+    </div>
+
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body p-2">
+            <input type="text" id="trainerSearch" onkeyup="filterTable('trainerSearch', 'trainerTable')" 
+                   class="form-control border-0" placeholder="Search your notes...">
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="trainerTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="width: 30%;">Title</th>
+                            <th style="width: 40%;">Description</th>
+                            <th style="width: 15%;">Assigned</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ note.title }}</div>
+                                <div class="text-muted small">
+                                    <i class="far fa-calendar-alt"></i> {{ note.created_at|date:"M d, Y" }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="desc-truncate">{{ note.description }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ note.assigned_to.count }} Students</span>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'trainer_notes_edit' note.pk %}" class="btn btn-sm btn-outline-primary btn-icon">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger btn-icon" disabled title="Contact Admin to Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <p class="text-muted">You haven't shared any notes yet.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

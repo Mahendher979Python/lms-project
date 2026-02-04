@@ -1,0 +1,137 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .glass-form-container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+
+    .form-title {
+        font-size: 28px;
+        background: linear-gradient(135deg, #38f9d7, #4facfe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .custom-input, .custom-select {
+        width: 100%;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 15px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 20px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .custom-input:focus { border-color: #38f9d7; box-shadow: 0 0 10px rgba(56, 249, 215, 0.3); }
+
+    /* 3D Dropzone */
+    .dropzone {
+        border: 2px dashed rgba(255,255,255,0.2);
+        padding: 50px;
+        border-radius: 20px;
+        text-align: center;
+        background: rgba(255,255,255,0.02);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .dropzone:hover {
+        border-color: #4facfe;
+        background: rgba(79, 172, 254, 0.05);
+        transform: perspective(1000px) rotateX(5deg);
+    }
+
+    .upload-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #38f9d7, #4facfe);
+        border: none;
+        padding: 15px;
+        border-radius: 50px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 20px;
+        transition: 0.4s;
+    }
+
+    .upload-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(56, 249, 215, 0.4);
+    }
+
+    #file-preview-name {
+        margin-top: 15px;
+        color: #38f9d7;
+        font-size: 0.9em;
+    }
+</style>
+
+<div class="glass-form-container">
+    <div class="form-title">Upload Knowledge Asset</div>
+
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+
+        <label class="small text-muted mb-2">Resource Title</label>
+        <input type="text" name="title" class="custom-input" placeholder="e.g. Advanced Python Module 1" required>
+
+        <label class="small text-muted mb-2">Associated Course</label>
+        <select name="course" class="custom-select" required>
+            <option value="">Select Target Course</option>
+            {% for c in courses %}
+            <option value="{{c.id}}">{{c.title}}</option>
+            {% endfor %}
+        </select>
+
+        <label class="dropzone" id="dropzone">
+            <i class="fa-solid fa-cloud-arrow-up fa-3x mb-3" style="color: #4facfe;"></i>
+            <h5 class="text-white">Drag & Drop File Here</h5>
+            <p class="text-muted small">Supports: MP4, PDF, PNG, JPG</p>
+            <input type="file" name="file" id="fileInput" hidden required onchange="handleFile(this)">
+            <div id="file-preview-name"></div>
+        </label>
+
+        <button type="submit" class="upload-btn">
+            Deploy to Server
+        </button>
+    </form>
+</div>
+
+<script>
+    function handleFile(input) {
+        const fileName = input.files[0].name;
+        const preview = document.getElementById('file-preview-name');
+        
+        // Visual feedback based on file type
+        let icon = '<i class="fa-solid fa-file me-2"></i>';
+        if(fileName.toLowerCase().endsWith('.pdf')) icon = '<i class="fa-solid fa-file-pdf me-2 text-danger"></i>';
+        if(fileName.toLowerCase().endsWith('.mp4')) icon = '<i class="fa-solid fa-video me-2 text-info"></i>';
+        
+        preview.innerHTML = icon + "<strong>Target:</strong> " + fileName;
+        
+        // Add a 3D pulse effect on select
+        document.getElementById('dropzone').style.borderColor = '#38f9d7';
+    }
+
+    // Drag and Drop visual feedback
+    const dz = document.getElementById('dropzone');
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "rgba(56, 249, 215, 0.1)"; });
+    dz.addEventListener('dragleave', () => { dz.style.background = "transparent"; });
+</script>
+
+{% endblock %}

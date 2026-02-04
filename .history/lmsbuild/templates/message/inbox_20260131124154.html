@@ -1,0 +1,84 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+    .glass-container {
+        perspective: 1000px;
+        padding: 20px;
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 25px;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+    .custom-table th {
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 1px;
+        padding: 10px;
+    }
+    .msg-row {
+        background: #fff;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    .msg-row:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        background: #f8faff;
+    }
+    .msg-row td {
+        padding: 15px;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .msg-row td:first-child { border-left: 1px solid #f0f0f0; border-radius: 10px 0 0 10px; }
+    .msg-row td:last-child { border-right: 1px solid #f0f0f0; border-radius: 0 10px 10px 0; }
+    .unread { border-left: 4px solid #4f46e5 !important; font-weight: bold; }
+    .btn-new {
+        background: linear-gradient(135deg, #4f46e5, #9333ea);
+        color: white; padding: 10px 20px; border-radius: 8px;
+        text-decoration: none; display: inline-block; margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+</style>
+
+<div class="glass-container">
+    <a href="/message/send/" class="btn-new">＋ New Message</a>
+    <div class="glass-card">
+        <h2 style="margin-bottom:20px;">Inbox</h2>
+        <table class="custom-table">
+            <thead>
+                <tr><th>Sender</th><th>Subject</th><th>Preview</th></tr>
+            </thead>
+            <tbody>
+                {% for m in messages %}
+                <tr class="msg-row {% if not m.is_read %}unread{% endif %}" onclick="viewMessage('{{m.id}}')">
+                    <td><strong>{{m.sender.username}}</strong></td>
+                    <td>{{m.subject}}</td>
+                    <td style="color:#666;">{{m.body|truncatechars:40}}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" style="text-align:center;">No messages yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function viewMessage(id) {
+        window.location.href = '/message/view/' + id + '/';
+    }
+</script>
+{% endblock %}

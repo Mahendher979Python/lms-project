@@ -1,0 +1,275 @@
+{% extends 'accounts\trainer\base.html' %}
+
+
+{% block title %}Trainer Dashboard | LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===== 1. VARIABLES & RESET ===== */
+    :root {
+        --dark: #0f172a;
+        --panel: #1e293b;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --bg-body: #f1f5f9;
+        --white: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
+    body { 
+        background: var(--bg-body); 
+        color: #333; 
+        /* FIX: Allow body to scroll naturally */
+        min-height: 100vh; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ===== 2. LAYOUT STRUCTURE ===== */
+    .topbar {
+        height: 60px;
+        background: var(--panel);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 25px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        
+        /* FIX: Keep Topbar fixed at the top */
+        position: fixed; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+
+    /* FIX: Add padding to top of layout so content isn't hidden behind fixed header */
+    .layout { 
+        display: flex; 
+        margin-top: 60px; 
+        min-height: calc(100vh - 60px);
+    }
+
+    /* ===== 3. SIDEBAR ===== */
+    .sidebar {
+        width: 250px;
+        background: var(--dark);
+        color: white;
+        padding: 25px 15px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+
+        /* FIX: Make Sidebar Sticky so it stays visible while scrolling */
+        position: fixed;
+        top: 60px; /* Height of topbar */
+        left: 0;
+        bottom: 0;
+        height: calc(100vh - 60px);
+        overflow-y: auto; /* Scroll sidebar if menu is too long */
+    }
+
+    /* Scrollbar styling for Sidebar (Optional) */
+    .sidebar::-webkit-scrollbar { width: 5px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 5px; }
+
+    /* ===== 4. MAIN CONTENT AREA ===== */
+    .content {
+        flex: 1;
+        padding: 30px;
+        
+        /* FIX: Push content to the right of the fixed sidebar */
+        margin-left: 250px; 
+        
+        /* FIX: Remove overflow hidden/auto so the main window scrolls */
+        overflow: visible; 
+    }
+
+    /* ===== 5. CONTENT STYLING ===== */
+    .header {
+        background: var(--white);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border-left: 5px solid var(--accent);
+    }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    
+    .card {
+        background: var(--white);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card h3 { margin-bottom: 10px; color: var(--panel); }
+    .card p { color: #64748b; font-size: 0.9rem; margin-bottom: 15px; }
+
+    .btn, .card a {
+        display: inline-block;
+        padding: 8px 16px;
+        background: var(--accent);
+        color: #0f172a;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+    }
+    .btn:hover, .card a:hover { background: #0ea5e9; color: white; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-top: 15px;
+    }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; font-weight: 600; color: var(--panel); }
+    tr:hover { background: #f1f5f9; }
+
+    input[type="text"], input[type="number"], textarea, select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+
+    /* Mobile Responsive Fix */
+    @media (max-width: 768px) {
+        .sidebar { display: none; } /* Hide sidebar on mobile for now */
+        .content { margin-left: 0; }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Dashboard Overview</h2>
+    <p>Welcome back, <strong>{{ request.user.username }}</strong>! Here is what's happening today.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card bg-blue">
+        <h3>📘 Total Courses</h3>
+        <p>{{ courses_count|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card bg-green">
+        <h3>📝 Assignments</h3>
+        <p>{{ assignments_count|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card bg-orange">
+        <h3>📤 Submissions</h3>
+        <p>{{ submissions_count|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card bg-purple">
+        <h3>📊 Attendance</h3>
+        <p>{{ attendance_percentage|default:"0" }}%</p>
+    </div>
+</div>
+
+<h3 class="section-title">⚡ Quick Actions</h3>
+<div class="cards">
+    
+    <div class="card action-card">
+        <i class="fa-solid fa-video"></i>
+        <h3>Manage Videos</h3>
+        <p>Upload session recordings</p>
+        <a href="{% url 'trainer_video_list' %}" class="btn">Go to Videos</a>
+    </div>
+
+    <div class="card action-card">
+        <i class="fa-solid fa-image"></i>
+        <h3>Manage Images</h3>
+        <p>Posters & Ads</p>
+        <a href="{% url 'trainer_ad_list' %}" class="btn">Go to Images</a>
+    </div>
+
+    <div class="card action-card">
+        <i class="fa-solid fa-plus"></i>
+        <h3>Add New Course</h3>
+        <p>Create a new curriculum</p>
+        <a href="{% url 'trainer_course_create' %}" class="btn">Create Course</a>
+    </div>
+
+</div>
+
+<h3 class="section-title">📂 Recent Courses</h3>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 Search course name...">
+</div>
+
+<table id="courseTable">
+    <thead>
+        <tr>
+            <th>Course Title</th>
+            <th>Students</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>
+                <strong>{{ course.title }}</strong><br>
+                <small style="color:#64748b">{{ course.level }}</small>
+            </td>
+            <td>0</td> <td>
+                {% if course.is_published %}
+                    <span class="status-badge status-active">Active</span>
+                {% else %}
+                    <span class="status-badge status-draft">Draft</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'upload_course_pdf' course.id %}" style="color: #2563eb; margin-right: 10px;">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+                <a href="{% url 'trainer_course_edit' course.id %}" style="color: #64748b;">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align:center; padding: 30px;">
+                No courses found. <a href="{% url 'trainer_course_create' %}">Create one now?</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple Client-side Search Script
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#courseTable tbody tr");
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

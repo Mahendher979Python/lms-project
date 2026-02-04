@@ -1,0 +1,26 @@
+<h2>Create Course</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<input name="title" placeholder="Course Title" required><br>
+
+<textarea name="description" placeholder="Description"></textarea><br>
+
+<select name="level">
+<option value="beginner">Beginner</option>
+<option value="intermediate">Intermediate</option>
+<option value="advanced">Advanced</option>
+</select><br>
+
+<input name="duration" placeholder="Duration"><br>
+
+<select name="trainer" required>
+<option value="">Select Trainer</option>
+{% for t in trainers %}
+<option value="{{ t.id }}">{{ t.user.username }}</option>
+{% endfor %}
+</select><br>
+
+<button type="submit">Save</button>
+</form>

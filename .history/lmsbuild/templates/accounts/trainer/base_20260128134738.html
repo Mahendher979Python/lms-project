@@ -1,0 +1,328 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 6D / Glassmorphism Base Styles --- */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        --neon-blue: #00f2ff;
+        --neon-purple: #bc13fe;
+        --text-white: #ffffff;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at 10% 20%, rgb(20, 20, 40) 0%, rgb(10, 10, 20) 90%);
+        color: var(--text-white);
+        margin: 0;
+        min-height: 100vh;
+    }
+
+    .page { padding: 30px; }
+
+    /* --- The Glass Card Class --- */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: var(--glass-border);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: var(--glass-shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .glass-card:hover { transform: translateY(-5px); }
+
+    /* --- Header & Actions --- */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .gradient-text {
+        background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+
+    /* --- 3D Buttons (Create Cheyu) --- */
+    .btn-3d {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+        margin-left: 10px;
+    }
+
+    .btn-3d:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 0 15px var(--neon-purple);
+    }
+
+    .btn-secondary { background: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%); }
+
+    /* --- Stats Grid --- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box h3 { margin: 0; font-size: 1rem; opacity: 0.8; }
+    .stat-number { font-size: 3rem; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+    .stat-icon { float: right; font-size: 2.5rem; opacity: 0.2; }
+
+    /* --- Charts Section --- */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    .chart-container { height: 350px; width: 100%; }
+
+    /* --- Tables --- */
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+    th { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; padding: 15px; text-align: left;}
+    td { background: rgba(255,255,255,0.05); padding: 15px; first-child: border-radius: 10px 0 0 10px; }
+    tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+    tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+    tr:hover td { background: rgba(255,255,255,0.1); }
+
+    /* --- Modal (Popups for Create) --- */
+    .modal {
+        display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        margin: 10% auto; width: 400px;
+        background: #1a1a2e; border: 1px solid var(--neon-blue);
+        border-radius: 15px; padding: 30px; position: relative;
+    }
+    .close { color: white; float: right; font-size: 28px; cursor: pointer; }
+    input, select {
+        width: 100%; padding: 10px; margin: 10px 0;
+        background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 5px;
+    }
+</style>
+
+<div class="page">
+
+    <div class="header-section">
+        <div>
+            <h2 class="gradient-text">Master Dashboard</h2>
+            <p style="opacity: 0.7;">Welcome back, {{ admin.username }} (ID: {{ admin.id }})</p>
+        </div>
+        <div>
+            <button class="btn-3d" onclick="openModal('trainerModal')"><i class="fas fa-chalkboard-teacher"></i> Add Trainer</button>
+            <button class="btn-3d btn-secondary" onclick="openModal('studentModal')"><i class="fas fa-user-graduate"></i> Add Student</button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="glass-card stat-box">
+            <i class="fas fa-chalkboard-teacher stat-icon"></i>
+            <h3>Total Trainers</h3>
+            <div class="stat-number" style="color: #00f2ff;">{{ total_trainers }}</div>
+        </div>
+        <div class="glass-card stat-box">
+            <i class="fas fa-users stat-icon"></i>
+            <h3>Total Students</h3>
+            <div class="stat-number" style="color: #bc13fe;">{{ total_students }}</div>
+        </div>
+        <div class="glass-card stat-box">
+            <i class="fas fa-layer-group stat-icon"></i>
+            <h3>Active Batches</h3>
+            <div class="stat-number" style="color: #ff9966;">{{ batch_stats|length }}</div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="glass-card">
+            <h3><i class="fas fa-chart-pie"></i> Batch Distribution (3D)</h3>
+            <div id="batch3DChart" class="chart-container"></div>
+        </div>
+        <div class="glass-card">
+            <h3><i class="fas fa-chart-bar"></i> Student Growth (3D Bar)</h3>
+            <div id="bar3DChart" class="chart-container"></div>
+        </div>
+    </div>
+
+    <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        
+        <div class="glass-card">
+            <h3 style="color: var(--neon-blue);"><i class="fas fa-chalkboard-teacher"></i> Recent Trainers</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in trainers|slice:":5" %}
+                    <tr>
+                        <td>#{{ t.user.id }}</td>
+                        <td><b>{{ t.user.username }}</b></td>
+                        <td><span style="background: rgba(0,242,255,0.2); padding: 2px 8px; border-radius: 4px;">{{ t.subject }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="color: var(--neon-purple);"><i class="fas fa-user-graduate"></i> Recent Students</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Trainer</th>
+                        <th>Batch</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students|slice:":5" %}
+                    <tr>
+                        <td>{{ s.user.username }}</td>
+                        <td>{{ s.trainer.user.username }}</td>
+                        <td><span style="background: rgba(188,19,254,0.2); padding: 2px 8px; border-radius: 4px;">{{ s.batch.name }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div id="trainerModal" class="modal">
+    <div class="modal-content glass-card">
+        <span class="close" onclick="closeModal('trainerModal')">&times;</span>
+        <h2 style="color: var(--neon-blue)">Add New Trainer</h2>
+        <form method="POST" action=""> {% csrf_token %}
+            <input type="text" placeholder="Username" name="username" required>
+            <input type="email" placeholder="Email" name="email" required>
+            <input type="text" placeholder="Subject Specialization" name="subject" required>
+            <button type="submit" class="btn-3d" style="width:100%; margin-top:15px;">Create Trainer</button>
+        </form>
+    </div>
+</div>
+
+<div id="studentModal" class="modal">
+    <div class="modal-content glass-card">
+        <span class="close" onclick="closeModal('studentModal')">&times;</span>
+        <h2 style="color: var(--neon-purple)">Add New Student</h2>
+        <form method="POST" action=""> {% csrf_token %}
+            <input type="text" placeholder="Student Name" name="student_name" required>
+            <select name="trainer_id">
+                <option value="">Select Trainer</option>
+                {% for t in trainers %}
+                <option value="{{ t.id }}">{{ t.user.username }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-3d btn-secondary" style="width:100%; margin-top:15px;">Create Student</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- 3D PIE CHART (ECharts) ---
+    var chartDom = document.getElementById('batch3DChart');
+    var myChart = echarts.init(chartDom, 'dark');
+    var option;
+
+    const dataLabels = [{% for b in batch_stats %}"{{ b.batch__name }}",{% endfor %}];
+    const dataValues = [{% for b in batch_stats %}{value: {{ b.count }}, name: "{{ b.batch__name }}"},{% endfor %}];
+
+    option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item' },
+        legend: { top: '5%', left: 'center', textStyle: { color: '#fff' } },
+        series: [
+            {
+                name: 'Batch Students',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: { show: false, position: 'center' },
+                emphasis: {
+                    label: { show: true, fontSize: 20, fontWeight: 'bold' }
+                },
+                data: dataValues
+            }
+        ]
+    };
+    myChart.setOption(option);
+
+    // --- 3D BAR CHART (ECharts Dummy Data for Visual) ---
+    var barDom = document.getElementById('bar3DChart');
+    var barChart = echarts.init(barDom, 'dark');
+    
+    // Generating dummy 3D effect bars for visual flair
+    var barOption = {
+        backgroundColor: 'transparent',
+        tooltip: {},
+        grid: { top: '15%', bottom: '15%' },
+        xAxis: { 
+            data: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            axisLine: { lineStyle: { color: '#fff' } }
+        },
+        yAxis: { 
+            axisLine: { lineStyle: { color: '#fff' } },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+        },
+        series: [{
+            name: 'Joinings',
+            type: 'bar',
+            data: [12, 20, 15, 8, 25],
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#83bff6' },
+                    { offset: 0.5, color: '#188df0' },
+                    { offset: 1, color: '#188df0' }
+                ])
+            },
+            showBackground: true,
+            backgroundStyle: { color: 'rgba(180, 180, 180, 0.2)' }
+        }]
+    };
+    barChart.setOption(barOption);
+
+    // --- Modal Logic ---
+    function openModal(id) { document.getElementById(id).style.display = "block"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    
+    // Close modal if clicked outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}

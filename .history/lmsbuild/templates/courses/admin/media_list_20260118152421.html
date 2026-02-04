@@ -1,0 +1,48 @@
+<h2>Admin – Media Management</h2>
+
+<h3>Session Videos</h3>
+<a href="/admin/courses/sessionvideo/add/">➕ Add Video</a>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Title</th>
+    <th>Created By</th>
+    <th>Status</th>
+</tr>
+{% for video in videos %}
+<tr>
+    <td>{{ video.title }}</td>
+    <td>{{ video.created_by.username }}</td>
+    <td>
+        {% if video.is_active %} Active {% else %} Inactive {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="3">No videos</td></tr>
+{% endfor %}
+</table>
+
+<hr>
+
+<h3>Advertisements</h3>
+<a href="/admin/courses/advertisement/add/">➕ Add Advertisement</a>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Title</th>
+    <th>Status</th>
+</tr>
+{% for ad in ads %}
+<tr>
+    <td>{{ ad.title }}</td>
+    <td>
+        {% if ad.is_active %} Active {% else %} Inactive {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="2">No ads</td></tr>
+{% endfor %}
+</table>
+
+<br>
+<a href="{% url 'admin_dashboard' %}">⬅ Back</a>

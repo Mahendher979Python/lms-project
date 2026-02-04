@@ -1,0 +1,25 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<h2>➕ Add Note (Trainer)</h2>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p>Title<br><input type="text" name="title" required></p>
+
+  <p>Description<br><textarea name="description"></textarea></p>
+
+  <p>File<br><input type="file" name="file" required></p>
+
+  <h4>Assign Students</h4>
+  {% for s in students %}
+    <input type="checkbox" name="assigned_to" value="{{ s.id }}"> {{ s.username }}<br>
+  {% endfor %}
+
+  <br>
+  <button type="submit">Save</button>
+  <a href="{% url 'trainer_notes_list' %}">Back</a>
+</form>
+
+{% endblock %}

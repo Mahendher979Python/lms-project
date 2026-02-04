@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LMS | Mahendher Platform{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ================= CSS VARIABLES (THEMING) ================= */
+        :root {
+            /* Light Mode Colors */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --primary: #2563eb;       /* Blue */
+            --primary-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Colors */
+        [data-theme="dark"] {
+            --bg-body: #0f172a;       /* Dark Navy */
+            --bg-card: #1e293b;       /* Lighter Navy */
+            --text-main: #f1f5f9;     /* White/Grey */
+            --text-light: #94a3b8;
+            --primary: #3b82f6;       /* Lighter Blue for Dark Mode */
+            --primary-hover: #60a5fa;
+            --border: #334155;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Global Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: var(--bg-card);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .logo-img { height: 35px; border-radius: 6px; }
+        .brand-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .brand-name span { color: var(--primary); }
+
+        .nav-center { display: flex; gap: 30px; }
+        .nav-link { font-weight: 500; color: var(--text-main); font-size: 15px; position: relative; }
+        .nav-link:hover { color: var(--primary); }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+
+        /* Buttons & Icons */
+        .icon-btn { font-size: 20px; cursor: pointer; position: relative; color: var(--text-main); }
+        .icon-btn:hover { color: var(--primary); transform: translateY(-2px); }
+
+        /* Notification Badge (Backend Controlled) */
+        .badge-count {
+            position: absolute; top: -5px; right: -5px;
+            background: #ef4444; color: white;
+            font-size: 10px; font-weight: bold;
+            padding: 2px 5px; border-radius: 50%;
+            border: 2px solid var(--bg-card);
+        }
+
+        .btn-nav { padding: 8px 20px; border-radius: 50px; font-weight: 600; font-size: 14px; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); }
+
+        /* Mobile Menu */
+        .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+
+        /* ================= FOOTER ================= */
+        footer {
+            background: #0f172a; /* Always dark footer */
+            color: #cbd5e1;
+            padding: 60px 5% 20px;
+            margin-top: auto;
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; border-bottom: 1px solid #334155; padding-bottom: 40px; }
+        .footer-col h4 { color: white; margin-bottom: 20px; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a:hover { color: var(--primary); padding-left: 5px; transition: 0.3s; }
+        .copyright { text-align: center; margin-top: 20px; font-size: 14px; }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .nav-center {
+                position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px);
+                background: var(--bg-card); flex-direction: column; justify-content: center; align-items: center;
+                transition: 0.4s; z-index: 999;
+            }
+            .nav-center.active { left: 0; }
+            .nav-right { display: none; } /* Show in menu instead for mobile */
+            .hamburger { display: block; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <img src="{% static 'images/Speshwaylogo.jpg' %}" onerror="this.src='https://via.placeholder.com/40'" class="logo-img" alt="LMS Logo">
+            <a href="{% url 'home' %}" class="brand-name">LMS<span>Pro</span></a>
+        </div>
+
+        <nav class="nav-center" id="nav-menu">
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="#" class="nav-link">Courses</a>
+            <a href="#" class="nav-link">About</a>
+            <a href="#" class="nav-link">Contact</a>
+            
+            {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="nav-link" style="display:none;" id="mobile-login">Login</a>
+            {% endif %}
+        </nav>
+
+        <div class="nav-right">
+            <div class="icon-btn" id="theme-toggle" title="Switch Theme">
+                <i class="fas fa-moon"></i>
+            </div>
+
+            <div class="icon-btn" title="Notifications">
+                <i class="far fa-bell"></i>
+                {% if notification_count and notification_count > 0 %}
+                    <span class="badge-count">{{ notification_count }}</span>
+                {% endif %}
+            </div>
+
+            {% if user.is_authenticated %}
+                <a href="#" class="btn-nav btn-primary">Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-nav btn-primary">Log In</a>
+            {% endif %}
+        </div>
+
+        <div class="hamburger" id="hamburger-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div style="max-width:600px; margin:20px auto; padding:0 20px;">
+                {% for message in messages %}
+                    <div style="background:var(--primary); color:white; padding:10px; border-radius:5px; margin-bottom:10px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>LMS Pro</h4>
+                <p>Learn efficiently with our top-rated courses and expert instructors.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="#">Courses</a></li>
+                    <li><a href="#">My Account</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> help@lms.com</li>
+                    <li><i class="fas fa-phone"></i> +91 9876543210</li>
+                </ul>
+            </div>
+        </div>
+        <p class="copyright">© 2026 Banavath Mahendher LMS. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // 1. Mobile Menu Logic
+        const hamburger = document.getElementById('hamburger-btn');
+        const navMenu = document.getElementById('nav-menu');
+        const mobileLogin = document.getElementById('mobile-login');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            // Check for mobile login visibility
+            if(window.innerWidth <= 768) {
+                if(mobileLogin) mobileLogin.style.display = 'block';
+            }
+        });
+
+        // 2. Dark Mode Logic (with LocalStorage)
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        const icon = themeToggle.querySelector('i');
+
+        // Check saved theme on load
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            htmlElement.setAttribute('data-theme', currentTheme);
+            updateIcon(currentTheme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const current = htmlElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

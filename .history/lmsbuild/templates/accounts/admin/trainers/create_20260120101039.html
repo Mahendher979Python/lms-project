@@ -1,0 +1,148 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 30px;
+        background-color: #1e293b;
+        border-radius: 10px;
+        color: #f1f5f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #f8fafc;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #cbd5e1;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #475569;
+        background-color: #0f172a;
+        color: #e2e8f0;
+        outline: none;
+    }
+
+    .form-input:focus {
+        border-color: #3b82f6;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-save {
+        background-color: #22c55e;
+        color: #020617;
+    }
+
+    .btn-save:hover {
+        background-color: #16a34a;
+    }
+
+    .btn-cancel {
+        background-color: #ef4444;
+        color: #f8fafc;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-cancel:hover {
+        background-color: #dc2626;
+    }
+
+    .message-list {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #1e1b4b;
+        border-left: 4px solid #f87171;
+        border-radius: 6px;
+        color: #f87171;
+        font-weight: 600;
+    }
+</style>
+
+<div class="form-container">
+    <h1 class="form-title">➕ Create Trainer</h1>
+
+    {% if messages %}
+        <div class="message-list">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Mobile</label>
+            <input type="text" name="mobile" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Qualification</label>
+            <input type="text" name="qualification" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Designation</label>
+            <input type="text" name="designation" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Experience (Years)</label>
+            <input type="number" name="experience" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Joining Date</label>
+            <input type="date" name="joining_date" class="form-input" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">💾 Save Trainer</button>
+            <a href="{% url 'trainer_list' %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

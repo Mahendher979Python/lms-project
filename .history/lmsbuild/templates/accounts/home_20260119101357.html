@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | LMS{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>Learn Anytime, Anywhere</h1>
+    <p>Admin • Trainer • Student Platform</p>
+
+    <div class="hero-btns">
+      <a href="#" class="btn primary">Explore Courses</a>
+      <a href="#" class="btn outline">Join Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories">
+  <h2>Course Categories</h2>
+  <div class="cat-grid">
+    <div>Web Development</div>
+    <div>Data Science</div>
+    <div>Digital Marketing</div>
+    <div>Soft Skills</div>
+  </div>
+</section>
+
+<!-- COURSES (DB BASED) -->
+<section class="courses">
+  <h2>Popular Courses</h2>
+
+  <div class="course-grid">
+    {% for course in courses %}
+    <div class="course-card">
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.trainer }}</p>
+      <span>{{ course.duration }}</span>
+      <a href="{% url 'course_detail' course.id %}" class="btn primary">View</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps">
+  <h2>How It Works</h2>
+  <ol>
+    <li>Register</li>
+    <li>Choose Course</li>
+    <li>Learn</li>
+    <li>Get Certificate</li>
+  </ol>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div>👨‍🎓 {{ student_count }} Students</div>
+  <div>📚 {{ course_count }} Courses</div>
+  <div>🧑‍🏫 {{ trainer_count }} Trainers</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <h2>What Students Say</h2>
+  <blockquote>“Best LMS ever!” ⭐⭐⭐⭐⭐</blockquote>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <h2>Contact Us</h2>
+  <form class="contact-form">
+    <input type="text" placeholder="Name">
+    <input type="email" placeholder="Email">
+    <textarea placeholder="Message"></textarea>
+    <button>Send</button>
+  </form>
+</section>
+
+{% endblock %}

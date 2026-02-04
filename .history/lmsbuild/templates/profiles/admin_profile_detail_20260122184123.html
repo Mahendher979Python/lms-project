@@ -1,0 +1,22 @@
+{% extends "profiles/base.html" %}
+{% block content %}
+
+<h2>{{ role|title }} Profile Details</h2>
+
+<p><b>Username:</b> {{ profile.user.username }}</p>
+<p><b>Email:</b> {{ profile.user.email }}</p>
+
+{% if role == "student" %}
+    <p><b>Education:</b> {{ profile.education }}</p>
+    <p><b>College:</b> {{ profile.college }}</p>
+    <p><b>Semester:</b> {{ profile.semester }}</p>
+
+{% elif role == "trainer" %}
+    <p><b>Qualification:</b> {{ profile.qualification }}</p>
+    <p><b>Experience:</b> {{ profile.experience_years }}</p>
+    <p><b>Expertise:</b> {{ profile.expertise }}</p>
+{% endif %}
+
+<a href="javascript:history.back()">⬅ Back</a>
+
+{% endblock %}

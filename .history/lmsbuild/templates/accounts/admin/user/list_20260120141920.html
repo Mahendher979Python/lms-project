@@ -1,0 +1,103 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+<style>
+    .page-title {
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .table-wrapper {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #343a40;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .status-active {
+        color: green;
+        font-weight: 600;
+    }
+
+    .status-inactive {
+        color: red;
+        font-weight: 600;
+    }
+
+    .action-link {
+        text-decoration: none;
+        font-weight: 600;
+        margin-right: 10px;
+        color: #0d6efd;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<h2 class="page-title">👥 Users Management</h2>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role|title }}</td>
+                <td>
+                    {% if user.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-inactive">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'admin_user_view' user.id %}" class="action-link">
+                        👁 View
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">No users found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

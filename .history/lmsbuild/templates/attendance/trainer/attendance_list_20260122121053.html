@@ -1,0 +1,102 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+:root { --primary: #4361ee; --success: #2ec4b6; --danger: #e63946; --dark: #2b2d42; }
+.card-3d { background: #fff; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: all 0.3s; overflow: hidden; border:1px solid #f1f5f9; }
+.card-3d:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.card-header-3d { background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+.user-badge { font-weight: 800; color: var(--dark); display:flex; align-items:center; gap:8px;}
+.date-tag { background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; }
+.card-body-3d { padding: 20px; }
+.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.time-box { background: #f8fafc; padding: 10px; border-radius: 10px; border-left: 4px solid #ccc; }
+.time-box.in { border-color: var(--success); }
+.time-box.out { border-color: var(--danger); }
+.time-label { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+.time-value { font-size: 14px; font-weight: 700; color: #334155; }
+.location-panel { background: #fff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 15px; margin-top: 15px; }
+.map-frame { width: 100%; height: 180px; border-radius: 8px; border: none; margin-top:10px; }
+.btn-3d { padding: 6px 12px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: #fff; font-size: 12px; text-decoration: none;}
+.btn-map { background: #4361ee; }
+.btn-copy { background: #64748b; }
+h2 { color: #1e293b; font-size: 22px; margin: 30px 0 15px; border-left: 5px solid #4361ee; padding-left: 15px; }
+</style>
+
+<h2>👨‍🏫 My Attendance</h2>
+<div class="row">
+{% for a in my_attendance %}
+<div class="col-md-6"> <div class="card-3d">
+        <div class="card-header-3d">
+            <span class="user-badge">📅 {{ a.date }}</span>
+            <span class="date-tag">{{ a.total_work_hours|default:"-" }} Hrs</span>
+        </div>
+        <div class="card-body-3d">
+            <div class="time-grid">
+                <div class="time-box in">
+                    <div class="time-label">Login</div>
+                    <div class="time-value">{{ a.login_time|default:"-" }}</div>
+                </div>
+                <div class="time-box out">
+                    <div class="time-label">Logout</div>
+                    <div class="time-value">{{ a.logout_time|default:"-" }}</div>
+                </div>
+            </div>
+            {% if a.latitude and a.longitude %}
+            <div class="location-panel">
+                 <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <strong style="color:#e63946">📍 Location</strong>
+                    <div>
+                        <a href="https://maps.google.com/?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn-3d btn-map">Map</a>
+                    </div>
+                </div>
+                <iframe class="map-frame" loading="lazy" src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed"></iframe>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+<h2>🎓 Students Attendance</h2>
+<div class="row">
+{% for a in students_attendance %}
+<div class="col-md-6">
+    <div class="card-3d">
+        <div class="card-header-3d" style="background:#f0f9ff;">
+            <div class="user-badge">
+                <img src="https://ui-avatars.com/api/?name={{ a.user.username }}&background=random" style="width:30px; border-radius:50%; margin-right:8px;">
+                {{ a.user.username }}
+            </div>
+            <span class="date-tag" style="background:#fff;">{{ a.date }}</span>
+        </div>
+        
+        <div class="card-body-3d">
+             <div class="time-grid">
+                <div class="time-box in">
+                    <div class="time-label">Login</div>
+                    <div class="time-value">{{ a.login_time|default:"-" }}</div>
+                </div>
+                <div class="time-box out">
+                    <div class="time-label">Logout</div>
+                    <div class="time-value">{{ a.logout_time|default:"-" }}</div>
+                </div>
+            </div>
+            
+            {% if a.latitude and a.longitude %}
+            <div class="location-panel">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <small>Lat: {{ a.latitude|floatformat:4 }}</small>
+                    <a href="https://maps.google.com/?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn-3d btn-map">View Map</a>
+                </div>
+                <iframe class="map-frame" loading="lazy" src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed"></iframe>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}

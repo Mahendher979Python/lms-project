@@ -1,0 +1,16 @@
+<h2>🎬 {{ lesson.title }}</h2>
+<p>Course: {{ lesson.course.title }}</p>
+
+{% if lesson.video %}
+    <video width="800" controls>
+        <source src="{{ lesson.video.url }}">
+        Your browser does not support video.
+    </video>
+{% else %}
+    <p>No video available</p>
+{% endif %}
+
+<br><br>
+<a href="{% url 'student_lesson_list' lesson.course.id %}">
+    ⬅ Back to Lessons
+</a>

@@ -1,0 +1,234 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --primary: #4361ee;
+    --success: #2ec4b6;
+    --danger: #e63946;
+    --dark: #2b2d42;
+    --light: #f8f9fa;
+    --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+    --shadow-3d: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.05);
+}
+
+.container-fluid { background: #f0f2f5; padding: 30px; }
+
+/* --- 3D Card Design --- */
+.card-3d {
+    background: #fff;
+    border-radius: 16px;
+    border: none;
+    margin-bottom: 25px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    overflow: hidden;
+}
+
+.card-3d:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-3d);
+}
+
+.card-header-3d {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-badge {
+    font-weight: 800;
+    color: var(--dark);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-tag {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-body-3d { padding: 20px; }
+
+/* --- Time Stats --- */
+.time-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.time-box {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 10px;
+    border-left: 4px solid #ccc;
+}
+
+.time-box.in { border-color: var(--success); }
+.time-box.out { border-color: var(--danger); }
+
+.time-label { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+.time-value { font-size: 15px; font-weight: 700; color: #334155; margin-top: 4px; }
+
+/* --- Map Section --- */
+.location-panel {
+    background: #fff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.loc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.loc-title { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+
+.map-frame {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* --- Buttons --- */
+.btn-3d {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+}
+.btn-3d:active { transform: scale(0.96); }
+
+.btn-login { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(46, 196, 182, 0.3); }
+.btn-logout { background: var(--danger); color: white; box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3); }
+.btn-map { background: #4361ee; color: white; }
+.btn-copy { background: #64748b; color: white; }
+</style>
+
+<div class="card-3d">
+  <div class="card-header-3d">
+    <span class="user-badge">📍 Daily Tracker</span>
+  </div>
+  <div class="card-body-3d" style="text-align:center;">
+    <div style="margin-bottom:20px;">
+        <button class="btn-3d btn-login" onclick="markLogin()">Login Check-in</button>
+        <button class="btn-3d btn-logout" onclick="markLogout()">Logout Check-out</button>
+    </div>
+
+    {% if attendance_today %}
+    <div class="time-grid">
+        <div class="time-box in">
+            <div class="time-label">Login Time</div>
+            <div class="time-value">{{ attendance_today.login_time|default:"-" }}</div>
+        </div>
+        <div class="time-box out">
+            <div class="time-label">Logout Time</div>
+            <div class="time-value">{{ attendance_today.logout_time|default:"-" }}</div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div id="liveMap" style="display:none; margin-top:15px;">
+        <iframe id="liveMapFrame" class="map-frame"></iframe>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin: 30px 0 15px; color:#334155;">📅 Attendance History</h3>
+
+{% for a in attendance_list %}
+<div class="card-3d">
+    <div class="card-header-3d">
+        <span class="user-badge">Date: {{ a.date }}</span>
+        <span class="date-tag">Hours: {{ a.total_work_hours|default:"00:00" }}</span>
+    </div>
+
+    <div class="card-body-3d">
+        <div class="time-grid">
+            <div class="time-box in">
+                <div class="time-label">Login</div>
+                <div class="time-value">{{ a.login_time|default:"-" }}</div>
+            </div>
+            <div class="time-box out">
+                <div class="time-label">Logout</div>
+                <div class="time-value">{{ a.logout_time|default:"-" }}</div>
+            </div>
+        </div>
+
+        {% if a.latitude and a.longitude %}
+        <div class="location-panel">
+            <div class="loc-header">
+                <div class="loc-title">📍 Location Detected</div>
+                <div>
+                    <a href="https://maps.google.com/?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn-3d btn-map">Open Map</a>
+                    <button onclick="copyCoords('{{ a.latitude }}, {{ a.longitude }}')" class="btn-3d btn-copy">Copy</button>
+                </div>
+            </div>
+            <iframe class="map-frame" loading="lazy"
+                src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed">
+            </iframe>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+<form hidden>{% csrf_token %}</form>
+
+<script>
+function csrf(){ return document.querySelector('[name=csrfmiddlewaretoken]').value; }
+
+function markLogin(){
+  if(!navigator.geolocation) { alert("Geo not supported"); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    fetch("{% url 'attendance_login' %}", {
+      method: "POST", headers: { "X-CSRFToken": csrf(), "Content-Type": "application/json" },
+      body: JSON.stringify({ latitude: lat, longitude: lng })
+    }).then(res => {
+        if(res.ok){
+            document.getElementById("liveMap").style.display="block";
+            document.getElementById("liveMapFrame").src=`https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+            setTimeout(()=>location.reload(), 1500);
+        }
+    });
+  });
+}
+
+function markLogout(){
+  if(confirm("Logout?")) {
+    fetch("{% url 'attendance_logout' %}", { method: "POST", headers: { "X-CSRFToken": csrf() } })
+    .then(() => setTimeout(() => location.reload(), 500));
+  }
+}
+
+function copyCoords(txt) {
+    navigator.clipboard.writeText(txt).then(() => alert("Copied: " + txt));
+}
+</script>
+
+{% endblock %}

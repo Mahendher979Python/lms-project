@@ -1,0 +1,24 @@
+<h2>Available Courses</h2>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Title</th>
+    <th>Level</th>
+    <th>Action</th>
+</tr>
+
+{% for course in courses %}
+<tr>
+    <td>{{ course.title }}</td>
+    <td>{{ course.level }}</td>
+<td>
+    {% if course.id in enrolled_ids %}
+        <a href="{% url 'student_course_detail' course.id %}">View</a>
+    {% else %}
+        <a href="{% url 'enroll_course' course.id %}">Enroll</a>
+    {% endif %}
+</td>
+
+</tr>
+{% endfor %}
+</table>

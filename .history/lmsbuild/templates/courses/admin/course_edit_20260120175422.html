@@ -1,0 +1,209 @@
+{% extends "accounts/admin/base.html" %}
+
+{% block content %}
+
+<style>
+.course-card {
+  max-width: 800px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.course-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #475569;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.file-info {
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.file-info a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.status-box {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.status-box label {
+  font-weight: 500;
+}
+
+.actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+}
+
+.btn-save {
+  padding: 12px 22px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  padding: 12px 22px;
+  background: #e5e7eb;
+  color: #1e293b;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn-save:hover { background:#1d4ed8; }
+.btn-cancel:hover { background:#d1d5db; }
+</style>
+
+<h2>✏️ Edit Course</h2>
+
+<div class="course-card">
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- TITLE -->
+    <div class="form-group">
+      <label>Course Title</label>
+      <input type="text" name="title" value="{{ course.title }}" required>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description">{{ course.description }}</textarea>
+    </div>
+
+    <!-- LEVEL & DURATION -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Level</label>
+        <select name="level">
+          <option value="beginner" {% if course.level == "beginner" %}selected{% endif %}>Beginner</option>
+          <option value="intermediate" {% if course.level == "intermediate" %}selected{% endif %}>Intermediate</option>
+          <option value="advanced" {% if course.level == "advanced" %}selected{% endif %}>Advanced</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Duration</label>
+        <input type="text" name="duration" value="{{ course.duration }}">
+      </div>
+    </div>
+
+    <!-- TRAINER -->
+    <div class="form-group">
+      <label>Trainer</label>
+      <select name="trainer">
+        {% for t in trainers %}
+          <option value="{{ t.id }}"
+            {% if course.trainer and course.trainer.id == t.id %}selected{% endif %}>
+            {{ t.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- FILES -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Thumbnail Image</label>
+        <input type="file" name="thumbnail">
+        {% if course.thumbnail %}
+          <div class="file-info">
+            Current: <a href="{{ course.thumbnail.url }}" target="_blank">View Image</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>Intro Video</label>
+        <input type="file" name="video">
+        {% if course.intro_video %}
+          <div class="file-info">
+            Current: <a href="{{ course.intro_video.url }}" target="_blank">View Video</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Syllabus PDF</label>
+      <input type="file" name="pdf">
+      {% if course.syllabus_pdf %}
+        <div class="file-info">
+          Current: <a href="{{ course.syllabus_pdf.url }}" target="_blank">Download PDF</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- STATUS -->
+    <div class="status-box">
+      <label>
+        <input type="radio" name="status" value="published"
+          {% if course.is_published %}checked{% endif %}>
+        Published
+      </label>
+
+      <label>
+        <input type="radio" name="status" value="draft"
+          {% if not course.is_published %}checked{% endif %}>
+        Draft
+      </label>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button type="submit" class="btn-save">Update Course</button>
+      <a href="{% url 'admin_course_list' %}" class="btn-cancel">Cancel</a>
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}

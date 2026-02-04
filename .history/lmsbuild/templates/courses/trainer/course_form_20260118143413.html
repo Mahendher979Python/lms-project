@@ -1,0 +1,10 @@
+<h2>{{ action }} Course</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{{ action }}</button>
+</form>
+
+<br>
+<a href="{% url 'trainer_course_list' %}">⬅ Back</a>

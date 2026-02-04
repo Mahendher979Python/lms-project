@@ -1,0 +1,30 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<style>
+.form-box { max-width:600px; margin:auto; background:#1e293b; padding:30px; border-radius:10px; }
+input { width:100%; padding:12px; margin-bottom:15px; background:#0f172a; color:white; border:1px solid #475569; }
+button { background:#3b82f6; padding:12px; width:100%; border:none; font-weight:bold; color:white; }
+</style>
+
+<div class="form-box">
+<h2>✏️ Edit Trainer</h2>
+
+<form method="post">
+{% csrf_token %}
+<input name="username" value="{{ trainer.username }}" required>
+<input name="mobile" value="{{ trainer.mobile }}" required>
+<input name="qualification" value="{{ profile.qualification }}" required>
+<input name="designation" value="{{ profile.designation }}" required>
+<input name="experience" type="number" value="{{ profile.experience }}" required>
+
+<label>
+<input type="checkbox" name="is_active" {% if trainer.is_active %}checked{% endif %}>
+ Active
+</label>
+
+<button>Update Trainer</button>
+</form>
+</div>
+
+{% endblock %}

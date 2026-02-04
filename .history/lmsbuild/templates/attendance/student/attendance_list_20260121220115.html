@@ -1,0 +1,110 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.page-wrap {
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.status-present {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.status-half {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.status-absent {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.map-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+</style>
+
+<div class="page-wrap">
+  <h2>📅 My Attendance</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Login</th>
+        <th>Logout</th>
+        <th>Status</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for att in attendance_list %}
+      <tr>
+        <td>{{ att.date }}</td>
+
+        <td>{{ att.login_time|default:"-" }}</td>
+
+        <td>{{ att.logout_time|default:"-" }}</td>
+
+        <td class="
+          {% if att.status == 'present' %}status-present
+          {% elif att.status == 'half_day' %}status-half
+          {% else %}status-absent{% endif %}
+        ">
+          {{ att.get_status_display }}
+        </td>
+
+        <td>
+          {% if att.latitude and att.longitude %}
+            <a
+              class="map-link"
+              href="https://www.google.com/maps?q={{ att.latitude }},{{ att.longitude }}"
+              target="_blank"
+            >
+              📍 View Map
+            </a>
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">No attendance records</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

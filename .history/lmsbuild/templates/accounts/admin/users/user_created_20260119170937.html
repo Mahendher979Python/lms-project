@@ -1,0 +1,41 @@
+{% extends "accounts\admin\base.html" %}
+{% block content %}
+
+<style>
+.box{
+  max-width:450px;margin:50px auto;background:#0f172a;
+  padding:30px;border-radius:16px;text-align:center;
+  border:1px solid #22c55e;
+}
+.creds{
+  background:#1e293b;padding:15px;border-radius:10px;
+  margin:20px 0;text-align:left;
+}
+.row{display:flex;justify-content:space-between;margin-bottom:10px}
+.label{color:#94a3b8}
+.value{color:#fff;font-family:monospace}
+</style>
+
+<div class="box">
+  <h2>User Created</h2>
+  <p>Copy credentials now (won’t show again)</p>
+
+  <div class="creds">
+    <div class="row">
+      <span class="label">Username</span>
+      <span class="value">{{ username }}</span>
+    </div>
+    <div class="row">
+      <span class="label">Password</span>
+      <span class="value">{{ password }}</span>
+    </div>
+    <div class="row">
+      <span class="label">Role</span>
+      <span class="value">{{ role }}</span>
+    </div>
+  </div>
+
+  <a href="{% url 'admin_users' %}">Go to Users</a>
+</div>
+
+{% endblock %}

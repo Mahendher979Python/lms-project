@@ -1,0 +1,141 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Message</title>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --hover-color: #0a58ca;
+            --bg-color: #f4f6f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1.5px solid #eee;
+            border-radius: 6px;
+            box-sizing: border-box; /* Padding valla width distract avvakunda */
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background: var(--hover-color);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .loading-spinner {
+            display: none;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Send Message</h2>
+
+    <form id="messageForm" method="post">
+        {% csrf_token %}
+
+        <label>Receiver</label>
+        <select name="receiver" required>
+            <option value="">Select User</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Subject</label>
+        <input type="text" name="subject" placeholder="Enter subject" required>
+
+        <label>Message</label>
+        <textarea rows="5" name="body" placeholder="Write your message here..." required></textarea>
+
+        <button type="submit" id="submitBtn">
+            <span class="btn-text">Send Message</span>
+        </button>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('messageForm');
+    const btn = document.getElementById('submitBtn');
+    const btnText = btn.querySelector('.btn-text');
+
+    form.addEventListener('submit', function() {
+        // Submit button loading state
+        btnText.innerText = 'Sending...';
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+    });
+</script>
+
+</body>
+</html>
+
+{% endblock %}

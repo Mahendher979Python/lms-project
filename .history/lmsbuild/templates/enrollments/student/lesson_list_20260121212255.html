@@ -1,0 +1,77 @@
+{% extends "accounts/student/base.html" %}
+{% block content %}
+
+<style>
+.page-wrap {
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-bar h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.action-btns a {
+  margin-left: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-btn {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.close-btn {
+  background: #ef4444;
+  color: white;
+}
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="header-bar">
+    <h2>📘 {{ course.title }}</h2>
+
+    <div class="action-btns">
+      <!-- Back Button -->
+      <a href="{% url 'student_course_list' %}" class="back-btn">
+        ⬅ Back
+      </a>
+
+      <!-- Close Button -->
+      <a href="{% url 'student_dashboard' %}" class="close-btn">
+        ✖ Close
+      </a>
+    </div>
+  </div>
+
+  <!-- LESSONS -->
+  {% for lesson in lessons %}
+    <div class="course-card">
+      <h3>{{ lesson.title }}</h3>
+      <p>{{ lesson.description|truncatechars:120 }}</p>
+
+      <a href="{% url 'student_lesson_detail' lesson.id %}" class="btn-3d">
+        Open Lesson 📖
+      </a>
+    </div>
+  {% empty %}
+    <p>No lessons available.</p>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

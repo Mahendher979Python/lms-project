@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Trainer Dashboard{% endblock %}</title>
+
+    <style>
+        body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #f1f5f9; }
+        
+        /* ===== Layout ===== */
+        .wrapper { display: flex; min-height: 100vh; }
+        
+        /* ===== Sidebar ===== */
+        .sidebar { width: 240px; background: #1e293b; color: white; padding: 20px; flex-shrink: 0; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
+        .sidebar a { display: block; padding: 12px; margin-bottom: 10px; text-decoration: none; color: white; border-radius: 6px; background: #334155; }
+        .sidebar a:hover { background: #475569; }
+        .sidebar .logout { background: #dc2626 !important; }
+
+        /* ===== Main Content ===== */
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+
+        /* ===== Common Elements (Tables, Forms) ===== */
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        
+        /* Dashboard Cards */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .card h3 { margin: 0 0 10px 0; font-size: 18px; color: #1e293b; }
+        .card p { margin: 0; font-size: 14px; color: #64748b; }
+        .card a, .btn { display: inline-block; margin-top: 12px; padding: 8px 14px; background: #2563eb; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; border: none; cursor: pointer;}
+        .card a:hover, .btn:hover { background: #1d4ed8; }
+        
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; font-weight: 600; }
+        tr:hover { background-color: #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="sidebar">
+        <h2>Trainer Panel</h2>
+
+        <a href="{% url 'trainer_dashboard' %}">🏠 Dashboard</a>
+        <a href="{% url 'trainer_course_list' %}">📚 My Courses</a>
+        <a href="{% url 'trainer_course_create' %}">➕ Add Course</a>
+        <a href="{% url 'trainer_video_list' %}">🎥 Videos</a>
+        <a href="{% url 'trainer_ad_list' %}">🖼 Images</a>
+        <a href="{% url 'public_media_view' %}">🌐 Public Media</a>
+
+        <a href="{% url 'logout' %}" class="logout">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding:10px; background:#dcfce7; color:#166534; margin-bottom:20px; border-radius:5px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</div>
+
+</body>
+</html>

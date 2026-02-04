@@ -1,0 +1,207 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+/* ===== PAGE SETUP ===== */
+.page-wrap {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  perspective: 1000px;
+}
+
+/* ===== 3D CARD ===== */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 
+    0 20px 50px rgba(0,0,0,0.1),
+    0 1px 3px rgba(0,0,0,0.05);
+  transform: rotateX(0.5deg);
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px dashed #e5e7eb;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1e293b;
+  font-weight: 800;
+}
+
+/* ===== 3D BUTTONS ===== */
+.btn-3d {
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: all 0.1s;
+}
+
+.btn-add {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 5px 0 #4338ca;
+}
+.btn-add:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #4338ca; }
+.btn-add:active { transform: translateY(5px); box-shadow: none; }
+
+.btn-edit {
+  background: #f1f5f9;
+  color: #475569;
+  box-shadow: 0 4px 0 #cbd5e1;
+  border: 1px solid #e2e8f0;
+}
+.btn-edit:hover { background: #e2e8f0; transform: translateY(-2px); }
+.btn-edit:active { transform: translateY(4px); box-shadow: none; }
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+}
+
+th {
+  text-align: left;
+  padding: 0 20px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+tbody tr {
+  background: #ffffff;
+  box-shadow: 0 5px 0 #e2e8f0, 0 10px 20px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+tbody tr:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 0 #cbd5e1, 0 15px 30px rgba(0,0,0,0.1);
+}
+
+td {
+  padding: 20px;
+  color: #334155;
+}
+
+.role-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.role-admin {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.role-trainer {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.read-only {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+}
+</style>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <div class="header">
+      <h2>📘 My Notes</h2>
+      <a href="{% url 'trainer_notes_add' %}" class="btn-3d btn-add">➕ Add New Note</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Assigned Users</th>
+          <th>Date Created</th>
+          <th style="text-align:right">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for note in notes %}
+        <tr>
+          <td>
+            {{ note.title }}<br>
+
+            {% if note.created_by.role == "admin" %}
+              <span class="role-badge role-admin">ADMIN</span>
+            {% else %}
+              <span class="role-badge role-trainer">TRAINER</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <span style="background:#e0e7ff;color:#4338ca;padding:4px 10px;border-radius:6px;font-weight:700;">
+              👥 {{ note.assigned_to.count }}
+            </span>
+          </td>
+
+          <td style="color:#64748b;">
+            {{ note.created_at|date:"d M Y" }}
+          </td>
+
+          <td style="text-align:right">
+            {% if note.created_by == request.user %}
+              <a href="{% url 'trainer_notes_edit' note.id %}" class="btn-3d btn-edit">
+                Edit Note
+              </a>
+            {% else %}
+              <span class="read-only">Read Only</span>
+            {% endif %}
+          </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="4" style="padding:0;background:none;box-shadow:none;">
+            <div class="empty-state">
+              No notes available yet.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

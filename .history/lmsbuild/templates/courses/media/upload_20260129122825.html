@@ -1,0 +1,222 @@
+{% extends "accounts/admin/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #38f9d7;
+    --secondary: #4facfe;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background: radial-gradient(circle at top, #0b1225, #02040b);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+/* --- 6D FLOATING WRAPPER --- */
+.upload-wrapper {
+    max-width: 550px;
+    margin: 60px auto;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    /* 6D Depth Shadow Effect */
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.5),
+        0 30px 60px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,255,255,0.1);
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CLOSE BUTTON --- */
+.close-window {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 95, 86, 0.1);
+    border: 1px solid rgba(255, 95, 86, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff5f56;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.close-window:hover {
+    background: #ff5f56;
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* --- FORM STYLING --- */
+.upload-header { margin-bottom: 30px; text-align: center; }
+.upload-title {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(to right, #38f9d7, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.upload-sub { opacity: 0.5; font-size: 14px; margin-top: 5px; }
+
+.form-group { margin-bottom: 22px; }
+label { display: block; margin-bottom: 10px; color: #cbd5e1; font-size: 14px; font-weight: 500; }
+
+input, select {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    color: white;
+    font-size: 15px;
+    transition: 0.3s;
+    outline: none;
+}
+input:focus, select:focus {
+    border-color: var(--primary);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 15px rgba(56, 249, 215, 0.2);
+}
+
+/* --- ENHANCED DROP AREA --- */
+.drop-area {
+    border: 2px dashed rgba(56, 249, 215, 0.3);
+    padding: 40px 20px;
+    border-radius: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.4s;
+    background: rgba(56, 249, 215, 0.02);
+    display: block;
+}
+.drop-area:hover {
+    border-color: var(--primary);
+    background: rgba(56, 249, 215, 0.08);
+}
+.drop-area i {
+    font-size: 45px;
+    background: linear-gradient(135deg, #38f9d7, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+}
+
+.file-info {
+    margin-top: 15px;
+    font-size: 13px;
+    color: var(--primary);
+    display: none; /* Initially hidden */
+    font-weight: 600;
+}
+
+/* --- 3D BUTTON --- */
+.upload-btn {
+    margin-top: 15px;
+    width: 100%;
+    background: linear-gradient(135deg, #38f9d7, #4facfe);
+    border: none;
+    padding: 16px;
+    border-radius: 15px;
+    font-weight: 800;
+    color: #020617;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(56, 249, 215, 0.2);
+}
+.upload-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(56, 249, 215, 0.4);
+}
+
+</style>
+
+<div class="upload-wrapper">
+    <a href="{% url 'admin_media_hub' %}" class="close-window" title="Close">
+        <i class="fa-solid fa-xmark"></i>
+    </a>
+
+    <div class="upload-header">
+        <div class="upload-title">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Media
+        </div>
+        <div class="upload-sub">Add new digital assets to your library</div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Material Title</label>
+            <input name="title" placeholder="e.g. Django Full Stack Architecture" required>
+        </div>
+
+        <div class="form-group">
+            <label>Assign to Course</label>
+            <select name="course" required>
+                <option value="" disabled selected>-- Choose a Course --</option>
+                {% for c in courses %}
+                <option value="{{c.id}}">{{c.title}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Select Document / Video</label>
+            <label class="drop-area" id="dropArea">
+                <i class="fa-solid fa-file-circle-plus"></i><br>
+                <span id="dropText">Drag & drop or click to browse</span>
+                <input type="file" hidden name="file" required id="fileInput" onchange="showFile(this)">
+                <div id="fileInfo" class="file-info"></div>
+            </label>
+        </div>
+
+        <button class="upload-btn" type="submit" id="submitBtn">
+            <i class="fa-solid fa-rocket"></i> Publish Material
+        </button>
+    </form>
+</div>
+
+<script>
+function showFile(input) {
+    const fileInfo = document.getElementById("fileInfo");
+    const dropText = document.getElementById("dropText");
+    const dropArea = document.getElementById("dropArea");
+    
+    if (input.files && input.files[0]) {
+        fileInfo.style.display = "block";
+        fileInfo.innerHTML = `<i class="fa-solid fa-check-circle"></i> Selected: ${input.files[0].name}`;
+        dropText.style.opacity = "0.5";
+        dropArea.style.borderColor = "#38f9d7";
+        dropArea.style.background = "rgba(56, 249, 215, 0.05)";
+    }
+}
+
+// Simple Button Animation on Submit
+document.getElementById('uploadForm').onsubmit = function() {
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+    btn.style.opacity = '0.7';
+    btn.style.pointerEvents = 'none';
+};
+</script>
+
+{% endblock %}

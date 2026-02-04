@@ -1,0 +1,264 @@
+{% extends "accounts/admin/base.html" %}
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 6D Theme Variables (Teal & Pink) --- */
+    :root {
+        --neon-teal: #00f2ea;
+        --neon-pink: #ff0055;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --text-white: #ffffff;
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(15, 20, 35) 0%, rgb(5, 5, 15) 90%);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-white);
+        min-height: 100vh;
+    }
+
+    .dashboard-container { padding: 30px; }
+
+    /* --- Header Section --- */
+    .header-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: var(--glass-border);
+        padding: 25px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(90deg, var(--neon-teal), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* --- Search Bar --- */
+    .search-wrapper { position: relative; width: 300px; }
+    .search-wrapper input {
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50px;
+        color: white;
+        outline: none;
+        transition: 0.3s;
+    }
+    .search-wrapper input:focus {
+        border-color: var(--neon-teal);
+        box-shadow: 0 0 15px rgba(0, 242, 234, 0.3);
+    }
+    .search-wrapper i {
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5);
+    }
+
+    /* --- Glass Table --- */
+    .table-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: var(--glass-border);
+        padding: 5px;
+        overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    
+    thead th {
+        padding: 20px;
+        text-align: left;
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    tbody tr { transition: 0.3s; }
+    tbody tr:hover {
+        background: rgba(255,255,255,0.05);
+        transform: scale(1.005);
+    }
+
+    td { padding: 20px; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+    /* --- File Type Icons --- */
+    .file-icon-box {
+        width: 45px; height: 45px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 1.4rem;
+        margin-right: 15px;
+        float: left;
+        color: var(--neon-teal);
+        transition: 0.3s;
+    }
+    tr:hover .file-icon-box { background: var(--neon-teal); color: #000; box-shadow: 0 0 15px var(--neon-teal); }
+
+    /* --- Badges --- */
+    .course-badge {
+        background: rgba(255, 0, 85, 0.15);
+        color: var(--neon-pink);
+        padding: 5px 12px; border-radius: 8px;
+        border: 1px solid rgba(255, 0, 85, 0.3);
+        font-size: 0.85rem;
+    }
+
+    /* --- Download Button --- */
+    .download-btn {
+        background: linear-gradient(135deg, var(--neon-teal), #0099ff);
+        color: #000;
+        padding: 8px 18px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex; align-items: center; gap: 5px;
+        transition: 0.3s;
+    }
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px var(--neon-teal);
+    }
+
+</style>
+
+<div class="dashboard-container">
+
+    <div class="header-section">
+        <div>
+            <h2 class="page-title"><i class="fas fa-folder-open"></i> Media Library</h2>
+            <p style="opacity:0.7; margin-top:5px;">All uploaded course materials & resources</p>
+        </div>
+        
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="mediaSearch" placeholder="Search files, courses..." onkeyup="filterTable()">
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table id="mediaTable">
+            <thead>
+                <tr>
+                    <th>File Details</th>
+                    <th>Course</th>
+                    <th>Uploaded By</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in materials %}
+                <tr>
+                    <td>
+                        <div class="file-icon-box" data-url="{{ m.file.url }}">
+                            <i class="fas fa-file"></i> </div>
+                        <div style="padding-top:2px;">
+                            <div style="font-weight:600; font-size:1rem;">{{ m.title }}</div>
+                            <div style="font-size:0.75rem; opacity:0.5; margin-top:3px;">
+                                File ID: #{{ m.id }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="course-badge">{{ m.course.title }}</span>
+                    </td>
+
+                    <td>
+                        <i class="fas fa-user-circle" style="margin-right:5px; color:rgba(255,255,255,0.5);"></i>
+                        {{ m.uploaded_by.username|title }}
+                    </td>
+
+                    <td style="font-family:monospace; color:var(--neon-teal);">
+                        {{ m.created_at|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        <a href="{{ m.file.url }}" target="_blank" class="download-btn">
+                            <i class="fas fa-cloud-download-alt"></i> Download
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:50px;">
+                        <i class="fas fa-ghost" style="font-size:3rem; opacity:0.2; margin-bottom:15px;"></i>
+                        <p style="opacity:0.5;">No media files found in the system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // 1. Auto-Detect File Icons
+    document.addEventListener("DOMContentLoaded", function() {
+        const icons = document.querySelectorAll('.file-icon-box');
+        
+        icons.forEach(box => {
+            const url = box.getAttribute('data-url').toLowerCase();
+            const icon = box.querySelector('i');
+
+            if (url.includes('.pdf')) {
+                icon.className = 'fas fa-file-pdf';
+            } else if (url.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+                icon.className = 'fas fa-file-image';
+            } else if (url.match(/\.(mp4|mov|avi)$/)) {
+                icon.className = 'fas fa-file-video';
+            } else if (url.match(/\.(zip|rar|tar)$/)) {
+                icon.className = 'fas fa-file-archive';
+            } else if (url.match(/\.(doc|docx)$/)) {
+                icon.className = 'fas fa-file-word';
+            } else {
+                icon.className = 'fas fa-file-alt'; // Default
+            }
+        });
+    });
+
+    // 2. Search Filter
+    function filterTable() {
+        const input = document.getElementById("mediaSearch");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("mediaTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            // Search in Title (Col 0) and Course (Col 1)
+            let tdTitle = tr[i].getElementsByTagName("td")[0];
+            let tdCourse = tr[i].getElementsByTagName("td")[1];
+            
+            if (tdTitle || tdCourse) {
+                let txtTitle = tdTitle.textContent || tdTitle.innerText;
+                let txtCourse = tdCourse.textContent || tdCourse.innerText;
+                
+                if (txtTitle.toUpperCase().indexOf(filter) > -1 || txtCourse.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+{% endblock %}

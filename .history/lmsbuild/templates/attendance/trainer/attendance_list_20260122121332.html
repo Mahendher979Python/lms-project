@@ -1,0 +1,210 @@
+{% extends "accounts/trainer/base.html" %}
+{% block content %}
+
+<style>
+/* --- SAME CSS AS STUDENT DASHBOARD --- */
+.container-fluid { padding: 20px; background-color: #f8f9fa; }
+
+/* --- Main Card Container --- */
+.att-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid #edf2f7;
+}
+
+.att-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Individual History Item (The 3D Card Look) --- */
+.history-item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+.history-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+/* Badges */
+.date-badge {
+    background: #e0f2fe; color: #0284c7;
+    padding: 5px 12px; border-radius: 6px;
+    font-weight: 600; font-size: 14px;
+}
+
+.student-badge {
+    background: #dcfce7; color: #166534;
+    padding: 5px 12px; border-radius: 6px;
+    font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 5px;
+}
+
+.work-hours { font-weight: 700; color: #334155; }
+
+/* Time Row */
+.time-row {
+    display: flex; gap: 30px; margin-bottom: 15px;
+    color: #64748b; font-size: 14px;
+}
+.time-row b { color: #334155; }
+
+/* --- Location Section (Dashed Box) --- */
+.location-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px dashed #cbd5e1;
+}
+
+.loc-title {
+    color: #ef4444; font-weight: 700;
+    margin-bottom: 8px; font-size: 15px;
+}
+
+.lat-lon-text {
+    color: #16a34a; font-weight: 600;
+    font-size: 14px; margin-bottom: 12px;
+}
+
+/* Buttons */
+.action-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+.btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 6px; border:none; cursor:pointer; font-weight:600; text-decoration:none; display:inline-block;}
+.btn-blue { background: #3b82f6; color: white; }
+.btn-grey { background: #64748b; color: white; }
+
+/* Map */
+.map-frame-container {
+    width: 100%; height: 250px;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid #ddd;
+}
+iframe { width: 100%; height: 100%; border: none; }
+</style>
+
+<div class="att-card">
+  <div class="att-title">
+    <span>👨‍🏫</span> My Attendance
+  </div>
+
+  {% for a in my_attendance %}
+  <div class="history-item">
+    <div class="history-header">
+        <span class="date-badge">{{ a.date }}</span>
+        <span class="work-hours">Hours: {{ a.total_work_hours|default:"00:00" }}</span>
+    </div>
+
+    <div class="time-row">
+        <div>Login: <b>{{ a.login_time|default:"-" }}</b></div>
+        <div>Logout: <b>{{ a.logout_time|default:"-" }}</b></div>
+    </div>
+
+    {% if a.latitude and a.longitude %}
+    <div class="location-section">
+        <div class="loc-title">📍 My Location</div>
+        <div class="lat-lon-text">Lat: {{ a.latitude }}, Lon: {{ a.longitude }}</div>
+        
+        <div class="action-buttons">
+            <a href="https://www.google.com/maps?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn-sm btn-blue">
+                Open in Google Maps
+            </a>
+            <button onclick="copyCoords('{{ a.latitude }}, {{ a.longitude }}')" class="btn-sm btn-grey">
+                Copy Coordinates
+            </button>
+        </div>
+
+        <div class="map-frame-container">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed"></iframe>
+        </div>
+    </div>
+    {% else %}
+    <div class="location-section" style="text-align:center; color:#94a3b8;">
+        <i>No location data available.</i>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p style="text-align:center; color:#64748b; padding:20px;">No records found.</p>
+  {% endfor %}
+</div>
+
+<div class="att-card">
+  <div class="att-title">
+    <span>🎓</span> Students Attendance
+  </div>
+
+  {% for a in students_attendance %}
+  <div class="history-item">
+    <div class="history-header">
+        <div style="display:flex; flex-direction:column; gap:5px;">
+            <span class="student-badge">👤 {{ a.user.username }}</span>
+            <span style="font-size:12px; color:#64748b; margin-left:2px;">{{ a.date }}</span>
+        </div>
+        <span class="work-hours">Hours: {{ a.total_work_hours|default:"00:00" }}</span>
+    </div>
+
+    <div class="time-row">
+        <div>Login: <b>{{ a.login_time|default:"-" }}</b></div>
+        <div>Logout: <b>{{ a.logout_time|default:"-" }}</b></div>
+    </div>
+
+    {% if a.latitude and a.longitude %}
+    <div class="location-section">
+        <div class="loc-title">📍 Student Location</div>
+        <div class="lat-lon-text">Lat: {{ a.latitude }}, Lon: {{ a.longitude }}</div>
+        
+        <div class="action-buttons">
+            <a href="https://www.google.com/maps?q={{ a.latitude }},{{ a.longitude }}" target="_blank" class="btn-sm btn-blue">
+                Open in Google Maps
+            </a>
+            <button onclick="copyCoords('{{ a.latitude }}, {{ a.longitude }}')" class="btn-sm btn-grey">
+                Copy Coordinates
+            </button>
+        </div>
+
+        <div class="map-frame-container">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q={{ a.latitude }},{{ a.longitude }}&hl=en&z=15&output=embed"></iframe>
+        </div>
+    </div>
+    {% else %}
+    <div class="location-section" style="text-align:center; color:#94a3b8;">
+        <i>No location data available.</i>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}
+    <p style="text-align:center; color:#64748b; padding:20px;">No student records found.</p>
+  {% endfor %}
+</div>
+
+<script>
+function copyCoords(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Coordinates copied: " + text);
+    });
+}
+</script>
+
+{% endblock %}
